@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { RouterLink } from "vue-router";
-import { BUILD_DATE } from "@/lib/buildMeta";
 import { useConstantsStore } from "@/stores/constants";
 
 const year = new Date().getFullYear();
@@ -33,7 +32,7 @@ const constantsStore = useConstantsStore();
 
       <div class="mt-3 border-t border-border/40 pt-3 space-y-1">
         <p class="text-tiny text-muted-foreground">
-          계산식 기준일: {{ BUILD_DATE }} | 본 계산 결과는 참고용이며, 실제 금융사 심사·중도상환수수료 정책과 차이가 있을 수 있습니다.
+          계산식 기준일: {{ constantsStore.feeDataUpdated }} | 본 계산 결과는 참고용이며, 실제 금융사 심사·중도상환수수료 정책과 차이가 있을 수 있습니다.
         </p>
         <p class="text-tiny text-muted-foreground">
           Copyright &copy; {{ year }} shakilabs.com

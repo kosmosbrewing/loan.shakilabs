@@ -2,13 +2,13 @@ import { computed, ref } from "vue";
 import { defineStore } from "pinia";
 import { fetchPublicConstants, isRemoteConstantsEnabled } from "@/lib/api";
 import { DEFAULT_SITE_URL } from "@/lib/site";
-import { FEE_DATA_UPDATED, FEE_DATA_VERIFIED } from "@/data/marketFees";
+import { LOAN_DATA_UPDATED, LOAN_DATA_VERIFIED } from "@/data/loanPresets";
 import type { PublicConstants } from "@/types/api";
 
 const fallbackConstants: PublicConstants = {
   siteUrl: DEFAULT_SITE_URL,
-  feeDataUpdated: FEE_DATA_UPDATED,
-  feeDataVerified: FEE_DATA_VERIFIED,
+  feeDataUpdated: LOAN_DATA_UPDATED,
+  feeDataVerified: LOAN_DATA_VERIFIED,
   supportEmail: "skdba1313@gmail.com",
 };
 

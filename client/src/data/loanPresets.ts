@@ -1,5 +1,7 @@
 import type { DsrInput, RefinanceInput, RepaymentInput } from "@/lib/validators";
 
+export const LOAN_DATA_UPDATED = "2026-03-16";
+export const LOAN_DATA_VERIFIED = "2026-03-16";
 export const LOAN_BADGE_MESSAGE = "2026년 3월 계산식 기준";
 export const LOAN_ASSUMPTION_NOTE =
   "중도상환수수료·보증료·은행별 우대금리는 단순화했고, 실제 승인 한도는 금융사 정책에 따라 달라질 수 있습니다.";
