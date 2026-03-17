@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import { computed, reactive } from "vue";
+import { AlertTriangle, ShieldCheck, Banknote, TrendingDown } from "lucide-vue-next";
+import { Card, CardContent } from "@/components/ui/card";
 import CompareSourceFooter from "@/components/common/CompareSourceFooter.vue";
 import {
   DEFAULT_PREPAYMENT_FEE_INPUT,
@@ -12,6 +14,14 @@ import { formatPercent, formatWon } from "@/lib/utils";
 const form = reactive({ ...DEFAULT_PREPAYMENT_FEE_INPUT });
 const sanitized = computed(() => sanitizePrepaymentFeeInput(form));
 const result = computed(() => calcPrepaymentFee(sanitized.value));
+
+const statIcons = [AlertTriangle, ShieldCheck, Banknote, TrendingDown] as const;
+const statIconClasses = [
+  "bg-fee/10 text-fee",
+  "bg-muted text-muted-foreground",
+  "bg-muted text-muted-foreground",
+  "bg-muted text-muted-foreground",
+] as const;
 </script>
 
 <template>
@@ -47,31 +57,35 @@ const result = computed(() => calcPrepaymentFee(sanitized.value));
       </div>
     </section>
 
-    <div class="retro-stat-grid">
-      <div class="retro-stat">
-        <p class="retro-stat-label">예상 수수료</p>
-        <p class="retro-stat-value text-status-danger">{{ formatWon(result.feeAmount) }}</p>
-      </div>
-      <div class="retro-stat">
-        <p class="retro-stat-label">면제 처리 금액</p>
-        <p class="retro-stat-value">{{ formatWon(result.waivedAmount) }}</p>
-      </div>
-      <div class="retro-stat">
-        <p class="retro-stat-label">과금 대상 원금</p>
-        <p class="retro-stat-value">{{ formatWon(result.feeTargetAmount) }}</p>
-      </div>
-      <div class="retro-stat">
-        <p class="retro-stat-label">실효 부담률</p>
-        <p class="retro-stat-value">{{ formatPercent(result.effectiveRate, 2) }}</p>
-      </div>
+    <div class="grid grid-cols-2 gap-2 sm:grid-cols-4">
+      <Card
+        v-for="(stat, index) in [
+          { label: '예상 수수료', value: formatWon(result.feeAmount), cls: 'text-fee' },
+          { label: '면제 처리 금액', value: formatWon(result.waivedAmount), cls: '' },
+          { label: '과금 대상 원금', value: formatWon(result.feeTargetAmount), cls: '' },
+          { label: '실효 부담률', value: formatPercent(result.effectiveRate, 2), cls: '' },
+        ]"
+        :key="stat.label"
+        class="border-border/50 bg-muted/30"
+      >
+        <CardContent class="p-3.5">
+          <div class="flex items-center gap-2">
+            <span class="inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-lg" :class="statIconClasses[index]">
+              <component :is="statIcons[index]" class="h-3.5 w-3.5" />
+            </span>
+            <p class="truncate text-caption uppercase tracking-wide text-muted-foreground">{{ stat.label }}</p>
+          </div>
+          <p class="mt-2 text-heading font-bold tabular-nums" :class="stat.cls">{{ stat.value }}</p>
+        </CardContent>
+      </Card>
     </div>
 
-    <section class="retro-panel p-4">
-      <p class="text-caption leading-relaxed text-muted-foreground">
+    <Card>
+      <CardContent class="p-4 text-caption leading-relaxed text-muted-foreground">
         연간 면제한도 {{ formatWon(result.freeQuota) }}와 잔여 부과기간 {{ result.remainingMonths }}개월을 반영한 참고 계산입니다.
         은행별 최소 면제금액, 상품별 예외조항은 별도로 확인해야 합니다.
-      </p>
-    </section>
+      </CardContent>
+    </Card>
 
     <CompareSourceFooter :sources="[...PREPAYMENT_FEE_SOURCES]" updated-at="2026-03-17" />
   </div>

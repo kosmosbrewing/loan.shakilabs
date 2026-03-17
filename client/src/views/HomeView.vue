@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { RouterLink } from "vue-router";
-import { ArrowRightLeft, Gauge, Scale, ReceiptText, GraduationCap } from "lucide-vue-next";
+import { ArrowRightLeft, Gauge, Scale, ReceiptText, GraduationCap, ArrowRight } from "lucide-vue-next";
+import { ActionCard } from "@/components/ui/action-card";
 import RelatedServices from "@/components/common/RelatedServices.vue";
 import SEOHead from "@/components/common/SEOHead.vue";
 
@@ -83,40 +84,24 @@ const faqJsonLd = {
           대출 갈아타기, DSR, 상환방식 비교처럼 실제로 자주 묻는 질문을 모바일에서도 바로 확인할 수 있게 구성했습니다.
         </p>
         <div class="grid gap-3 md:grid-cols-5">
-          <RouterLink
+          <ActionCard
             v-for="tool in tools"
             :key="tool.to"
-            :to="tool.to"
-            class="retro-panel-muted p-4 transition-colors hover:border-primary/50"
+            as-child
           >
-            <component :is="tool.icon" class="h-5 w-5 text-primary" />
-            <p class="mt-3 text-heading font-bold text-foreground">{{ tool.title }}</p>
-            <p class="mt-2 text-caption leading-relaxed text-muted-foreground">{{ tool.desc }}</p>
-          </RouterLink>
+            <RouterLink :to="tool.to">
+              <span class="inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-primary/12 text-primary">
+                <component :is="tool.icon" class="h-5 w-5" />
+              </span>
+              <p class="mt-3 text-heading font-bold text-foreground">{{ tool.title }}</p>
+              <p class="mt-2 text-caption leading-relaxed text-muted-foreground">{{ tool.desc }}</p>
+              <p class="mt-3 inline-flex items-center gap-1 text-caption font-semibold text-primary">
+                계산하기
+                <ArrowRight class="h-3.5 w-3.5" />
+              </p>
+            </RouterLink>
+          </ActionCard>
         </div>
-      </div>
-    </div>
-
-    <div class="retro-panel">
-      <div class="retro-titlebar rounded-t-2xl">
-        <h2 class="retro-title">바로 시작하기</h2>
-      </div>
-      <div class="retro-panel-content grid gap-3 sm:grid-cols-5">
-        <RouterLink class="retro-panel-muted p-4 text-center font-semibold text-foreground hover:border-primary/50" to="/refinance">
-          갈아타기 계산
-        </RouterLink>
-        <RouterLink class="retro-panel-muted p-4 text-center font-semibold text-foreground hover:border-primary/50" to="/dsr">
-          DSR 계산
-        </RouterLink>
-        <RouterLink class="retro-panel-muted p-4 text-center font-semibold text-foreground hover:border-primary/50" to="/repayment">
-          상환방식 비교
-        </RouterLink>
-        <RouterLink class="retro-panel-muted p-4 text-center font-semibold text-foreground hover:border-primary/50" to="/prepayment-fee">
-          중도상환수수료
-        </RouterLink>
-        <RouterLink class="retro-panel-muted p-4 text-center font-semibold text-foreground hover:border-primary/50" to="/student-loan">
-          학자금 상환
-        </RouterLink>
       </div>
     </div>
 

@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import { computed, reactive } from "vue";
+import { TrendingUp, AlertTriangle, CalendarClock, Wallet } from "lucide-vue-next";
+import { Card, CardContent } from "@/components/ui/card";
 import CompareSourceFooter from "@/components/common/CompareSourceFooter.vue";
 import {
   DEFAULT_STUDENT_LOAN_INPUT,
@@ -16,6 +18,14 @@ const result = computed(() => calcStudentLoanRepayment(sanitized.value));
 function setRepaymentRate(rate: number): void {
   form.repaymentRate = rate;
 }
+
+const statIcons = [TrendingUp, AlertTriangle, CalendarClock, Wallet] as const;
+const statIconClasses = [
+  "bg-muted text-muted-foreground",
+  "bg-fee/10 text-fee",
+  "bg-muted text-muted-foreground",
+  "bg-primary/10 text-primary",
+] as const;
 </script>
 
 <template>
@@ -65,31 +75,35 @@ function setRepaymentRate(rate: number): void {
       </div>
     </section>
 
-    <div class="retro-stat-grid">
-      <div class="retro-stat">
-        <p class="retro-stat-label">기준소득 초과분</p>
-        <p class="retro-stat-value">{{ formatWon(result.baseExcessIncome) }}</p>
-      </div>
-      <div class="retro-stat">
-        <p class="retro-stat-label">의무상환액</p>
-        <p class="retro-stat-value text-status-danger">{{ formatWon(result.creditedMandatoryRepayment) }}</p>
-      </div>
-      <div class="retro-stat">
-        <p class="retro-stat-label">월 원천공제 환산</p>
-        <p class="retro-stat-value">{{ formatWon(result.monthlyWithholding) }}</p>
-      </div>
-      <div class="retro-stat">
-        <p class="retro-stat-label">연말 잔액 추정</p>
-        <p class="retro-stat-value text-primary">{{ formatWon(result.balanceAfterYear) }}</p>
-      </div>
+    <div class="grid grid-cols-2 gap-2 sm:grid-cols-4">
+      <Card
+        v-for="(stat, index) in [
+          { label: '기준소득 초과분', value: formatWon(result.baseExcessIncome), cls: '' },
+          { label: '의무상환액', value: formatWon(result.creditedMandatoryRepayment), cls: 'text-fee' },
+          { label: '월 원천공제 환산', value: formatWon(result.monthlyWithholding), cls: '' },
+          { label: '연말 잔액 추정', value: formatWon(result.balanceAfterYear), cls: 'text-primary' },
+        ]"
+        :key="stat.label"
+        class="border-border/50 bg-muted/30"
+      >
+        <CardContent class="p-3.5">
+          <div class="flex items-center gap-2">
+            <span class="inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-lg" :class="statIconClasses[index]">
+              <component :is="statIcons[index]" class="h-3.5 w-3.5" />
+            </span>
+            <p class="truncate text-caption uppercase tracking-wide text-muted-foreground">{{ stat.label }}</p>
+          </div>
+          <p class="mt-2 text-heading font-bold tabular-nums" :class="stat.cls">{{ stat.value }}</p>
+        </CardContent>
+      </Card>
     </div>
 
-    <section class="retro-panel p-4">
-      <p class="text-caption leading-relaxed text-muted-foreground">
+    <Card>
+      <CardContent class="p-4 text-caption leading-relaxed text-muted-foreground">
         자발적 상환액은 고지 의무상환액에서 차감되는 것으로 간주했습니다. 상속·증여에 따른 의무상환과 체납 가산금은
         반영하지 않은 단순 계산입니다.
-      </p>
-    </section>
+      </CardContent>
+    </Card>
 
     <CompareSourceFooter :sources="[...STUDENT_LOAN_SOURCES]" updated-at="2026-03-17" />
   </div>
