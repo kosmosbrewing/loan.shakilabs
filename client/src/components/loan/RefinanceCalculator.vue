@@ -4,7 +4,7 @@ import LoanMetricGrid from "@/components/loan/LoanMetricGrid.vue";
 import LoanScenarioChips from "@/components/loan/LoanScenarioChips.vue";
 import { LOAN_ASSUMPTION_NOTE, TERM_OPTIONS, refinancePresets } from "@/data/loanPresets";
 import { useRefinanceCalculator } from "@/composables/useRefinanceCalculator";
-import { formatWon } from "@/lib/utils";
+import { formatWon, parseNumericInput } from "@/lib/utils";
 
 const { state, result, applyPreset, reset } = useRefinanceCalculator();
 
@@ -49,7 +49,7 @@ function selectPreset(key: string): void {
         <div class="grid gap-3 sm:grid-cols-2">
           <label class="space-y-1.5">
             <span class="text-caption font-semibold text-foreground">남은 대출원금</span>
-            <input v-model.number="state.balance" class="retro-input" min="100000" step="100000" type="number" />
+            <input type="text" inputmode="numeric" class="retro-input" :value="state.balance.toLocaleString('ko-KR')" @input="state.balance = parseNumericInput(($event.target as HTMLInputElement).value)" />
           </label>
           <label class="space-y-1.5">
             <span class="text-caption font-semibold text-foreground">현재 금리</span>
@@ -61,7 +61,7 @@ function selectPreset(key: string): void {
           </label>
           <label class="space-y-1.5">
             <span class="text-caption font-semibold text-foreground">갈아타기 비용</span>
-            <input v-model.number="state.refinanceFee" class="retro-input" min="0" step="10000" type="number" />
+            <input type="text" inputmode="numeric" class="retro-input" :value="state.refinanceFee.toLocaleString('ko-KR')" @input="state.refinanceFee = parseNumericInput(($event.target as HTMLInputElement).value)" />
           </label>
           <label class="space-y-1.5">
             <span class="text-caption font-semibold text-foreground">남은 개월 수</span>

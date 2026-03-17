@@ -4,7 +4,7 @@ import LoanMetricGrid from "@/components/loan/LoanMetricGrid.vue";
 import LoanScenarioChips from "@/components/loan/LoanScenarioChips.vue";
 import { DSR_LIMIT_OPTIONS, LOAN_ASSUMPTION_NOTE, TERM_OPTIONS, dsrPresets } from "@/data/loanPresets";
 import { useDsrCalculator } from "@/composables/useDsrCalculator";
-import { formatPercent, formatWon } from "@/lib/utils";
+import { formatPercent, formatWon, parseNumericInput } from "@/lib/utils";
 
 const { state, result, applyPreset, reset } = useDsrCalculator();
 
@@ -46,16 +46,16 @@ function selectPreset(key: string): void {
         <div class="grid gap-3 sm:grid-cols-2">
           <label class="space-y-1.5">
             <span class="text-caption font-semibold text-foreground">연소득</span>
-            <input v-model.number="state.annualIncome" class="retro-input" min="0" step="100000" type="number" />
+            <input type="text" inputmode="numeric" class="retro-input" :value="state.annualIncome.toLocaleString('ko-KR')" @input="state.annualIncome = parseNumericInput(($event.target as HTMLInputElement).value)" />
           </label>
           <label class="space-y-1.5">
             <span class="text-caption font-semibold text-foreground">기존 연 원리금</span>
             <input
-              v-model.number="state.existingAnnualDebtService"
+              type="text"
+              inputmode="numeric"
               class="retro-input"
-              min="0"
-              step="100000"
-              type="number"
+              :value="state.existingAnnualDebtService.toLocaleString('ko-KR')"
+              @input="state.existingAnnualDebtService = parseNumericInput(($event.target as HTMLInputElement).value)"
             />
           </label>
           <label class="space-y-1.5">

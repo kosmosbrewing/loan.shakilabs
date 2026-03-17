@@ -4,7 +4,7 @@ import LoanMetricGrid from "@/components/loan/LoanMetricGrid.vue";
 import LoanScenarioChips from "@/components/loan/LoanScenarioChips.vue";
 import { LOAN_ASSUMPTION_NOTE, TERM_OPTIONS, repaymentPresets } from "@/data/loanPresets";
 import { useRepaymentCalculator } from "@/composables/useRepaymentCalculator";
-import { formatWon } from "@/lib/utils";
+import { formatWon, parseNumericInput } from "@/lib/utils";
 
 const { state, result, applyPreset, reset } = useRepaymentCalculator();
 
@@ -46,7 +46,7 @@ function selectPreset(key: string): void {
         <div class="grid gap-3 sm:grid-cols-3">
           <label class="space-y-1.5 sm:col-span-2">
             <span class="text-caption font-semibold text-foreground">대출원금</span>
-            <input v-model.number="state.principal" class="retro-input" min="100000" step="100000" type="number" />
+            <input type="text" inputmode="numeric" class="retro-input" :value="state.principal.toLocaleString('ko-KR')" @input="state.principal = parseNumericInput(($event.target as HTMLInputElement).value)" />
           </label>
           <label class="space-y-1.5">
             <span class="text-caption font-semibold text-foreground">금리</span>

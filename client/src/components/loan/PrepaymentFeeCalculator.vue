@@ -9,7 +9,7 @@ import {
 } from "@/lib/validators";
 import { calcPrepaymentFee } from "@/utils/loanExtraCalculator";
 import { PREPAYMENT_FEE_SOURCES } from "@/data/loanExtraTools";
-import { formatPercent, formatWon } from "@/lib/utils";
+import { formatPercent, formatWon, parseNumericInput } from "@/lib/utils";
 
 const form = reactive({ ...DEFAULT_PREPAYMENT_FEE_INPUT });
 const sanitized = computed(() => sanitizePrepaymentFeeInput(form));
@@ -30,11 +30,11 @@ const statIconClasses = [
       <div class="grid gap-3 md:grid-cols-2">
         <label class="space-y-1.5">
           <span class="text-caption font-semibold text-foreground">원대출 금액</span>
-          <input v-model.number="form.originalLoanAmount" class="retro-input" min="1000000" step="1000000" type="number" />
+          <input type="text" inputmode="numeric" class="retro-input" :value="form.originalLoanAmount.toLocaleString('ko-KR')" @input="form.originalLoanAmount = parseNumericInput(($event.target as HTMLInputElement).value)" />
         </label>
         <label class="space-y-1.5">
           <span class="text-caption font-semibold text-foreground">이번 상환액</span>
-          <input v-model.number="form.repaymentAmount" class="retro-input" min="0" step="1000000" type="number" />
+          <input type="text" inputmode="numeric" class="retro-input" :value="form.repaymentAmount.toLocaleString('ko-KR')" @input="form.repaymentAmount = parseNumericInput(($event.target as HTMLInputElement).value)" />
         </label>
       </div>
       <div class="grid gap-3 md:grid-cols-4">

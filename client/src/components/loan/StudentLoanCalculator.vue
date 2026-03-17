@@ -9,7 +9,7 @@ import {
 } from "@/lib/validators";
 import { STUDENT_LOAN_SOURCES } from "@/data/loanExtraTools";
 import { calcStudentLoanRepayment } from "@/utils/loanExtraCalculator";
-import { formatWon } from "@/lib/utils";
+import { formatWon, parseNumericInput } from "@/lib/utils";
 
 const form = reactive({ ...DEFAULT_STUDENT_LOAN_INPUT });
 const sanitized = computed(() => sanitizeStudentLoanInput(form));
@@ -34,21 +34,21 @@ const statIconClasses = [
       <div class="grid gap-3 md:grid-cols-2">
         <label class="space-y-1.5">
           <span class="text-caption font-semibold text-foreground">대출 잔액</span>
-          <input v-model.number="form.loanBalance" class="retro-input" min="0" step="1000000" type="number" />
+          <input type="text" inputmode="numeric" class="retro-input" :value="form.loanBalance.toLocaleString('ko-KR')" @input="form.loanBalance = parseNumericInput(($event.target as HTMLInputElement).value)" />
         </label>
         <label class="space-y-1.5">
           <span class="text-caption font-semibold text-foreground">연간 총급여</span>
-          <input v-model.number="form.annualIncome" class="retro-input" min="0" step="1000000" type="number" />
+          <input type="text" inputmode="numeric" class="retro-input" :value="form.annualIncome.toLocaleString('ko-KR')" @input="form.annualIncome = parseNumericInput(($event.target as HTMLInputElement).value)" />
         </label>
       </div>
       <div class="grid gap-3 md:grid-cols-3">
         <label class="space-y-1.5">
           <span class="text-caption font-semibold text-foreground">상환기준소득</span>
-          <input v-model.number="form.thresholdIncome" class="retro-input" min="0" step="1000000" type="number" />
+          <input type="text" inputmode="numeric" class="retro-input" :value="form.thresholdIncome.toLocaleString('ko-KR')" @input="form.thresholdIncome = parseNumericInput(($event.target as HTMLInputElement).value)" />
         </label>
         <label class="space-y-1.5">
           <span class="text-caption font-semibold text-foreground">자발적 상환액</span>
-          <input v-model.number="form.voluntaryRepayment" class="retro-input" min="0" step="100000" type="number" />
+          <input type="text" inputmode="numeric" class="retro-input" :value="form.voluntaryRepayment.toLocaleString('ko-KR')" @input="form.voluntaryRepayment = parseNumericInput(($event.target as HTMLInputElement).value)" />
         </label>
         <label class="space-y-1.5">
           <span class="text-caption font-semibold text-foreground">대출금리(%)</span>

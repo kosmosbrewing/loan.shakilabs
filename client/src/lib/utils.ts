@@ -54,6 +54,12 @@ export function formatCurrency(amount: number | null | undefined, currency: stri
   }).format(amount);
 }
 
+// 콤마 포함 입력값에서 숫자만 추출: "1,234,000" → 1234000
+export function parseNumericInput(value: string): number {
+  const num = Number(value.replace(/[^0-9.-]/g, ""));
+  return Number.isNaN(num) ? 0 : Math.max(0, num);
+}
+
 // execCommand 기반 클립보드 복사 (Clipboard API 미지원 환경 폴백)
 export function copyUsingExecCommand(text: string): boolean {
   const textarea = document.createElement("textarea");
