@@ -9,6 +9,8 @@ const tabs = [
   { key: "refinance", label: "갈아타기", to: "/refinance" },
   { key: "dsr", label: "DSR", to: "/dsr" },
   { key: "repayment", label: "상환방식", to: "/repayment" },
+  { key: "prepayment", label: "중도상환", to: "/prepayment-fee" },
+  { key: "student", label: "학자금", to: "/student-loan" },
 ] as const;
 
 const activePath = computed(() => route.path);
@@ -18,6 +20,8 @@ function isActiveTab(key: (typeof tabs)[number]["key"]): boolean {
   if (key === "refinance") return activePath.value === "/refinance";
   if (key === "dsr") return activePath.value === "/dsr";
   if (key === "repayment") return activePath.value === "/repayment";
+  if (key === "prepayment") return activePath.value === "/prepayment-fee";
+  if (key === "student") return activePath.value === "/student-loan";
   return false;
 }
 </script>

@@ -25,10 +25,21 @@ export const routes: RouteRecordRaw[] = [
     name: "Repayment",
     component: () => import("@/views/RepaymentView.vue"),
   },
+  {
+    path: "/prepayment-fee",
+    name: "PrepaymentFee",
+    component: () => import("@/views/PrepaymentFeeView.vue"),
+  },
+  {
+    path: "/student-loan",
+    name: "StudentLoan",
+    component: () => import("@/views/StudentLoanView.vue"),
+  },
   { path: "/switch-loan", redirect: "/refinance" },
   { path: "/loan-limit", redirect: "/dsr" },
   { path: "/equal-principal", redirect: "/repayment" },
   { path: "/equal-payment", redirect: "/repayment" },
+  { path: "/repay-fee", redirect: "/prepayment-fee" },
 
   {
     path: "/about",

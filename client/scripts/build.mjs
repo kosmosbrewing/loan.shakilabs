@@ -18,6 +18,8 @@ const sitemapRoutes = [
   { path: "/refinance", changefreq: "weekly", priority: "0.9" },
   { path: "/dsr", changefreq: "weekly", priority: "0.9" },
   { path: "/repayment", changefreq: "weekly", priority: "0.9" },
+  { path: "/prepayment-fee", changefreq: "weekly", priority: "0.8" },
+  { path: "/student-loan", changefreq: "weekly", priority: "0.8" },
   { path: "/about", changefreq: "monthly", priority: "0.4" },
   { path: "/terms", changefreq: "yearly", priority: "0.3" },
   { path: "/privacy", changefreq: "yearly", priority: "0.3" },

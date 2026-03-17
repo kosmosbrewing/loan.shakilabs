@@ -10,12 +10,20 @@ import {
 } from "@/utils/calculator";
 import {
   DEFAULT_DSR_INPUT,
+  DEFAULT_PREPAYMENT_FEE_INPUT,
   DEFAULT_REFINANCE_INPUT,
   DEFAULT_REPAYMENT_INPUT,
+  DEFAULT_STUDENT_LOAN_INPUT,
   sanitizeDsrInput,
+  sanitizePrepaymentFeeInput,
   sanitizeRefinanceInput,
   sanitizeRepaymentInput,
+  sanitizeStudentLoanInput,
 } from "@/lib/validators";
+import {
+  calcPrepaymentFee,
+  calcStudentLoanRepayment,
+} from "@/utils/loanExtraCalculator";
 
 describe("calcMonthlyPayment", () => {
   it("금리가 0%면 원금을 개월 수로 나눈다", () => {
@@ -103,5 +111,31 @@ describe("sanitize input", () => {
 
   it("잘못된 상환방식 입력은 기본값으로 대체한다", () => {
     expect(sanitizeRepaymentInput({ principal: 1 })).toEqual(DEFAULT_REPAYMENT_INPUT);
+  });
+
+  it("잘못된 중도상환 입력은 기본값으로 대체한다", () => {
+    expect(sanitizePrepaymentFeeInput({ feeRate: 9 })).toEqual(DEFAULT_PREPAYMENT_FEE_INPUT);
+  });
+
+  it("잘못된 학자금 입력은 기본값으로 대체한다", () => {
+    expect(sanitizeStudentLoanInput({ repaymentRate: 120 })).toEqual(DEFAULT_STUDENT_LOAN_INPUT);
+  });
+});
+
+describe("loan extra calculator", () => {
+  it("중도상환수수료를 잔여 부과기간 기준으로 계산한다", () => {
+    const result = calcPrepaymentFee(DEFAULT_PREPAYMENT_FEE_INPUT);
+
+    expect(result.remainingMonths).toBe(22);
+    expect(result.waivedAmount).toBe(30_000_000);
+    expect(result.feeAmount).toBe(513_333);
+  });
+
+  it("학부 취업후상환 의무상환액을 계산한다", () => {
+    const result = calcStudentLoanRepayment(DEFAULT_STUDENT_LOAN_INPUT);
+
+    expect(result.baseExcessIncome).toBe(11_630_000);
+    expect(result.rawMandatoryRepayment).toBe(2_326_000);
+    expect(result.monthlyWithholding).toBe(193_833);
   });
 });

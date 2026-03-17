@@ -58,6 +58,8 @@ export default defineConfig({
         "/refinance",
         "/dsr",
         "/repayment",
+        "/prepayment-fee",
+        "/student-loan",
         "/about",
         "/terms",
         "/privacy",
