@@ -40,7 +40,7 @@ const tools = [
 
 const faqItems = [
   {
-    q: "loan.shakilabs.com에서는 어떤 계산을 할 수 있나요?",
+    q: "shakilabs.com/loan에서는 어떤 계산을 할 수 있나요?",
     a: "대환대출, DSR, 상환방식 비교뿐 아니라 중도상환수수료와 취업후상환 학자금대출 계산도 할 수 있습니다.",
   },
   {

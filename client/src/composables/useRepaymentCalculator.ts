@@ -5,10 +5,10 @@ import { DEFAULT_REPAYMENT_INPUT, sanitizeRepaymentInput } from "@/lib/validator
 import { compareRepaymentPlans } from "@/utils/calculator";
 import { buildQuery, isSameQuery, parseQueryFloat, parseQueryInt } from "@/lib/routeState";
 
-export function useRepaymentCalculator() {
+export function useRepaymentCalculator(initialOverride?: Partial<RepaymentInput>) {
   const route = useRoute();
   const router = useRouter();
-  const state = reactive(fromQuery(route.query));
+  const state = reactive(fromQuery(route.query, initialOverride));
   let syncingFromRoute = false;
 
   watch(
@@ -41,11 +41,11 @@ export function useRepaymentCalculator() {
   };
 }
 
-function fromQuery(query: Record<string, unknown>): RepaymentInput {
+function fromQuery(query: Record<string, unknown>, override?: Partial<RepaymentInput>): RepaymentInput {
   return sanitizeRepaymentInput({
-    principal: parseQueryInt(query.p) ?? undefined,
-    annualRate: parseQueryFloat(query.r) ?? undefined,
-    termMonths: parseQueryInt(query.t) ?? undefined,
+    principal: parseQueryInt(query.p) ?? override?.principal ?? undefined,
+    annualRate: parseQueryFloat(query.r) ?? override?.annualRate ?? undefined,
+    termMonths: parseQueryInt(query.t) ?? override?.termMonths ?? undefined,
   });
 }
 

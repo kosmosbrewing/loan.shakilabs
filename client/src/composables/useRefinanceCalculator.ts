@@ -5,10 +5,10 @@ import { DEFAULT_REFINANCE_INPUT, sanitizeRefinanceInput } from "@/lib/validator
 import { calcRefinance } from "@/utils/calculator";
 import { buildQuery, isSameQuery, parseQueryFloat, parseQueryInt } from "@/lib/routeState";
 
-export function useRefinanceCalculator() {
+export function useRefinanceCalculator(initialOverride?: Partial<RefinanceInput>) {
   const route = useRoute();
   const router = useRouter();
-  const state = reactive(fromQuery(route.query));
+  const state = reactive(fromQuery(route.query, initialOverride));
   let syncingFromRoute = false;
 
   watch(
@@ -41,14 +41,14 @@ export function useRefinanceCalculator() {
   };
 }
 
-function fromQuery(query: Record<string, unknown>): RefinanceInput {
+function fromQuery(query: Record<string, unknown>, override?: Partial<RefinanceInput>): RefinanceInput {
   return sanitizeRefinanceInput({
-    balance: parseQueryInt(query.b) ?? undefined,
-    currentRate: parseQueryFloat(query.cr) ?? undefined,
-    newRate: parseQueryFloat(query.nr) ?? undefined,
-    remainingMonths: parseQueryInt(query.rm) ?? undefined,
-    newTermMonths: parseQueryInt(query.nt) ?? undefined,
-    refinanceFee: parseQueryInt(query.f) ?? undefined,
+    balance: parseQueryInt(query.b) ?? override?.balance ?? undefined,
+    currentRate: parseQueryFloat(query.cr) ?? override?.currentRate ?? undefined,
+    newRate: parseQueryFloat(query.nr) ?? override?.newRate ?? undefined,
+    remainingMonths: parseQueryInt(query.rm) ?? override?.remainingMonths ?? undefined,
+    newTermMonths: parseQueryInt(query.nt) ?? override?.newTermMonths ?? undefined,
+    refinanceFee: parseQueryInt(query.f) ?? override?.refinanceFee ?? undefined,
   });
 }
 

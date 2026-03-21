@@ -6,8 +6,8 @@ import { LOAN_ASSUMPTION_NOTE, LOAN_BADGE_MESSAGE } from "@/data/loanPresets";
 
 <template>
   <SEOHead
-    title="대출 계산기 소개 | loan.shakilabs.com"
-    description="loan.shakilabs.com의 계산 기준과 사용 범위를 안내합니다."
+    title="대출 계산기 소개 | shakilabs.com/loan"
+    description="shakilabs.com/loan의 계산 기준과 사용 범위를 안내합니다."
   />
 
   <div class="container space-y-5 py-5">
@@ -18,7 +18,7 @@ import { LOAN_ASSUMPTION_NOTE, LOAN_BADGE_MESSAGE } from "@/data/loanPresets";
       </div>
       <div class="retro-panel-content space-y-4">
         <p class="text-body leading-relaxed text-muted-foreground">
-          loan.shakilabs.com은 금융상품 비교가 아니라, 대출 구조를 빠르게 이해하기 위한 참고용 계산기입니다.
+          shakilabs.com/loan은 금융상품 비교가 아니라, 대출 구조를 빠르게 이해하기 위한 참고용 계산기입니다.
         </p>
         <div class="grid gap-3 md:grid-cols-3">
           <div class="retro-panel-muted p-4">

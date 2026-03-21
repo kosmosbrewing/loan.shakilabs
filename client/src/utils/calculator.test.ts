@@ -5,25 +5,37 @@ import {
   calcEqualPrincipalPlan,
   calcMonthlyPayment,
   calcRefinance,
+  compareMortgageRates,
   compareRepaymentPlans,
   invertLoanPrincipal,
 } from "@/utils/calculator";
 import {
   DEFAULT_DSR_INPUT,
+  DEFAULT_MORTGAGE_COMPARE_INPUT,
   DEFAULT_PREPAYMENT_FEE_INPUT,
   DEFAULT_REFINANCE_INPUT,
   DEFAULT_REPAYMENT_INPUT,
   DEFAULT_STUDENT_LOAN_INPUT,
   sanitizeDsrInput,
+  sanitizeMortgageCompareInput,
   sanitizePrepaymentFeeInput,
   sanitizeRefinanceInput,
   sanitizeRepaymentInput,
   sanitizeStudentLoanInput,
 } from "@/lib/validators";
 import {
+  calcJeonseLoan,
   calcPrepaymentFee,
   calcStudentLoanRepayment,
 } from "@/utils/loanExtraCalculator";
+import { calcSteppingStoneLoan } from "@/utils/steppingStoneLoanCalc";
+import { calcLtvDti } from "@/utils/ltvDtiCalc";
+import {
+  DEFAULT_STEPPING_STONE_INPUT,
+  DEFAULT_LTV_DTI_INPUT,
+  sanitizeSteppingStoneLoanInput,
+  sanitizeLtvDtiInput,
+} from "@/lib/validators";
 
 describe("calcMonthlyPayment", () => {
   it("금리가 0%면 원금을 개월 수로 나눈다", () => {
@@ -100,6 +112,37 @@ describe("compareRepaymentPlans", () => {
   });
 });
 
+describe("compareMortgageRates", () => {
+  it("은행들을 최저금리 기준 오름차순으로 정렬한다", () => {
+    const result = compareMortgageRates(DEFAULT_MORTGAGE_COMPARE_INPUT);
+    for (let i = 1; i < result.banks.length; i++) {
+      expect(result.banks[i].bestRate).toBeGreaterThanOrEqual(result.banks[i - 1].bestRate);
+    }
+  });
+
+  it("최저금리 은행을 bestBank로 반환한다", () => {
+    const result = compareMortgageRates(DEFAULT_MORTGAGE_COMPARE_INPUT);
+    expect(result.bestBank).not.toBeNull();
+    expect(result.bestBank!.bestRate).toBe(result.banks[0].bestRate);
+  });
+
+  it("월 상환액 차이와 총이자 차이를 계산한다", () => {
+    const result = compareMortgageRates(DEFAULT_MORTGAGE_COMPARE_INPUT);
+    expect(result.monthlyPaymentRange).toBeGreaterThan(0);
+    expect(result.totalInterestRange).toBeGreaterThan(0);
+  });
+
+  it("대출금액이 크면 총이자 차이도 커진다", () => {
+    const small = compareMortgageRates({ loanAmount: 100_000_000, termMonths: 360, repaymentMethod: "annuity" });
+    const large = compareMortgageRates({ loanAmount: 500_000_000, termMonths: 360, repaymentMethod: "annuity" });
+    expect(large.totalInterestRange).toBeGreaterThan(small.totalInterestRange);
+  });
+
+  it("잘못된 입력은 기본값으로 sanitize된다", () => {
+    expect(sanitizeMortgageCompareInput({ loanAmount: -1 })).toEqual(DEFAULT_MORTGAGE_COMPARE_INPUT);
+  });
+});
+
 describe("sanitize input", () => {
   it("잘못된 갈아타기 입력은 기본값으로 대체한다", () => {
     expect(sanitizeRefinanceInput({ balance: -1 })).toEqual(DEFAULT_REFINANCE_INPUT);
@@ -119,6 +162,126 @@ describe("sanitize input", () => {
 
   it("잘못된 학자금 입력은 기본값으로 대체한다", () => {
     expect(sanitizeStudentLoanInput({ repaymentRate: 120 })).toEqual(DEFAULT_STUDENT_LOAN_INPUT);
+  });
+});
+
+describe("calcJeonseLoan", () => {
+  it("거치식은 매달 이자만 납부한다", () => {
+    const result = calcJeonseLoan({
+      depositAmount: 200_000_000,
+      annualRate: 3.6,
+      termMonths: 24,
+      isInterestOnly: true,
+    });
+    // 월 이자 = 2억 × 3.6% / 12 = 600,000
+    expect(result.monthlyPayment).toBe(600_000);
+    expect(result.monthlyInterest).toBe(600_000);
+    expect(result.totalInterest).toBe(14_400_000);
+    expect(result.totalRepayment).toBe(214_400_000);
+  });
+
+  it("원리금균등은 총이자가 거치식보다 적다", () => {
+    const io = calcJeonseLoan({
+      depositAmount: 200_000_000,
+      annualRate: 3.5,
+      termMonths: 120,
+      isInterestOnly: true,
+    });
+    const amort = calcJeonseLoan({
+      depositAmount: 200_000_000,
+      annualRate: 3.5,
+      termMonths: 120,
+      isInterestOnly: false,
+    });
+    expect(amort.totalInterest).toBeLessThan(io.totalInterest);
+  });
+
+  it("상품별 비교에서 한도 초과 시 eligible이 false", () => {
+    const result = calcJeonseLoan({
+      depositAmount: 300_000_000,
+      annualRate: 3.5,
+      termMonths: 24,
+      isInterestOnly: true,
+    });
+    // 청년전용은 2억 한도 → 3억은 초과
+    const youth = result.productComparison.find((p) => p.product.id === "youth");
+    expect(youth?.eligible).toBe(false);
+  });
+});
+
+describe("calcSteppingStoneLoan", () => {
+  it("생애최초 소득 5천만·주택 4억이면 자격 충족", () => {
+    const result = calcSteppingStoneLoan(DEFAULT_STEPPING_STONE_INPUT);
+    expect(result.eligible).toBe(true);
+    expect(result.applicableRate).toBeGreaterThan(0);
+    expect(result.effectiveLoanAmount).toBeGreaterThan(0);
+    expect(result.effectiveLoanAmount).toBeLessThanOrEqual(240_000_000);
+  });
+
+  it("소득 초과하면 자격 미충족", () => {
+    const result = calcSteppingStoneLoan({
+      ...DEFAULT_STEPPING_STONE_INPUT,
+      borrowerType: "general",
+      householdIncome: 70_000_000,
+    });
+    expect(result.eligible).toBe(false);
+    expect(result.ineligibleReasons.length).toBeGreaterThan(0);
+  });
+
+  it("신혼가구는 한도가 3.2억", () => {
+    const result = calcSteppingStoneLoan({
+      householdIncome: 60_000_000,
+      propertyPrice: 500_000_000,
+      borrowerType: "newlywed",
+      termYears: 30,
+      isMetro: true,
+    });
+    expect(result.maxLoanByLimit).toBe(320_000_000);
+  });
+
+  it("원금균등이 원리금균등보다 총이자가 적다", () => {
+    const result = calcSteppingStoneLoan(DEFAULT_STEPPING_STONE_INPUT);
+    expect(result.equalPrincipalPlan.totalInterest).toBeLessThan(result.annuityPlan.totalInterest);
+  });
+
+  it("잘못된 입력은 기본값으로 sanitize된다", () => {
+    expect(sanitizeSteppingStoneLoanInput({ termYears: 5 })).toEqual(DEFAULT_STEPPING_STONE_INPUT);
+  });
+});
+
+describe("calcLtvDti", () => {
+  it("규제지역 일반 무주택자 LTV는 40%", () => {
+    const result = calcLtvDti(DEFAULT_LTV_DTI_INPUT);
+    expect(result.ltvRate).toBe(0.4);
+    expect(result.maxByLtv).toBe(280_000_000);
+  });
+
+  it("DSR이 가장 제한적일 수 있다 (스트레스 금리 적용)", () => {
+    const result = calcLtvDti(DEFAULT_LTV_DTI_INPUT);
+    expect(result.stressRate).toBe(3.0);
+    expect(result.finalMaxLoan).toBeGreaterThan(0);
+    expect(result.finalMaxLoan).toBeLessThanOrEqual(result.maxByLtv);
+  });
+
+  it("비규제지역은 LTV 70%, 스트레스 금리 1.5%", () => {
+    const result = calcLtvDti({
+      ...DEFAULT_LTV_DTI_INPUT,
+      region: "nonRegulated",
+    });
+    expect(result.ltvRate).toBe(0.7);
+    expect(result.stressRate).toBe(1.5);
+  });
+
+  it("생애최초는 규제지역에서도 LTV 70%", () => {
+    const result = calcLtvDti({
+      ...DEFAULT_LTV_DTI_INPUT,
+      borrowerCategory: "firstTime",
+    });
+    expect(result.ltvRate).toBe(0.7);
+  });
+
+  it("잘못된 입력은 기본값으로 sanitize된다", () => {
+    expect(sanitizeLtvDtiInput({ loanRate: -1 })).toEqual(DEFAULT_LTV_DTI_INPUT);
   });
 });
 

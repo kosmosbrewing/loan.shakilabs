@@ -6,7 +6,9 @@ import { LOAN_ASSUMPTION_NOTE, TERM_OPTIONS, refinancePresets } from "@/data/loa
 import { useRefinanceCalculator } from "@/composables/useRefinanceCalculator";
 import { formatWon, parseNumericInput } from "@/lib/utils";
 
-const { state, result, applyPreset, reset } = useRefinanceCalculator();
+const props = defineProps<{ initialBalance?: number }>();
+const override = props.initialBalance ? { balance: props.initialBalance } : undefined;
+const { state, result, applyPreset, reset } = useRefinanceCalculator(override);
 
 const metrics = computed(() => [
   {

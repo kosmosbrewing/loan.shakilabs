@@ -6,7 +6,9 @@ import { LOAN_ASSUMPTION_NOTE, TERM_OPTIONS, repaymentPresets } from "@/data/loa
 import { useRepaymentCalculator } from "@/composables/useRepaymentCalculator";
 import { formatWon, parseNumericInput } from "@/lib/utils";
 
-const { state, result, applyPreset, reset } = useRepaymentCalculator();
+const props = defineProps<{ initialPrincipal?: number }>();
+const override = props.initialPrincipal ? { principal: props.initialPrincipal } : undefined;
+const { state, result, applyPreset, reset } = useRepaymentCalculator(override);
 
 const metrics = computed(() => [
   {

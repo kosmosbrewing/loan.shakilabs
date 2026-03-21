@@ -3,7 +3,7 @@ import SEOHead from "@/components/common/SEOHead.vue";
 </script>
 
 <template>
-  <SEOHead title="이용약관 | loan.shakilabs.com" description="loan.shakilabs.com 이용약관입니다." />
+  <SEOHead title="이용약관 | shakilabs.com/loan" description="shakilabs.com/loan 이용약관입니다." />
 
   <div class="container space-y-5 py-5">
     <div class="retro-panel overflow-hidden">

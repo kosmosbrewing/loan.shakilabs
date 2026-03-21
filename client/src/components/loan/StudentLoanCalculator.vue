@@ -11,7 +11,11 @@ import { STUDENT_LOAN_SOURCES } from "@/data/loanExtraTools";
 import { calcStudentLoanRepayment } from "@/utils/loanExtraCalculator";
 import { formatWon, parseNumericInput } from "@/lib/utils";
 
-const form = reactive({ ...DEFAULT_STUDENT_LOAN_INPUT });
+const props = defineProps<{ initialBalance?: number }>();
+const form = reactive({
+  ...DEFAULT_STUDENT_LOAN_INPUT,
+  ...(props.initialBalance ? { loanBalance: props.initialBalance } : {}),
+});
 const sanitized = computed(() => sanitizeStudentLoanInput(form));
 const result = computed(() => calcStudentLoanRepayment(sanitized.value));
 

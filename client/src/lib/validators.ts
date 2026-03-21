@@ -48,11 +48,55 @@ export const studentLoanInputSchema = z.object({
   interestRate: z.coerce.number().min(0).max(10),
 });
 
+const repaymentMethodValues = ["annuity", "equalPrincipal"] as const;
+export type RepaymentMethod = (typeof repaymentMethodValues)[number];
+
+export const jeonseLoanInputSchema = z.object({
+  depositAmount: amountSchema.max(5_000_000_000),
+  annualRate: rateSchema,
+  termMonths: termSchema,
+  isInterestOnly: z.boolean(),
+});
+
+export const mortgageCompareInputSchema = z.object({
+  loanAmount: amountSchema.max(5_000_000_000),
+  termMonths: termSchema,
+  repaymentMethod: z.enum(repaymentMethodValues),
+});
+
+const borrowerTypeValues = ["general", "firstTime", "newlywed"] as const;
+export type BorrowerType = (typeof borrowerTypeValues)[number];
+
+export const steppingStoneLoanInputSchema = z.object({
+  householdIncome: incomeSchema,
+  propertyPrice: amountSchema.max(5_000_000_000),
+  borrowerType: z.enum(borrowerTypeValues),
+  termYears: z.coerce.number().int().min(10).max(30),
+  isMetro: z.boolean(),
+});
+
+const regionTypeValues = ["speculative", "nonRegulated"] as const;
+const borrowerCategoryValues = ["general", "firstTime", "lowIncome"] as const;
+
+export const ltvDtiInputSchema = z.object({
+  propertyPrice: amountSchema.max(10_000_000_000),
+  annualIncome: incomeSchema,
+  existingDebtPayment: optionalAmountSchema,
+  loanRate: rateSchema,
+  termMonths: termSchema,
+  region: z.enum(regionTypeValues),
+  borrowerCategory: z.enum(borrowerCategoryValues),
+});
+
 export type RefinanceInput = z.infer<typeof refinanceInputSchema>;
 export type DsrInput = z.infer<typeof dsrInputSchema>;
 export type RepaymentInput = z.infer<typeof repaymentInputSchema>;
 export type PrepaymentFeeInput = z.infer<typeof prepaymentFeeInputSchema>;
 export type StudentLoanInput = z.infer<typeof studentLoanInputSchema>;
+export type JeonseLoanInput = z.infer<typeof jeonseLoanInputSchema>;
+export type MortgageCompareInput = z.infer<typeof mortgageCompareInputSchema>;
+export type SteppingStoneLoanInput = z.infer<typeof steppingStoneLoanInputSchema>;
+export type LtvDtiInput = z.infer<typeof ltvDtiInputSchema>;
 
 export const DEFAULT_REFINANCE_INPUT: RefinanceInput = {
   balance: 120_000_000,
@@ -86,6 +130,19 @@ export const DEFAULT_PREPAYMENT_FEE_INPUT: PrepaymentFeeInput = {
   annualFreeRate: 10,
 };
 
+export const DEFAULT_JEONSE_LOAN_INPUT: JeonseLoanInput = {
+  depositAmount: 200_000_000,
+  annualRate: 3.5,
+  termMonths: 24,
+  isInterestOnly: true,
+};
+
+export const DEFAULT_MORTGAGE_COMPARE_INPUT: MortgageCompareInput = {
+  loanAmount: 300_000_000,
+  termMonths: 360,
+  repaymentMethod: "annuity",
+};
+
 export const DEFAULT_STUDENT_LOAN_INPUT: StudentLoanInput = {
   loanBalance: 28_000_000,
   annualIncome: 42_000_000,
@@ -93,6 +150,24 @@ export const DEFAULT_STUDENT_LOAN_INPUT: StudentLoanInput = {
   repaymentRate: 20,
   voluntaryRepayment: 0,
   interestRate: 1.7,
+};
+
+export const DEFAULT_STEPPING_STONE_INPUT: SteppingStoneLoanInput = {
+  householdIncome: 50_000_000,
+  propertyPrice: 400_000_000,
+  borrowerType: "firstTime",
+  termYears: 30,
+  isMetro: true,
+};
+
+export const DEFAULT_LTV_DTI_INPUT: LtvDtiInput = {
+  propertyPrice: 700_000_000,
+  annualIncome: 80_000_000,
+  existingDebtPayment: 6_000_000,
+  loanRate: 4.5,
+  termMonths: 360,
+  region: "speculative",
+  borrowerCategory: "general",
 };
 
 function readField<T>(schema: z.ZodType<T>, value: unknown, fallback: T): T {
@@ -164,6 +239,29 @@ export function sanitizePrepaymentFeeInput(input?: Partial<PrepaymentFeeInput>):
   };
 }
 
+export function sanitizeJeonseLoanInput(input?: Partial<JeonseLoanInput>): JeonseLoanInput {
+  return {
+    depositAmount: readField(amountSchema.max(5_000_000_000), input?.depositAmount, DEFAULT_JEONSE_LOAN_INPUT.depositAmount),
+    annualRate: readField(rateSchema, input?.annualRate, DEFAULT_JEONSE_LOAN_INPUT.annualRate),
+    termMonths: readField(termSchema, input?.termMonths, DEFAULT_JEONSE_LOAN_INPUT.termMonths),
+    isInterestOnly: typeof input?.isInterestOnly === "boolean" ? input.isInterestOnly : DEFAULT_JEONSE_LOAN_INPUT.isInterestOnly,
+  };
+}
+
+function parseRepaymentMethod(value: unknown): RepaymentMethod | null {
+  return typeof value === "string" && repaymentMethodValues.includes(value as RepaymentMethod)
+    ? (value as RepaymentMethod)
+    : null;
+}
+
+export function sanitizeMortgageCompareInput(input?: Partial<MortgageCompareInput>): MortgageCompareInput {
+  return {
+    loanAmount: readField(amountSchema.max(5_000_000_000), input?.loanAmount, DEFAULT_MORTGAGE_COMPARE_INPUT.loanAmount),
+    termMonths: readField(termSchema, input?.termMonths, DEFAULT_MORTGAGE_COMPARE_INPUT.termMonths),
+    repaymentMethod: parseRepaymentMethod(input?.repaymentMethod) ?? DEFAULT_MORTGAGE_COMPARE_INPUT.repaymentMethod,
+  };
+}
+
 export function sanitizeStudentLoanInput(input?: Partial<StudentLoanInput>): StudentLoanInput {
   return {
     loanBalance: readField(
@@ -192,5 +290,45 @@ export function sanitizeStudentLoanInput(input?: Partial<StudentLoanInput>): Stu
       input?.interestRate,
       DEFAULT_STUDENT_LOAN_INPUT.interestRate,
     ),
+  };
+}
+
+function parseBorrowerType(value: unknown): BorrowerType | null {
+  return typeof value === "string" && borrowerTypeValues.includes(value as BorrowerType)
+    ? (value as BorrowerType)
+    : null;
+}
+
+export function sanitizeSteppingStoneLoanInput(input?: Partial<SteppingStoneLoanInput>): SteppingStoneLoanInput {
+  return {
+    householdIncome: readField(incomeSchema, input?.householdIncome, DEFAULT_STEPPING_STONE_INPUT.householdIncome),
+    propertyPrice: readField(amountSchema.max(5_000_000_000), input?.propertyPrice, DEFAULT_STEPPING_STONE_INPUT.propertyPrice),
+    borrowerType: parseBorrowerType(input?.borrowerType) ?? DEFAULT_STEPPING_STONE_INPUT.borrowerType,
+    termYears: readField(z.coerce.number().int().min(10).max(30), input?.termYears, DEFAULT_STEPPING_STONE_INPUT.termYears),
+    isMetro: typeof input?.isMetro === "boolean" ? input.isMetro : DEFAULT_STEPPING_STONE_INPUT.isMetro,
+  };
+}
+
+function parseRegionType(value: unknown): LtvDtiInput["region"] | null {
+  return typeof value === "string" && regionTypeValues.includes(value as LtvDtiInput["region"])
+    ? (value as LtvDtiInput["region"])
+    : null;
+}
+
+function parseBorrowerCategory(value: unknown): LtvDtiInput["borrowerCategory"] | null {
+  return typeof value === "string" && borrowerCategoryValues.includes(value as LtvDtiInput["borrowerCategory"])
+    ? (value as LtvDtiInput["borrowerCategory"])
+    : null;
+}
+
+export function sanitizeLtvDtiInput(input?: Partial<LtvDtiInput>): LtvDtiInput {
+  return {
+    propertyPrice: readField(amountSchema.max(10_000_000_000), input?.propertyPrice, DEFAULT_LTV_DTI_INPUT.propertyPrice),
+    annualIncome: readField(incomeSchema, input?.annualIncome, DEFAULT_LTV_DTI_INPUT.annualIncome),
+    existingDebtPayment: readField(optionalAmountSchema, input?.existingDebtPayment, DEFAULT_LTV_DTI_INPUT.existingDebtPayment),
+    loanRate: readField(rateSchema, input?.loanRate, DEFAULT_LTV_DTI_INPUT.loanRate),
+    termMonths: readField(termSchema, input?.termMonths, DEFAULT_LTV_DTI_INPUT.termMonths),
+    region: parseRegionType(input?.region) ?? DEFAULT_LTV_DTI_INPUT.region,
+    borrowerCategory: parseBorrowerCategory(input?.borrowerCategory) ?? DEFAULT_LTV_DTI_INPUT.borrowerCategory,
   };
 }

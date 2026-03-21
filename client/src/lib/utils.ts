@@ -54,6 +54,18 @@ export function formatCurrency(amount: number | null | undefined, currency: stri
   }).format(amount);
 }
 
+// 만원 단위 → 한국어 레이블: 10000 → "1억", 5000 → "5천만", 7200 → "7200만"
+export function formatManWon(manWon: number): string {
+  if (manWon >= 10000) {
+    const eok = manWon / 10000;
+    return Number.isInteger(eok) ? `${eok}억` : `${eok}억`;
+  }
+  if (manWon >= 1000 && manWon % 1000 === 0) {
+    return `${manWon / 1000}천만`;
+  }
+  return `${manWon.toLocaleString("ko-KR")}만`;
+}
+
 // 콤마 포함 입력값에서 숫자만 추출: "1,234,000" → 1234000
 export function parseNumericInput(value: string): number {
   const num = Number(value.replace(/[^0-9.-]/g, ""));

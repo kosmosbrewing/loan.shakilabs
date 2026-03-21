@@ -1,9 +1,11 @@
-import type { DsrInput, RefinanceInput, RepaymentInput } from "@/lib/validators";
+import type { DsrInput, MortgageCompareInput, RefinanceInput, RepaymentInput } from "@/lib/validators";
 import {
   sanitizeDsrInput,
+  sanitizeMortgageCompareInput,
   sanitizeRefinanceInput,
   sanitizeRepaymentInput,
 } from "@/lib/validators";
+import { BANK_MORTGAGE_RATES, type BankMortgageRate } from "@/data/mortgageRates";
 
 export interface PaymentPlanSummary {
   monthlyPayment: number;
@@ -170,6 +172,99 @@ export function calcDsrLimit(input: DsrInput): DsrResult {
       normalized.annualIncome > 0
         ? normalized.existingAnnualDebtService / normalized.annualIncome
         : 0,
+  };
+}
+
+export interface BankCompareRow {
+  id: string;
+  bank: string;
+  fixedMinRate: number;
+  fixedMaxRate: number;
+  variableMinRate: number;
+  variableMaxRate: number;
+  bestRate: number;
+  bestMonthlyPayment: number;
+  bestTotalInterest: number;
+  bestTotalRepayment: number;
+  worstRate: number;
+  worstMonthlyPayment: number;
+  worstTotalInterest: number;
+}
+
+export interface MortgageCompareResult {
+  loanAmount: number;
+  termMonths: number;
+  repaymentMethod: string;
+  banks: BankCompareRow[];
+  bestBank: BankCompareRow | null;
+  monthlyPaymentRange: number;
+  totalInterestRange: number;
+}
+
+function calcPlanSummaryForRate(
+  principal: number,
+  annualRate: number,
+  months: number,
+  method: "annuity" | "equalPrincipal",
+): PaymentPlanSummary {
+  return method === "annuity"
+    ? calcAnnuityPlan(principal, annualRate, months)
+    : calcEqualPrincipalPlan(principal, annualRate, months);
+}
+
+export function compareMortgageRates(
+  input: MortgageCompareInput,
+  banks: readonly BankMortgageRate[] = BANK_MORTGAGE_RATES,
+): MortgageCompareResult {
+  const normalized = sanitizeMortgageCompareInput(input);
+  const { loanAmount, termMonths, repaymentMethod } = normalized;
+
+  const rows: BankCompareRow[] = banks.map((bank) => {
+    const rates = [bank.fixedMin, bank.fixedMax, bank.variableMin, bank.variableMax];
+    const bestRate = Math.min(...rates);
+    const worstRate = Math.max(...rates);
+
+    const bestPlan = calcPlanSummaryForRate(loanAmount, bestRate, termMonths, repaymentMethod);
+    const worstPlan = calcPlanSummaryForRate(loanAmount, worstRate, termMonths, repaymentMethod);
+
+    return {
+      id: bank.id,
+      bank: bank.bank,
+      fixedMinRate: bank.fixedMin,
+      fixedMaxRate: bank.fixedMax,
+      variableMinRate: bank.variableMin,
+      variableMaxRate: bank.variableMax,
+      bestRate,
+      bestMonthlyPayment: bestPlan.monthlyPayment,
+      bestTotalInterest: bestPlan.totalInterest,
+      bestTotalRepayment: bestPlan.totalRepayment,
+      worstRate,
+      worstMonthlyPayment: worstPlan.monthlyPayment,
+      worstTotalInterest: worstPlan.totalInterest,
+    };
+  });
+
+  // 최저금리 기준 오름차순 정렬
+  rows.sort((a, b) => a.bestRate - b.bestRate);
+
+  const bestBank = rows.length > 0 ? rows[0] : null;
+  const monthlyPaymentRange =
+    rows.length >= 2
+      ? roundCurrency(rows[rows.length - 1].bestMonthlyPayment - rows[0].bestMonthlyPayment)
+      : 0;
+  const totalInterestRange =
+    rows.length >= 2
+      ? roundCurrency(rows[rows.length - 1].bestTotalInterest - rows[0].bestTotalInterest)
+      : 0;
+
+  return {
+    loanAmount,
+    termMonths,
+    repaymentMethod,
+    banks: rows,
+    bestBank,
+    monthlyPaymentRange,
+    totalInterestRange,
   };
 }
 

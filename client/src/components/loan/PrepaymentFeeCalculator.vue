@@ -11,7 +11,11 @@ import { calcPrepaymentFee } from "@/utils/loanExtraCalculator";
 import { PREPAYMENT_FEE_SOURCES } from "@/data/loanExtraTools";
 import { formatPercent, formatWon, parseNumericInput } from "@/lib/utils";
 
-const form = reactive({ ...DEFAULT_PREPAYMENT_FEE_INPUT });
+const props = defineProps<{ initialAmount?: number }>();
+const form = reactive({
+  ...DEFAULT_PREPAYMENT_FEE_INPUT,
+  ...(props.initialAmount ? { originalLoanAmount: props.initialAmount, repaymentAmount: props.initialAmount } : {}),
+});
 const sanitized = computed(() => sanitizePrepaymentFeeInput(form));
 const result = computed(() => calcPrepaymentFee(sanitized.value));
 

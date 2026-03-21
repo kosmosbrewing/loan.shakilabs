@@ -13,7 +13,7 @@ const items: RelatedServiceItem[] = [
   {
     title: "주거 계산기",
     description: "전세 vs 월세와 중개보수를 함께 보면 대출 규모 판단이 더 쉬워집니다.",
-    href: "https://house.shakilabs.com/jeonse-vs-wolse",
+    href: "/house/jeonse-vs-wolse",
     icon: Building2,
   },
 ];

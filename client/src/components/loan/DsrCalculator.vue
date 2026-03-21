@@ -6,7 +6,9 @@ import { DSR_LIMIT_OPTIONS, LOAN_ASSUMPTION_NOTE, TERM_OPTIONS, dsrPresets } fro
 import { useDsrCalculator } from "@/composables/useDsrCalculator";
 import { formatPercent, formatWon, parseNumericInput } from "@/lib/utils";
 
-const { state, result, applyPreset, reset } = useDsrCalculator();
+const props = defineProps<{ initialIncome?: number }>();
+const override = props.initialIncome ? { annualIncome: props.initialIncome } : undefined;
+const { state, result, applyPreset, reset } = useDsrCalculator(override);
 
 const metrics = computed(() => [
   {

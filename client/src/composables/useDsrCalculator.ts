@@ -5,10 +5,10 @@ import { DEFAULT_DSR_INPUT, sanitizeDsrInput } from "@/lib/validators";
 import { calcDsrLimit } from "@/utils/calculator";
 import { buildQuery, isSameQuery, parseQueryFloat, parseQueryInt } from "@/lib/routeState";
 
-export function useDsrCalculator() {
+export function useDsrCalculator(initialOverride?: Partial<DsrInput>) {
   const route = useRoute();
   const router = useRouter();
-  const state = reactive(fromQuery(route.query));
+  const state = reactive(fromQuery(route.query, initialOverride));
   let syncingFromRoute = false;
 
   watch(
@@ -41,13 +41,13 @@ export function useDsrCalculator() {
   };
 }
 
-function fromQuery(query: Record<string, unknown>): DsrInput {
+function fromQuery(query: Record<string, unknown>, override?: Partial<DsrInput>): DsrInput {
   return sanitizeDsrInput({
-    annualIncome: parseQueryInt(query.i) ?? undefined,
-    existingAnnualDebtService: parseQueryInt(query.e) ?? undefined,
-    dsrLimit: parseQueryFloat(query.l) ?? undefined,
-    newLoanRate: parseQueryFloat(query.r) ?? undefined,
-    termMonths: parseQueryInt(query.t) ?? undefined,
+    annualIncome: parseQueryInt(query.i) ?? override?.annualIncome ?? undefined,
+    existingAnnualDebtService: parseQueryInt(query.e) ?? override?.existingAnnualDebtService ?? undefined,
+    dsrLimit: parseQueryFloat(query.l) ?? override?.dsrLimit ?? undefined,
+    newLoanRate: parseQueryFloat(query.r) ?? override?.newLoanRate ?? undefined,
+    termMonths: parseQueryInt(query.t) ?? override?.termMonths ?? undefined,
   });
 }
 

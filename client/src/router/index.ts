@@ -16,9 +16,25 @@ export const routes: RouteRecordRaw[] = [
     component: () => import("@/views/RefinanceView.vue"),
   },
   {
+    path: "/refinance/:amount(\\d+)",
+    name: "RefinanceAmount",
+    component: () => import("@/views/RefinanceView.vue"),
+    props: (route) => ({
+      initialBalance: Number(route.params.amount) * 10000,
+    }),
+  },
+  {
     path: "/dsr",
     name: "Dsr",
     component: () => import("@/views/DsrView.vue"),
+  },
+  {
+    path: "/dsr/:income(\\d+)",
+    name: "DsrIncome",
+    component: () => import("@/views/DsrView.vue"),
+    props: (route) => ({
+      initialIncome: Number(route.params.income) * 10000,
+    }),
   },
   {
     path: "/repayment",
@@ -26,15 +42,94 @@ export const routes: RouteRecordRaw[] = [
     component: () => import("@/views/RepaymentView.vue"),
   },
   {
+    path: "/repayment/:amount(\\d+)",
+    name: "RepaymentAmount",
+    component: () => import("@/views/RepaymentView.vue"),
+    props: (route) => ({
+      initialPrincipal: Number(route.params.amount) * 10000,
+    }),
+  },
+  {
     path: "/prepayment-fee",
     name: "PrepaymentFee",
     component: () => import("@/views/PrepaymentFeeView.vue"),
+  },
+  {
+    path: "/prepayment-fee/:amount(\\d+)",
+    name: "PrepaymentFeeAmount",
+    component: () => import("@/views/PrepaymentFeeView.vue"),
+    props: (route) => ({
+      initialAmount: Number(route.params.amount) * 10000,
+    }),
   },
   {
     path: "/student-loan",
     name: "StudentLoan",
     component: () => import("@/views/StudentLoanView.vue"),
   },
+  {
+    path: "/student-loan/:balance(\\d+)",
+    name: "StudentLoanBalance",
+    component: () => import("@/views/StudentLoanView.vue"),
+    props: (route) => ({
+      initialBalance: Number(route.params.balance) * 10000,
+    }),
+  },
+  {
+    path: "/mortgage-compare",
+    name: "MortgageCompare",
+    component: () => import("@/views/MortgageCompareView.vue"),
+  },
+  {
+    path: "/mortgage-compare/:amount(\\d+)",
+    name: "MortgageCompareAmount",
+    component: () => import("@/views/MortgageCompareView.vue"),
+    props: (route) => ({
+      initialLoanAmount: Number(route.params.amount) * 10000,
+    }),
+  },
+
+  {
+    path: "/jeonse-loan",
+    name: "JeonseLoan",
+    component: () => import("@/views/JeonseLoanView.vue"),
+  },
+  {
+    path: "/jeonse-loan/:amount(\\d+)",
+    name: "JeonseLoanAmount",
+    component: () => import("@/views/JeonseLoanView.vue"),
+    props: (route) => ({
+      initialDeposit: Number(route.params.amount) * 10000,
+    }),
+  },
+
+  {
+    path: "/stepping-stone-loan",
+    name: "SteppingStoneLoan",
+    component: () => import("@/views/SteppingStoneLoanView.vue"),
+  },
+  {
+    path: "/stepping-stone-loan/:amount(\\d+)",
+    name: "SteppingStoneLoanAmount",
+    component: () => import("@/views/SteppingStoneLoanView.vue"),
+    props: (route) => ({
+      initialPropertyPrice: Number(route.params.amount) * 10000,
+    }),
+  },
+  {
+    path: "/ltv-dti",
+    name: "LtvDti",
+    component: () => import("@/views/LtvDtiView.vue"),
+  },
+  {
+    path: "/ltv-dti/:amount(\\d+)",
+    name: "LtvDtiAmount",
+    component: () => import("@/views/LtvDtiView.vue"),
+    props: (route) => ({
+      initialPropertyPrice: Number(route.params.amount) * 10000,
+    }),
+  },
+
   { path: "/switch-loan", redirect: "/refinance" },
   { path: "/loan-limit", redirect: "/dsr" },
   { path: "/equal-principal", redirect: "/repayment" },
