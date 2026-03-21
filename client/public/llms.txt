@@ -1,0 +1,31 @@
+# 대출 계산기 — shakilabs.com/loan
+
+> 대출 상환액, DSR, 대환 대출, 중도상환 수수료, 학자금 대출, 주담대 비교, 전세자금 대출, 디딤돌 대출, LTV·DTI 등 대출 관련 계산기를 제공하는 무료 서비스입니다.
+
+## 사이트 정보
+
+- URL: https://shakilabs.com/loan
+- 언어: 한국어
+- 데이터 기준: 2026년 금융 정책·금리
+
+## 주요 계산기
+
+- [대출 상환 계산기](https://shakilabs.com/loan/repayment): 원리금균등·원금균등·만기일시 상환액 비교
+- [DSR 계산기](https://shakilabs.com/loan/dsr): 총부채원리금상환비율(DSR) 계산
+- [대환 대출 계산기](https://shakilabs.com/loan/refinance): 기존 대출 → 대환 시 이자 절감액 계산
+- [중도상환 수수료 계산기](https://shakilabs.com/loan/prepayment-fee): 대출 중도상환 시 수수료 계산
+- [학자금 대출 상환 계산기](https://shakilabs.com/loan/student-loan): 한국장학재단 학자금 대출 상환 시뮬레이션
+- [주담대 비교 계산기](https://shakilabs.com/loan/mortgage-compare): 주택담보대출 금리·조건 비교
+- [전세자금 대출 계산기](https://shakilabs.com/loan/jeonse-loan): 전세자금 대출 한도·상환액 계산
+- [디딤돌 대출 계산기](https://shakilabs.com/loan/stepping-stone-loan): 디딤돌 대출 자격·한도·상환액 계산
+- [LTV·DTI 계산기](https://shakilabs.com/loan/ltv-dti): 담보인정비율·총부채상환비율 계산
+
+## 데이터 출처
+
+- DSR 규제: 금융위원회 가계부채 관리방안
+- 디딤돌 대출: 주택도시기금 공식 안내
+- 학자금: 한국장학재단 대출 안내
+
+## 연락처
+
+- 이메일: skdba1313@gmail.com
