@@ -35,6 +35,10 @@
     }
   ],
   "rewrites": [
+    { "source": "/loan/assets/:path*", "destination": "/assets/:path*" },
+    { "source": "/loan/fonts/:path*", "destination": "/fonts/:path*" },
+    { "source": "/loan/favicon.png", "destination": "/favicon.png" },
+    { "source": "/loan/:path*", "destination": "/index.html" },
     { "source": "/((?!assets|fonts|favicon|sitemap|robots).*)", "destination": "/index.html" }
   ]
 }
