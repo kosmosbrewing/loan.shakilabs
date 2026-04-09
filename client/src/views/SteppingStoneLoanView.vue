@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import SEOHead from "@/components/common/SEOHead.vue";
+import SeoRichGuide from "@/components/common/SeoRichGuide.vue";
+import { LOAN_HOME_GUIDE } from "@/data/seoGuides";
 import FreshBadge from "@/components/common/FreshBadge.vue";
 import SteppingStoneLoanCalculator from "@/components/loan/SteppingStoneLoanCalculator.vue";
 import { STEPPING_STONE_FAQS, STEPPING_STONE_UPDATED } from "@/data/steppingStoneLoan";
@@ -71,5 +73,13 @@ const faqJsonLd = {
         </details>
       </div>
     </div>
+
+    <SeoRichGuide
+      :title="LOAN_HOME_GUIDE.title"
+      :intro="LOAN_HOME_GUIDE.intro"
+      :sections="LOAN_HOME_GUIDE.sections"
+      :faqs="LOAN_HOME_GUIDE.faqs"
+      :disclaimer="LOAN_HOME_GUIDE.disclaimer"
+    />
   </div>
 </template>

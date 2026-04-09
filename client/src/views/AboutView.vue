@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import SEOHead from "@/components/common/SEOHead.vue";
 import FreshBadge from "@/components/common/FreshBadge.vue";
+import SeoRichGuide from "@/components/common/SeoRichGuide.vue";
 import { LOAN_ASSUMPTION_NOTE, LOAN_BADGE_MESSAGE } from "@/data/loanPresets";
+import { LOAN_ABOUT_GUIDE, LOAN_HOME_GUIDE } from "@/data/seoGuides";
 </script>
 
 <template>
@@ -37,5 +39,18 @@ import { LOAN_ASSUMPTION_NOTE, LOAN_BADGE_MESSAGE } from "@/data/loanPresets";
         <p class="text-caption leading-relaxed text-muted-foreground">{{ LOAN_ASSUMPTION_NOTE }}</p>
       </div>
     </div>
+
+    <SeoRichGuide
+      :title="LOAN_ABOUT_GUIDE.title"
+      :intro="LOAN_ABOUT_GUIDE.intro"
+      :sections="LOAN_ABOUT_GUIDE.sections"
+      :disclaimer="LOAN_ABOUT_GUIDE.disclaimer"
+    />
+    <SeoRichGuide
+      :title="LOAN_HOME_GUIDE.title"
+      :intro="LOAN_HOME_GUIDE.intro"
+      :sections="LOAN_HOME_GUIDE.sections"
+      :faqs="LOAN_HOME_GUIDE.faqs"
+    />
   </div>
 </template>

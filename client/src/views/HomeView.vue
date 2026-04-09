@@ -4,6 +4,8 @@ import { ArrowRightLeft, Gauge, Scale, ReceiptText, GraduationCap, ArrowRight } 
 import { ActionCard } from "@/components/ui/action-card";
 import RelatedServices from "@/components/common/RelatedServices.vue";
 import SEOHead from "@/components/common/SEOHead.vue";
+import SeoRichGuide from "@/components/common/SeoRichGuide.vue";
+import { LOAN_HOME_GUIDE } from "@/data/seoGuides";
 
 const tools = [
   {
@@ -126,5 +128,13 @@ const faqJsonLd = {
     </div>
 
     <RelatedServices />
+
+    <SeoRichGuide
+      :title="LOAN_HOME_GUIDE.title"
+      :intro="LOAN_HOME_GUIDE.intro"
+      :sections="LOAN_HOME_GUIDE.sections"
+      :faqs="LOAN_HOME_GUIDE.faqs"
+      :disclaimer="LOAN_HOME_GUIDE.disclaimer"
+    />
   </div>
 </template>

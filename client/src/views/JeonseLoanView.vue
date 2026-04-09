@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import SEOHead from "@/components/common/SEOHead.vue";
+import SeoRichGuide from "@/components/common/SeoRichGuide.vue";
+import { LOAN_JEONSE_GUIDE } from "@/data/seoGuides";
 import FreshBadge from "@/components/common/FreshBadge.vue";
 import JeonseLoanCalculator from "@/components/loan/JeonseLoanCalculator.vue";
 import { JEONSE_LOAN_FAQS, JEONSE_LOAN_UPDATED } from "@/data/jeonseLoan";
@@ -71,5 +73,13 @@ const faqJsonLd = {
         </details>
       </div>
     </div>
+
+    <SeoRichGuide
+      :title="LOAN_JEONSE_GUIDE.title"
+      :intro="LOAN_JEONSE_GUIDE.intro"
+      :sections="LOAN_JEONSE_GUIDE.sections"
+      :faqs="LOAN_JEONSE_GUIDE.faqs"
+      :disclaimer="LOAN_JEONSE_GUIDE.disclaimer"
+    />
   </div>
 </template>
