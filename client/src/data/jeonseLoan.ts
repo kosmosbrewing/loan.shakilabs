@@ -1,6 +1,6 @@
 import type { JeonseLoanInput } from "@/lib/validators";
 
-export const JEONSE_LOAN_UPDATED = "2026-03-19";
+export const JEONSE_LOAN_UPDATED = "2026-07-10";
 
 export type JeonseLoanProduct = "youth" | "buttimok" | "general";
 
@@ -20,24 +20,24 @@ export const JEONSE_LOAN_PRODUCTS: readonly JeonseLoanProductInfo[] = [
     id: "youth",
     name: "청년 전용 버팀목",
     description: "만 19~34세, 연소득 5천만원 이하, 전세보증금 3억원 이내",
-    minRate: 1.5,
-    maxRate: 2.1,
-    maxAmount: 200_000_000,
+    minRate: 2.2,
+    maxRate: 3.3,
+    maxAmount: 150_000_000,
     maxTermMonths: 120,
   },
   {
     id: "buttimok",
     name: "버팀목 전세대출",
-    description: "무주택 세대주, 연소득 6천만원 이하, 전세보증금 5억원 이내",
-    minRate: 2.1,
-    maxRate: 2.9,
-    maxAmount: 200_000_000,
+    description: "무주택 세대주, 연소득 5천만원 이하, 일반가구 수도권 보증금 3억원 이내",
+    minRate: 2.5,
+    maxRate: 3.5,
+    maxAmount: 120_000_000,
     maxTermMonths: 120,
   },
   {
     id: "general",
     name: "일반 전세대출 (시중은행)",
-    description: "별도 소득·나이 제한 없음, 은행별 금리 상이",
+    description: "사용자 비교용 금리 가정, 실제 한도·금리는 금융상품별 확인",
     minRate: 3.5,
     maxRate: 5.0,
     maxAmount: 500_000_000,
@@ -59,7 +59,7 @@ export const jeonseLoanPresets: ReadonlyArray<{
     key: "youth-1",
     label: "청년 1억",
     description: "청년전용 버팀목 금리 적용",
-    input: { depositAmount: 100_000_000, annualRate: 1.8, termMonths: 120, isInterestOnly: true },
+    input: { depositAmount: 100_000_000, annualRate: 2.5, termMonths: 120, isInterestOnly: true },
   },
   {
     key: "general-3",
@@ -76,7 +76,8 @@ export const jeonseLoanPresets: ReadonlyArray<{
 ];
 
 export const JEONSE_LOAN_SOURCES = [
-  { name: "주택도시기금", url: "https://nhuf.molit.go.kr/", basis: "버팀목·청년전용 전세대출 금리 고시" },
+  { name: "주택도시기금", url: "https://nhuf.molit.go.kr/FP/FP05/FP0502/FP05020301.jsp", basis: "청년전용 버팀목 금리·한도" },
+  { name: "주택도시기금", url: "https://nhuf.molit.go.kr/FP/FP05/FP0502/FP05020101.jsp", basis: "일반 버팀목 금리·한도" },
   { name: "금융감독원", url: "https://finlife.fss.or.kr/", basis: "전세대출 상품 비교" },
 ];
 
@@ -87,11 +88,11 @@ export const JEONSE_LOAN_FAQS = [
   },
   {
     q: "청년 전용 버팀목 대출 조건은 무엇인가요?",
-    a: "만 19~34세 무주택 세대주, 연소득 5천만원 이하(신혼부부는 합산 6천만원), 전세보증금 3억원 이내가 기본 조건이며, 연 1.5~2.1%의 저금리가 적용됩니다.",
+    a: "만 19~34세 무주택 세대주, 부부합산 연소득 5천만원 이하, 순자산 3.45억원 이하가 기본 조건입니다. 금리는 연 2.2~3.3%, 한도는 최대 1.5억원이며 만 25세 미만 단독세대주는 최대 1.2억원입니다.",
   },
   {
     q: "전세대출 금리는 고정인가요, 변동인가요?",
-    a: "정부 지원 상품(버팀목)은 대출기간 중 고정금리가 일반적이고, 시중은행 전세대출은 변동금리(COFIX 연동)가 많습니다. 변동금리는 6개월 또는 1년마다 금리가 조정됩니다.",
+    a: "주택도시기금 버팀목 상품은 국토교통부 고시에 따른 변동금리이며, 시중은행 상품도 COFIX 등에 연동된 변동금리가 많습니다. 상품별 금리 유형과 조정 주기를 약정 전에 확인해야 합니다.",
   },
   {
     q: "전세대출 보증보험료는 얼마인가요?",
