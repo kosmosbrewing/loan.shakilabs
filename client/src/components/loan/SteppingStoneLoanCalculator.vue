@@ -54,7 +54,7 @@ function selectPreset(key: string) {
 const borrowerTypes: { value: BorrowerType; label: string }[] = [
   { value: "general", label: "일반" },
   { value: "firstTime", label: "생애최초" },
-  { value: "newlywed", label: "신혼가구" },
+  { value: "newlywed", label: "생애최초 신혼가구" },
 ];
 </script>
 

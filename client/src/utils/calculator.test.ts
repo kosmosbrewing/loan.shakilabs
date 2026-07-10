@@ -203,7 +203,7 @@ describe("calcJeonseLoan", () => {
       termMonths: 24,
       isInterestOnly: true,
     });
-    // 청년전용은 2억 한도 → 3억은 초과
+    // 청년전용은 1.5억 한도 → 3억은 초과
     const youth = result.productComparison.find((p) => p.product.id === "youth");
     expect(youth?.eligible).toBe(false);
   });
@@ -228,7 +228,7 @@ describe("calcSteppingStoneLoan", () => {
     expect(result.ineligibleReasons.length).toBeGreaterThan(0);
   });
 
-  it("신혼가구는 한도가 3.2억", () => {
+  it("생애최초 신혼가구는 한도가 3.2억", () => {
     const result = calcSteppingStoneLoan({
       householdIncome: 60_000_000,
       propertyPrice: 500_000_000,
@@ -237,6 +237,11 @@ describe("calcSteppingStoneLoan", () => {
       isMetro: true,
     });
     expect(result.maxLoanByLimit).toBe(320_000_000);
+  });
+
+  it("생애최초는 일반 금리표에서 0.2%p 우대한다", () => {
+    const result = calcSteppingStoneLoan(DEFAULT_STEPPING_STONE_INPUT);
+    expect(result.applicableRate).toBe(3.6);
   });
 
   it("원금균등이 원리금균등보다 총이자가 적다", () => {

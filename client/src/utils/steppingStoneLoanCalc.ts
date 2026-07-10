@@ -39,12 +39,15 @@ function findRate(
   termYears: number,
   borrowerType: BorrowerType,
 ): { rate: number; label: string } | null {
-  const table = borrowerType === "general" ? GENERAL_RATES : SPECIAL_RATES;
+  const table = borrowerType === "newlywed" ? SPECIAL_RATES : GENERAL_RATES;
   const termKey = String(termYears);
   for (const bracket of table) {
     if (income <= bracket.maxIncome) {
       const rate = bracket.rates[termKey];
-      if (rate !== undefined) return { rate, label: bracket.label };
+      if (rate !== undefined) {
+        const firstTimeRate = borrowerType === "firstTime" ? Number((rate - 0.2).toFixed(2)) : rate;
+        return { rate: firstTimeRate, label: bracket.label };
+      }
     }
   }
   return null;
