@@ -80,7 +80,7 @@ function renderSitemap(buildDate) {
   const baseUrl = "https://shakilabs.com/loan";
   const urls = SEO_ROUTES.map((path) => {
     const { changefreq, priority } = getRouteConfig(path);
-    const loc = path === "/" ? `${baseUrl}/` : `${baseUrl}${path}`;
+    const loc = path === "/" ? baseUrl : `${baseUrl}${path}`;
     return `  <url>
     <loc>${loc}</loc>
     <lastmod>${buildDate}</lastmod>
