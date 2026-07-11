@@ -17,7 +17,7 @@ defineProps<{
       :key="item.label"
       class="border-border/50 bg-muted/30"
     >
-      <CardContent class="p-4">
+      <CardContent class="loan-metric-card p-4">
         <p class="text-tiny font-semibold uppercase tracking-[0.12em] text-muted-foreground">
           {{ item.label }}
         </p>

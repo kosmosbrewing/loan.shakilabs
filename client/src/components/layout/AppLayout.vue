@@ -2,7 +2,7 @@
 import { ShSurface } from "@shakilabs/ui";
 import AppHeader from "@/components/layout/AppHeader.vue";
 import AppFooter from "@/components/layout/AppFooter.vue";
-import TabNavigation from "@/components/common/TabNavigation.vue";
+import LoanTabNavigation from "@/components/loan/LoanTabNavigation.vue";
 </script>
 
 <template>
@@ -19,7 +19,7 @@ import TabNavigation from "@/components/common/TabNavigation.vue";
       본문 바로가기
     </a>
     <AppHeader />
-    <TabNavigation />
+    <LoanTabNavigation />
     <main id="main-content" tabindex="-1" class="flex-1 relative">
       <slot />
     </main>

@@ -47,7 +47,7 @@ function selectPreset(key: string): void {
     <LoanScenarioChips :items="refinancePresets" @select="selectPreset" />
 
     <div class="grid gap-4 xl:grid-cols-[1.2fr_0.8fr]">
-      <section class="retro-panel-muted p-4 space-y-4">
+      <section class="refinance-input-panel retro-panel-muted space-y-4 p-4">
         <div class="grid gap-3 sm:grid-cols-2">
           <label class="space-y-1.5">
             <span class="text-caption font-semibold text-foreground">남은 대출원금</span>
@@ -89,9 +89,9 @@ function selectPreset(key: string): void {
         </div>
       </section>
 
-      <section class="retro-panel p-4 space-y-3">
+      <section class="refinance-summary-panel retro-panel space-y-3 p-4">
         <div
-          class="rounded-2xl border px-4 py-3"
+          class="refinance-status rounded-2xl border px-4 py-3"
           :class="result.isSwitchWorthIt ? 'border-profit/30 bg-profit/10' : 'border-fee/20 bg-fee/10'"
         >
           <p class="text-caption font-semibold" :class="result.isSwitchWorthIt ? 'text-profit' : 'text-fee'">

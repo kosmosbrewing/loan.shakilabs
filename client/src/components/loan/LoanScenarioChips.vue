@@ -18,7 +18,7 @@ defineEmits<{
       v-for="item in items"
       :key="item.key"
       type="button"
-      class="retro-panel-muted px-3 py-2 text-left transition-colors hover:border-primary/40 hover:bg-primary/5"
+      class="loan-scenario-chip retro-panel-muted px-3 py-2 text-left transition-colors hover:border-primary/40 hover:bg-primary/5"
       @click="$emit('select', item.key)"
     >
       <span class="block text-caption font-semibold text-foreground">{{ item.label }}</span>
