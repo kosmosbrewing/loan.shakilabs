@@ -1,7 +1,7 @@
 // LTV / DTI / DSR 규제 한도 — 2025.10.15 대책 반영
 // 출처: 금융위원회, 한국은행
 
-export const LTV_DTI_UPDATED = "2026-03-19";
+export const LTV_DTI_UPDATED = "2026-07-10";
 
 export type RegionType = "speculative" | "nonRegulated";
 
@@ -75,6 +75,7 @@ export const LTV_DTI_FAQS: readonly { q: string; a: string }[] = [
 ];
 
 export const LTV_DTI_SOURCES = [
-  { name: "금융위원회", url: "https://www.fsc.go.kr/", basis: "대출규제 정책 안내" },
+  { name: "금융위원회", url: "https://www.fsc.go.kr/no010101/85432", basis: "2025.10.15 주택시장 안정화 대책" },
+  { name: "금융위원회", url: "https://www.fsc.go.kr/po020201/85518", basis: "규제지역 주담대 한도·스트레스 DSR" },
   { name: "한국은행 경제통계", url: "https://ecos.bok.or.kr/", basis: "주택담보대출 규제 통계" },
 ];

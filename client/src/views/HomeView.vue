@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { RouterLink } from "vue-router";
 import { ArrowRightLeft, Gauge, Scale, ReceiptText, GraduationCap, ArrowRight } from "lucide-vue-next";
+import { ShSurface, ShText } from "@shakilabs/ui";
 import { ActionCard } from "@/components/ui/action-card";
 import RelatedServices from "@/components/common/RelatedServices.vue";
 import SEOHead from "@/components/common/SEOHead.vue";
@@ -77,9 +78,9 @@ const faqJsonLd = {
   />
 
   <div class="container space-y-5 py-5">
-    <div class="retro-panel overflow-hidden">
+    <ShSurface padding="none" class="overflow-hidden">
       <div class="retro-titlebar rounded-t-2xl">
-        <h1 class="retro-title">대출 의사결정에 필요한 계산을 한 번에</h1>
+        <ShText as="h1" variant="heading">대출 의사결정에 필요한 계산을 한 번에</ShText>
       </div>
       <div class="retro-panel-content space-y-4">
         <p class="text-body leading-relaxed text-muted-foreground">
@@ -105,7 +106,7 @@ const faqJsonLd = {
           </ActionCard>
         </div>
       </div>
-    </div>
+    </ShSurface>
 
     <div class="retro-panel overflow-hidden">
       <div class="retro-titlebar rounded-t-2xl">
