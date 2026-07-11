@@ -134,11 +134,11 @@ const borrowerTypes: { value: BorrowerType; label: string }[] = [
         <p class="text-caption font-semibold text-foreground mb-1">대출 한도 상세</p>
       </div>
       <div class="overflow-x-auto">
-        <table class="w-full text-left text-caption">
+        <table aria-label="디딤돌대출 한도와 상환 방식 비교" class="w-full text-left text-caption">
           <thead class="bg-muted/40 text-muted-foreground">
             <tr>
-              <th class="px-3 py-2">기준</th>
-              <th class="px-3 py-2 text-right">한도</th>
+              <th scope="col" class="px-3 py-2">기준</th>
+              <th scope="col" class="px-3 py-2 text-right">한도</th>
             </tr>
           </thead>
           <tbody>
@@ -169,12 +169,12 @@ const borrowerTypes: { value: BorrowerType; label: string }[] = [
         <p class="text-caption font-semibold text-foreground mb-1">상환 방식 비교</p>
       </div>
       <div class="overflow-x-auto">
-        <table class="w-full text-left text-caption">
+        <table aria-label="디딤돌대출 한도와 상환 방식 비교" class="w-full text-left text-caption">
           <thead class="bg-muted/40 text-muted-foreground">
             <tr>
-              <th class="px-3 py-2">방식</th>
-              <th class="px-3 py-2 text-right">월 납입액</th>
-              <th class="px-3 py-2 text-right">총 이자</th>
+              <th scope="col" class="px-3 py-2">방식</th>
+              <th scope="col" class="px-3 py-2 text-right">월 납입액</th>
+              <th scope="col" class="px-3 py-2 text-right">총 이자</th>
             </tr>
           </thead>
           <tbody>

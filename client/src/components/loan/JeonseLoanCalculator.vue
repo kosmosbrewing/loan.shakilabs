@@ -58,6 +58,7 @@ function setDepositPreset(amount: number): void {
       <div class="space-y-1.5">
         <label class="text-caption font-semibold text-foreground">전세보증금 (대출금액)</label>
         <input
+          aria-label="전세보증금과 대출금액"
           type="text"
           inputmode="numeric"
           class="retro-input"
@@ -114,14 +115,14 @@ function setDepositPreset(amount: number): void {
         <p class="text-[10px] text-muted-foreground">{{ LOAN_ASSUMPTION_NOTE }}</p>
       </div>
       <div class="overflow-x-auto">
-        <table class="w-full text-left text-caption">
+        <table aria-label="전세대출 상품별 이자 비교" class="w-full text-left text-caption">
           <thead class="bg-muted/40 text-muted-foreground">
             <tr>
-              <th class="px-3 py-2 whitespace-nowrap">상품</th>
-              <th class="px-3 py-2 whitespace-nowrap text-right">최저금리</th>
-              <th class="px-3 py-2 whitespace-nowrap text-right">월 이자</th>
-              <th class="px-3 py-2 whitespace-nowrap text-right">총 이자</th>
-              <th class="px-3 py-2 whitespace-nowrap text-center">자격</th>
+              <th scope="col" class="px-3 py-2 whitespace-nowrap">상품</th>
+              <th scope="col" class="px-3 py-2 whitespace-nowrap text-right">최저금리</th>
+              <th scope="col" class="px-3 py-2 whitespace-nowrap text-right">월 이자</th>
+              <th scope="col" class="px-3 py-2 whitespace-nowrap text-right">총 이자</th>
+              <th scope="col" class="px-3 py-2 whitespace-nowrap text-center">자격</th>
             </tr>
           </thead>
           <tbody>

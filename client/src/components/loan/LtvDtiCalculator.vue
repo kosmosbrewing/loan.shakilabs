@@ -145,12 +145,12 @@ const borrowerCategories: { value: BorrowerCategory; label: string }[] = [
         <p class="text-[10px] text-muted-foreground">세 가지 규제 중 가장 낮은 금액이 최종 한도</p>
       </div>
       <div class="overflow-x-auto">
-        <table class="w-full text-left text-caption">
+        <table aria-label="주택담보대출 규제별 한도 분석" class="w-full text-left text-caption">
           <thead class="bg-muted/40 text-muted-foreground">
             <tr>
-              <th class="px-3 py-2">규제</th>
-              <th class="px-3 py-2 text-right">비율/조건</th>
-              <th class="px-3 py-2 text-right">한도</th>
+              <th scope="col" class="px-3 py-2">규제</th>
+              <th scope="col" class="px-3 py-2 text-right">비율/조건</th>
+              <th scope="col" class="px-3 py-2 text-right">한도</th>
             </tr>
           </thead>
           <tbody>

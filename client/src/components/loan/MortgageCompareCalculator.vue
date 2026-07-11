@@ -56,6 +56,7 @@ function setAmountPreset(amount: number): void {
       <div class="space-y-1.5">
         <label class="text-caption font-semibold text-foreground">대출금액</label>
         <input
+          aria-label="대출금액"
           type="text"
           inputmode="numeric"
           class="retro-input"
@@ -108,15 +109,15 @@ function setAmountPreset(amount: number): void {
         <p class="text-[10px] text-muted-foreground">{{ LOAN_ASSUMPTION_NOTE }}</p>
       </div>
       <div class="overflow-x-auto">
-        <table class="w-full text-left text-caption">
+        <table aria-label="은행별 주택담보대출 금리 비교" class="w-full text-left text-caption">
           <thead class="bg-muted/40 text-muted-foreground">
             <tr>
-              <th class="px-3 py-2 whitespace-nowrap">은행</th>
-              <th class="px-3 py-2 whitespace-nowrap text-right">최저금리</th>
-              <th class="px-3 py-2 whitespace-nowrap text-right">월 상환액</th>
-              <th class="px-3 py-2 whitespace-nowrap text-right">총이자</th>
-              <th class="px-3 py-2 whitespace-nowrap text-right">고정금리</th>
-              <th class="px-3 py-2 whitespace-nowrap text-right">변동금리</th>
+              <th scope="col" class="px-3 py-2 whitespace-nowrap">은행</th>
+              <th scope="col" class="px-3 py-2 whitespace-nowrap text-right">최저금리</th>
+              <th scope="col" class="px-3 py-2 whitespace-nowrap text-right">월 상환액</th>
+              <th scope="col" class="px-3 py-2 whitespace-nowrap text-right">총이자</th>
+              <th scope="col" class="px-3 py-2 whitespace-nowrap text-right">고정금리</th>
+              <th scope="col" class="px-3 py-2 whitespace-nowrap text-right">변동금리</th>
             </tr>
           </thead>
           <tbody>
