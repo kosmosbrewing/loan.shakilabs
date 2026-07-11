@@ -56,9 +56,9 @@ function setDepositPreset(amount: number): void {
 
     <section class="retro-panel-muted space-y-4 p-4">
       <div class="space-y-1.5">
-        <label class="text-caption font-semibold text-foreground">전세보증금 (대출금액)</label>
+        <label for="jeonse-loan-deposit" class="text-caption font-semibold text-foreground">전세보증금 (대출금액)</label>
         <input
-          aria-label="전세보증금과 대출금액"
+          id="jeonse-loan-deposit"
           type="text"
           inputmode="numeric"
           class="retro-input"
