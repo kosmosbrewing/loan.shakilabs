@@ -5,6 +5,7 @@ import SeoRichGuide from "@/components/common/SeoRichGuide.vue";
 import { LOAN_LTV_GUIDE } from "@/data/seoGuides";
 import FreshBadge from "@/components/common/FreshBadge.vue";
 import LtvDtiCalculator from "@/components/loan/LtvDtiCalculator.vue";
+import CalculatorPageHeader from "@/components/loan/CalculatorPageHeader.vue";
 import { LTV_DTI_FAQS, LTV_DTI_UPDATED } from "@/data/ltvDti";
 import { formatManWon } from "@/lib/utils";
 
@@ -41,9 +42,11 @@ const faqJsonLd = {
 <template>
   <SEOHead :title="seoTitle" :description="seoDescription" :json-ld="faqJsonLd" />
   <div class="container space-y-5 py-5">
+    <CalculatorPageHeader title="LTV·DTI·DSR 계산기" />
+
     <div class="retro-panel overflow-hidden">
       <div class="retro-titlebar rounded-t-2xl">
-        <h1 class="retro-title">{{ amountLabel ? `${amountLabel}` : '' }} LTV·DTI·DSR 계산기</h1>
+        <h2 class="retro-title">한도 조건 입력</h2>
         <FreshBadge :message="`${LTV_DTI_UPDATED} 기준`" />
       </div>
       <div class="retro-panel-content space-y-4">
