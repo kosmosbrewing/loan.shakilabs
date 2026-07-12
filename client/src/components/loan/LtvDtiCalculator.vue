@@ -2,6 +2,7 @@
 import { computed } from "vue";
 import LoanMetricGrid from "@/components/loan/LoanMetricGrid.vue";
 import LoanScenarioChips from "@/components/loan/LoanScenarioChips.vue";
+import ConstraintBars from "@/components/result-visualization/ConstraintBars.vue";
 import CompareSourceFooter from "@/components/common/CompareSourceFooter.vue";
 import { TERM_OPTIONS } from "@/data/loanPresets";
 import {
@@ -39,6 +40,12 @@ const metrics = computed(() => [
     value: formatWon(result.value.totalInterest),
     helper: `금리 ${formatPercent(state.loanRate, 1)} 기준`,
   },
+]);
+const constraints = computed(() => [
+  { key: "ltv", label: "LTV 한도", value: result.value.maxByLtv, limiting: result.value.limitingFactor === "LTV" },
+  ...(result.value.maxByAbsolute > 0 ? [{ key: "absolute", label: "절대 한도", value: result.value.maxByAbsolute, limiting: result.value.limitingFactor === "절대한도" }] : []),
+  { key: "dti", label: "DTI 한도", value: result.value.maxByDti, limiting: result.value.limitingFactor === "DTI" },
+  { key: "dsr", label: "DSR 한도", value: result.value.maxByDsr, limiting: result.value.limitingFactor === "DSR", detail: `스트레스 금리 +${result.value.stressRate}%p 적용` },
 ]);
 
 function selectPreset(key: string) {
@@ -137,6 +144,7 @@ const borrowerCategories: { value: BorrowerCategory; label: string }[] = [
     </section>
 
     <LoanMetricGrid :items="metrics" />
+    <ConstraintBars title="규제별 대출 한도" :items="constraints" :format-value="formatWon" />
 
     <!-- 규제별 한도 상세 -->
     <section class="retro-panel overflow-hidden">

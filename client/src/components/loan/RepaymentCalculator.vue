@@ -15,6 +15,7 @@ import {
 } from "@shakilabs/ui";
 import LoanMetricGrid from "@/components/loan/LoanMetricGrid.vue";
 import LoanScenarioChips from "@/components/loan/LoanScenarioChips.vue";
+import MetricComparisonBars from "@/components/result-visualization/MetricComparisonBars.vue";
 import { LOAN_ASSUMPTION_NOTE, TERM_OPTIONS, repaymentPresets } from "@/data/loanPresets";
 import { useRepaymentCalculator } from "@/composables/useRepaymentCalculator";
 import { formatWon, parseNumericInput } from "@/lib/utils";
@@ -43,6 +44,24 @@ const metrics = computed(() => [
     label: "첫 달 납입 차이",
     value: formatWon(result.value.firstMonthGap),
     helper: "원금균등이 더 많이 납부",
+  },
+]);
+const comparisonMetrics = computed(() => [
+  {
+    key: "first",
+    label: "첫 달 납입액",
+    values: [
+      { key: "annuity", label: "원리금균등", value: result.value.annuity.firstPayment },
+      { key: "equal", label: "원금균등", value: result.value.equalPrincipal.firstPayment },
+    ],
+  },
+  {
+    key: "interest",
+    label: "전체 기간 총이자",
+    values: [
+      { key: "annuity", label: "원리금균등", value: result.value.annuity.totalInterest },
+      { key: "equal", label: "원금균등", value: result.value.equalPrincipal.totalInterest, highlight: true },
+    ],
   },
 ]);
 
@@ -125,5 +144,11 @@ function selectPreset(key: string): void {
     </div>
 
     <LoanMetricGrid :items="metrics" />
+    <MetricComparisonBars
+      title="상환 방식 부담 비교"
+      note="초기 현금흐름과 전체 이자 부담은 별개이므로 두 축으로 나눠 표시합니다."
+      :metrics="comparisonMetrics"
+      :format-value="formatWon"
+    />
   </div>
 </template>

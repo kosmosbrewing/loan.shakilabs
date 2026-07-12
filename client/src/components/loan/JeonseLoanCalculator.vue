@@ -2,6 +2,7 @@
 import { computed } from "vue";
 import LoanMetricGrid from "@/components/loan/LoanMetricGrid.vue";
 import LoanScenarioChips from "@/components/loan/LoanScenarioChips.vue";
+import MetricComparisonBars from "@/components/result-visualization/MetricComparisonBars.vue";
 import CompareSourceFooter from "@/components/common/CompareSourceFooter.vue";
 import { LOAN_ASSUMPTION_NOTE, TERM_OPTIONS } from "@/data/loanPresets";
 import {
@@ -39,6 +40,33 @@ const metrics = computed(() => [
     helper: "연이율 기준",
   },
 ]);
+const productMetrics = computed(() => {
+  const eligible = result.value.productComparison.filter((row) => row.eligible);
+  const lowestInterest = Math.min(...eligible.map((row) => row.totalInterest), Number.POSITIVE_INFINITY);
+  return [
+    {
+      key: "monthly",
+      label: "월 이자",
+      values: eligible.map((row) => ({
+        key: row.product.id,
+        label: row.product.name,
+        value: row.monthlyInterest,
+        highlight: row.totalInterest === lowestInterest,
+        detail: `최저금리 ${formatPercent(row.product.minRate, 1)}`,
+      })),
+    },
+    {
+      key: "total",
+      label: "대출기간 총 이자",
+      values: eligible.map((row) => ({
+        key: row.product.id,
+        label: row.product.name,
+        value: row.totalInterest,
+        highlight: row.totalInterest === lowestInterest,
+      })),
+    },
+  ];
+});
 
 function selectPreset(key: string): void {
   const preset = jeonseLoanPresets.find((item) => item.key === key);
@@ -107,6 +135,14 @@ function setDepositPreset(amount: number): void {
     </section>
 
     <LoanMetricGrid :items="metrics" />
+
+    <MetricComparisonBars
+      v-if="productMetrics[0].values.length"
+      title="자격 충족 상품 이자 비교"
+      note="각 상품의 공개 최저금리를 동일 대출금과 기간에 적용한 참고 비교입니다."
+      :metrics="productMetrics"
+      :format-value="formatWon"
+    />
 
     <!-- 상품별 비교 테이블 -->
     <section class="retro-panel overflow-hidden">
