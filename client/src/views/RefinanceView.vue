@@ -5,6 +5,7 @@ import SeoRichGuide from "@/components/common/SeoRichGuide.vue";
 import { LOAN_HOME_GUIDE } from "@/data/seoGuides";
 import FreshBadge from "@/components/common/FreshBadge.vue";
 import RefinanceCalculator from "@/components/loan/RefinanceCalculator.vue";
+import CalculatorPageHeader from "@/components/loan/CalculatorPageHeader.vue";
 import { LOAN_BADGE_MESSAGE } from "@/data/loanPresets";
 import { formatManWon } from "@/lib/utils";
 
@@ -56,9 +57,11 @@ const faqJsonLd = computed(() => ({
 <template>
   <SEOHead :title="seoTitle" :description="seoDescription" :json-ld="faqJsonLd" />
   <div class="text-resize-layout container space-y-5 py-5">
+    <CalculatorPageHeader title="대환대출 갈아타기 계산기" />
+
     <div class="retro-panel overflow-hidden">
       <div class="retro-titlebar rounded-t-2xl">
-        <h1 class="retro-title">{{ balanceLabel ? `${balanceLabel}` : '' }} 대환대출 갈아타기 계산기</h1>
+        <h2 class="retro-title">갈아타기 조건 입력</h2>
         <FreshBadge :message="LOAN_BADGE_MESSAGE" />
       </div>
       <div class="retro-panel-content space-y-4">

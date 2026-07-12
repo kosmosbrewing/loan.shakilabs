@@ -3,6 +3,7 @@ import { RouterLink } from "vue-router";
 import { ArrowRightLeft, Gauge, Scale, ReceiptText, GraduationCap, ArrowRight } from "lucide-vue-next";
 import { ShSurface, ShText } from "@shakilabs/ui";
 import { ActionCard } from "@/components/ui/action-card";
+import CalculatorPageHeader from "@/components/loan/CalculatorPageHeader.vue";
 import RelatedServices from "@/components/common/RelatedServices.vue";
 import SEOHead from "@/components/common/SEOHead.vue";
 import SeoRichGuide from "@/components/common/SeoRichGuide.vue";
@@ -78,9 +79,11 @@ const faqJsonLd = {
   />
 
   <div class="container space-y-5 py-5">
+    <CalculatorPageHeader title="대출 계산기" />
+
     <ShSurface padding="none" class="overflow-hidden">
       <div class="retro-titlebar rounded-t-2xl">
-        <ShText as="h1" variant="heading">대출 의사결정에 필요한 계산을 한 번에</ShText>
+        <ShText as="h2" variant="heading">대출 의사결정에 필요한 계산</ShText>
       </div>
       <div class="retro-panel-content space-y-4">
         <p class="text-body leading-relaxed text-muted-foreground">

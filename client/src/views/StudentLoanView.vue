@@ -5,6 +5,7 @@ import SeoRichGuide from "@/components/common/SeoRichGuide.vue";
 import { LOAN_HOME_GUIDE } from "@/data/seoGuides";
 import FreshBadge from "@/components/common/FreshBadge.vue";
 import StudentLoanCalculator from "@/components/loan/StudentLoanCalculator.vue";
+import CalculatorPageHeader from "@/components/loan/CalculatorPageHeader.vue";
 import { STUDENT_LOAN_FAQS, STUDENT_LOAN_UPDATED } from "@/data/loanExtraTools";
 import { formatManWon } from "@/lib/utils";
 
@@ -41,9 +42,11 @@ const faqJsonLd = {
 <template>
   <SEOHead :title="seoTitle" :description="seoDescription" :json-ld="faqJsonLd" />
   <div class="container space-y-5 py-5">
+    <CalculatorPageHeader title="학자금 대출 상환 계산기" />
+
     <div class="retro-panel overflow-hidden">
       <div class="retro-titlebar rounded-t-2xl">
-        <h1 class="retro-title">{{ balanceLabel ? `${balanceLabel}원` : '' }} 학자금 대출 상환 계산기</h1>
+        <h2 class="retro-title">상환 조건 입력</h2>
         <FreshBadge :message="`${STUDENT_LOAN_UPDATED} 확인`" />
       </div>
       <div class="retro-panel-content space-y-4">
