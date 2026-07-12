@@ -134,7 +134,7 @@ const borrowerTypes: { value: BorrowerType; label: string }[] = [
         <p class="text-caption font-semibold text-foreground mb-1">대출 한도 상세</p>
       </div>
       <div class="overflow-x-auto">
-        <table aria-label="디딤돌대출 한도와 상환 방식 비교" class="w-full text-left text-caption">
+        <table aria-label="디딤돌대출 한도와 상환 방식 비교" class="w-max min-w-full text-left text-caption">
           <thead class="bg-muted/40 text-muted-foreground">
             <tr>
               <th scope="col" class="px-3 py-2">기준</th>
