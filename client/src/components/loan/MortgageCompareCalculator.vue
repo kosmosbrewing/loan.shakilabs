@@ -95,7 +95,7 @@ function setAmountPreset(amount: number): void {
 
       <div class="flex flex-wrap gap-2">
         <button type="button" class="retro-panel px-3 py-2 text-caption font-semibold text-foreground" @click="reset">
-          기본값으로 초기화
+          입력 초기화
         </button>
       </div>
     </section>
@@ -109,7 +109,7 @@ function setAmountPreset(amount: number): void {
         <p class="text-[10px] text-muted-foreground">{{ LOAN_ASSUMPTION_NOTE }}</p>
       </div>
       <div class="overflow-x-auto">
-        <table aria-label="은행별 주택담보대출 금리 비교" class="w-full text-left text-caption">
+        <table aria-label="은행별 주택담보대출 금리 비교" class="w-max min-w-full text-left text-caption">
           <thead class="bg-muted/40 text-muted-foreground">
             <tr>
               <th scope="col" class="px-3 py-2 whitespace-nowrap">은행</th>

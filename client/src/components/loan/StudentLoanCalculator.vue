@@ -79,7 +79,7 @@ const statIconClasses = [
       </div>
     </section>
 
-    <div class="grid grid-cols-2 gap-2 sm:grid-cols-4">
+    <div class="grid grid-cols-1 gap-2 sm:grid-cols-4">
       <Card
         v-for="(stat, index) in [
           { label: '기준소득 초과분', value: formatWon(result.baseExcessIncome), cls: '' },

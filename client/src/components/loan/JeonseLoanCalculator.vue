@@ -115,7 +115,7 @@ function setDepositPreset(amount: number): void {
         <p class="text-[10px] text-muted-foreground">{{ LOAN_ASSUMPTION_NOTE }}</p>
       </div>
       <div class="overflow-x-auto">
-        <table aria-label="전세대출 상품별 이자 비교" class="w-full text-left text-caption">
+        <table aria-label="전세대출 상품별 이자 비교" class="w-max min-w-full text-left text-caption">
           <thead class="bg-muted/40 text-muted-foreground">
             <tr>
               <th scope="col" class="px-3 py-2 whitespace-nowrap">상품</th>
