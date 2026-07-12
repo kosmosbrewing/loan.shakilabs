@@ -2,6 +2,7 @@
 import { computed } from "vue";
 import LoanMetricGrid from "@/components/loan/LoanMetricGrid.vue";
 import LoanScenarioChips from "@/components/loan/LoanScenarioChips.vue";
+import BulletProgress from "@/components/result-visualization/BulletProgress.vue";
 import { DSR_LIMIT_OPTIONS, LOAN_ASSUMPTION_NOTE, TERM_OPTIONS, dsrPresets } from "@/data/loanPresets";
 import { useDsrCalculator } from "@/composables/useDsrCalculator";
 import { formatPercent, formatWon, parseNumericInput } from "@/lib/utils";
@@ -100,5 +101,11 @@ function selectPreset(key: string): void {
     </div>
 
     <LoanMetricGrid :items="metrics" />
+    <BulletProgress
+      title="현재 DSR 한도 사용률"
+      :value="result.currentDsr"
+      :limit="state.dsrLimit"
+      :format-value="(value) => formatPercent(value, 1)"
+    />
   </div>
 </template>

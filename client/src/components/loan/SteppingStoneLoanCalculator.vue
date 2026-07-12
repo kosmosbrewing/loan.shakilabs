@@ -2,6 +2,8 @@
 import { computed } from "vue";
 import LoanMetricGrid from "@/components/loan/LoanMetricGrid.vue";
 import LoanScenarioChips from "@/components/loan/LoanScenarioChips.vue";
+import ConstraintBars from "@/components/result-visualization/ConstraintBars.vue";
+import MetricComparisonBars from "@/components/result-visualization/MetricComparisonBars.vue";
 import CompareSourceFooter from "@/components/common/CompareSourceFooter.vue";
 import {
   STEPPING_STONE_PRESETS,
@@ -38,6 +40,29 @@ const metrics = computed(() => [
     label: "총 이자",
     value: formatWon(result.value.totalInterest),
     helper: `${state.termYears}년 상환 기준`,
+  },
+]);
+const constraints = computed(() => [
+  { key: "product", label: "상품 한도", value: result.value.maxLoanByLimit, limiting: result.value.maxLoanByLimit === result.value.effectiveLoanAmount },
+  { key: "ltv", label: "LTV 한도", value: result.value.maxLoanByLtv, limiting: result.value.maxLoanByLtv === result.value.effectiveLoanAmount },
+  { key: "dti", label: "DTI 한도", value: result.value.maxLoanByDti, limiting: result.value.maxLoanByDti === result.value.effectiveLoanAmount },
+]);
+const repaymentMetrics = computed(() => [
+  {
+    key: "monthly",
+    label: "월 납입액",
+    values: [
+      { key: "annuity", label: "원리금균등", value: result.value.annuityPlan.monthlyPayment },
+      { key: "equal", label: "원금균등 평균", value: result.value.equalPrincipalPlan.monthlyPayment },
+    ],
+  },
+  {
+    key: "interest",
+    label: "총 이자",
+    values: [
+      { key: "annuity", label: "원리금균등", value: result.value.annuityPlan.totalInterest },
+      { key: "equal", label: "원금균등", value: result.value.equalPrincipalPlan.totalInterest, highlight: true },
+    ],
   },
 ]);
 
@@ -127,6 +152,13 @@ const borrowerTypes: { value: BorrowerType; label: string }[] = [
     </div>
 
     <LoanMetricGrid :items="metrics" />
+    <ConstraintBars title="디딤돌대출 한도 제한" :items="constraints" :format-value="formatWon" />
+    <MetricComparisonBars
+      title="상환 방식 부담 비교"
+      note="월 납입액과 전체 기간 총이자를 분리해 비교합니다."
+      :metrics="repaymentMetrics"
+      :format-value="formatWon"
+    />
 
     <!-- 한도 상세 -->
     <section class="retro-panel overflow-hidden">

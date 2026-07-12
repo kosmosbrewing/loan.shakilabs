@@ -2,6 +2,8 @@
 import { computed } from "vue";
 import LoanMetricGrid from "@/components/loan/LoanMetricGrid.vue";
 import LoanScenarioChips from "@/components/loan/LoanScenarioChips.vue";
+import BulletProgress from "@/components/result-visualization/BulletProgress.vue";
+import MetricComparisonBars from "@/components/result-visualization/MetricComparisonBars.vue";
 import { LOAN_ASSUMPTION_NOTE, TERM_OPTIONS, refinancePresets } from "@/data/loanPresets";
 import { useRefinanceCalculator } from "@/composables/useRefinanceCalculator";
 import { formatWon, parseNumericInput } from "@/lib/utils";
@@ -35,6 +37,25 @@ const metrics = computed(() => [
         : `${result.value.breakEvenMonths}개월 내 비용 회수`,
   },
 ]);
+const comparisonMetrics = computed(() => [
+  {
+    key: "monthly",
+    label: "월 납입액",
+    values: [
+      { key: "current", label: "현재 대출", value: result.value.currentPlan.monthlyPayment },
+      { key: "new", label: "갈아탄 대출", value: result.value.newPlan.monthlyPayment, highlight: result.value.monthlySavings > 0 },
+    ],
+  },
+  {
+    key: "interest",
+    label: "남은 기간 총이자",
+    values: [
+      { key: "current", label: "현재 대출", value: result.value.currentPlan.totalInterest },
+      { key: "new", label: "갈아탄 대출", value: result.value.newPlan.totalInterest, highlight: result.value.netSavings > 0 },
+    ],
+  },
+]);
+const formatMonths = (value: number) => `${Math.round(value)}개월`;
 
 function selectPreset(key: string): void {
   const preset = refinancePresets.find((item) => item.key === key);
@@ -110,5 +131,19 @@ function selectPreset(key: string): void {
     </div>
 
     <LoanMetricGrid :items="metrics" />
+
+    <MetricComparisonBars
+      title="대환 전후 비용 비교"
+      note="월 납입액과 총이자를 각각 같은 축에서 비교하며 짧을수록 부담이 낮습니다."
+      :metrics="comparisonMetrics"
+      :format-value="formatWon"
+    />
+    <BulletProgress
+      v-if="result.breakEvenMonths != null"
+      title="갈아타기 비용 회수 시점"
+      :value="result.breakEvenMonths"
+      :limit="state.remainingMonths"
+      :format-value="formatMonths"
+    />
   </div>
 </template>

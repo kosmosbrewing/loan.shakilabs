@@ -3,6 +3,7 @@ import { computed, reactive } from "vue";
 import { TrendingUp, AlertTriangle, CalendarClock, Wallet } from "lucide-vue-next";
 import { Card, CardContent } from "@/components/ui/card";
 import CompareSourceFooter from "@/components/common/CompareSourceFooter.vue";
+import BreakdownStackedBar from "@/components/result-visualization/BreakdownStackedBar.vue";
 import {
   DEFAULT_STUDENT_LOAN_INPUT,
   sanitizeStudentLoanInput,
@@ -18,6 +19,10 @@ const form = reactive({
 });
 const sanitized = computed(() => sanitizeStudentLoanInput(form));
 const result = computed(() => calcStudentLoanRepayment(sanitized.value));
+const balanceSegments = computed(() => [
+  { key: "repaid", label: "연간 상환액", value: result.value.totalRepayment, tone: "primary" as const },
+  { key: "remaining", label: "연말 잔액", value: result.value.balanceAfterYear, tone: "fee" as const },
+]);
 
 function setRepaymentRate(rate: number): void {
   form.repaymentRate = rate;
@@ -101,6 +106,13 @@ const statIconClasses = [
         </CardContent>
       </Card>
     </div>
+
+    <BreakdownStackedBar
+      title="이자 반영 후 대출 잔액"
+      note="기초 잔액과 예상 이자를 합친 금액이 연간 상환액과 연말 잔액으로 나뉩니다."
+      :segments="balanceSegments"
+      :format-value="formatWon"
+    />
 
     <Card>
       <CardContent class="p-4 text-caption leading-relaxed text-muted-foreground">

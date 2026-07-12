@@ -2,6 +2,7 @@
 import { computed } from "vue";
 import LoanMetricGrid from "@/components/loan/LoanMetricGrid.vue";
 import LoanScenarioChips from "@/components/loan/LoanScenarioChips.vue";
+import MetricComparisonBars from "@/components/result-visualization/MetricComparisonBars.vue";
 import CompareSourceFooter from "@/components/common/CompareSourceFooter.vue";
 import { LOAN_ASSUMPTION_NOTE, TERM_OPTIONS } from "@/data/loanPresets";
 import { MORTGAGE_AMOUNT_PRESETS, MORTGAGE_COMPARE_SOURCES, MORTGAGE_DATA_UPDATED, mortgageComparePresets } from "@/data/mortgageRates";
@@ -37,6 +38,29 @@ const metrics = computed(() => {
     },
   ];
 });
+const bankMetrics = computed(() => [
+  {
+    key: "monthly",
+    label: "최저금리 기준 월 상환액",
+    values: result.value.banks.map((row, index) => ({
+      key: row.id,
+      label: row.bank,
+      value: row.bestMonthlyPayment,
+      highlight: index === 0,
+      detail: `최저금리 ${formatPercent(row.bestRate, 2)}`,
+    })),
+  },
+  {
+    key: "interest",
+    label: "최저금리 기준 총이자",
+    values: result.value.banks.map((row, index) => ({
+      key: row.id,
+      label: row.bank,
+      value: row.bestTotalInterest,
+      highlight: index === 0,
+    })),
+  },
+]);
 
 function selectPreset(key: string): void {
   const preset = mortgageComparePresets.find((item) => item.key === key);
@@ -101,6 +125,13 @@ function setAmountPreset(amount: number): void {
     </section>
 
     <LoanMetricGrid :items="metrics" />
+
+    <MetricComparisonBars
+      title="은행별 상환 부담"
+      note="공시 금리 범위 중 최저금리를 동일 대출금과 기간에 적용한 비교입니다."
+      :metrics="bankMetrics"
+      :format-value="formatWon"
+    />
 
     <!-- 은행별 비교 테이블 -->
     <section class="retro-panel overflow-hidden">
