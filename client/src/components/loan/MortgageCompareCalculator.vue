@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed } from "vue";
+import { ShPresetGroup } from "@shakilabs/ui";
 import LoanMetricGrid from "@/components/loan/LoanMetricGrid.vue";
 import LoanScenarioChips from "@/components/loan/LoanScenarioChips.vue";
 import MetricComparisonBars from "@/components/result-visualization/MetricComparisonBars.vue";
@@ -12,6 +13,10 @@ import { formatWon, formatPercent, parseNumericInput } from "@/lib/utils";
 const props = defineProps<{ initialLoanAmount?: number }>();
 const override = props.initialLoanAmount ? { loanAmount: props.initialLoanAmount } : undefined;
 const { state, result, applyPreset, reset } = useMortgageCompare(override);
+const amountPresetOptions = MORTGAGE_AMOUNT_PRESETS.map((value) => ({
+  label: formatWon(value),
+  value,
+}));
 
 const metrics = computed(() => {
   const r = result.value;
@@ -87,18 +92,12 @@ function setAmountPreset(amount: number): void {
           :value="state.loanAmount.toLocaleString('ko-KR')"
           @input="state.loanAmount = parseNumericInput(($event.target as HTMLInputElement).value)"
         />
-        <div class="flex flex-wrap gap-1.5">
-          <button
-            v-for="preset in MORTGAGE_AMOUNT_PRESETS"
-            :key="preset"
-            :aria-pressed="state.loanAmount === preset"
-            class="rounded-lg border border-border/60 bg-background px-2.5 py-1 text-[11px] font-medium text-muted-foreground transition-colors hover:bg-primary/10 hover:text-primary"
-            :class="{ '!bg-primary/15 !text-primary !border-primary/30': state.loanAmount === preset }"
-            @click="setAmountPreset(preset)"
-          >
-            {{ formatWon(preset) }}
-          </button>
-        </div>
+        <ShPresetGroup
+          :model-value="state.loanAmount"
+          :options="amountPresetOptions"
+          label="대출 금액 빠른 선택"
+          @update:model-value="setAmountPreset"
+        />
       </div>
 
       <div class="grid gap-3 sm:grid-cols-2">
