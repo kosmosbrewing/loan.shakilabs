@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { computed } from "vue";
+import { ShBulletProgress } from "@shakilabs/ui";
 import LoanMetricGrid from "@/components/loan/LoanMetricGrid.vue";
 import LoanScenarioChips from "@/components/loan/LoanScenarioChips.vue";
-import BulletProgress from "@/components/result-visualization/BulletProgress.vue";
 import MetricComparisonBars from "@/components/result-visualization/MetricComparisonBars.vue";
 import { LOAN_ASSUMPTION_NOTE, TERM_OPTIONS, refinancePresets } from "@/data/loanPresets";
 import { useRefinanceCalculator } from "@/composables/useRefinanceCalculator";
@@ -138,12 +138,14 @@ function selectPreset(key: string): void {
       :metrics="comparisonMetrics"
       :format-value="formatWon"
     />
-    <BulletProgress
+    <ShBulletProgress
       v-if="result.breakEvenMonths != null"
-      title="갈아타기 비용 회수 시점"
+      label="갈아타기 비용 회수 시점"
       :value="result.breakEvenMonths"
       :limit="state.remainingMonths"
       :format-value="formatMonths"
+      limit-label="남은 대출 기간"
+      note="막대 전체는 현재 대출의 남은 기간이며 끝 눈금 전에 비용을 회수하는지 보여줍니다."
     />
   </div>
 </template>

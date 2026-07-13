@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { computed, reactive } from "vue";
+import { ShBreakdownBar } from "@shakilabs/ui";
 import { AlertTriangle, ShieldCheck, Banknote, TrendingDown } from "lucide-vue-next";
 import { Card, CardContent } from "@/components/ui/card";
 import CompareSourceFooter from "@/components/common/CompareSourceFooter.vue";
-import BreakdownStackedBar from "@/components/result-visualization/BreakdownStackedBar.vue";
 import {
   DEFAULT_PREPAYMENT_FEE_INPUT,
   sanitizePrepaymentFeeInput,
@@ -20,8 +20,8 @@ const form = reactive({
 const sanitized = computed(() => sanitizePrepaymentFeeInput(form));
 const result = computed(() => calcPrepaymentFee(sanitized.value));
 const repaymentSegments = computed(() => [
-  { key: "waived", label: "면제 처리 금액", value: result.value.waivedAmount, tone: "primary" as const },
-  { key: "target", label: "수수료 과금 대상", value: result.value.feeTargetAmount, tone: "fee" as const },
+  { key: "waived", label: "면제 처리 금액", value: result.value.waivedAmount, tone: "success" as const },
+  { key: "target", label: "수수료 과금 대상", value: result.value.feeTargetAmount, tone: "danger" as const },
 ]);
 
 const statIcons = [AlertTriangle, ShieldCheck, Banknote, TrendingDown] as const;
@@ -89,11 +89,12 @@ const statIconClasses = [
       </Card>
     </div>
 
-    <BreakdownStackedBar
-      title="이번 상환액의 수수료 적용 범위"
+    <ShBreakdownBar
+      label="이번 상환액의 수수료 적용 범위"
       note="면제 처리 금액과 과금 대상 원금의 합은 이번 상환액과 같습니다."
       :segments="repaymentSegments"
       :format-value="formatWon"
+      surface="outlined"
     />
 
     <Card>
