@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed } from "vue";
+import { ShPresetGroup } from "@shakilabs/ui";
 import LoanMetricGrid from "@/components/loan/LoanMetricGrid.vue";
 import LoanScenarioChips from "@/components/loan/LoanScenarioChips.vue";
 import MetricComparisonBars from "@/components/result-visualization/MetricComparisonBars.vue";
@@ -17,6 +18,10 @@ import { formatWon, formatPercent, parseNumericInput } from "@/lib/utils";
 const props = defineProps<{ initialDeposit?: number }>();
 const override = props.initialDeposit ? { depositAmount: props.initialDeposit } : undefined;
 const { state, result, applyPreset, reset } = useJeonseLoan(override);
+const depositPresetOptions = JEONSE_DEPOSIT_PRESETS.map((value) => ({
+  label: formatWon(value),
+  value,
+}));
 
 const metrics = computed(() => [
   {
@@ -93,18 +98,12 @@ function setDepositPreset(amount: number): void {
           :value="state.depositAmount.toLocaleString('ko-KR')"
           @input="state.depositAmount = parseNumericInput(($event.target as HTMLInputElement).value)"
         />
-        <div class="flex flex-wrap gap-1.5">
-          <button
-            v-for="preset in JEONSE_DEPOSIT_PRESETS"
-            :key="preset"
-            :aria-pressed="state.depositAmount === preset"
-            class="rounded-lg border border-border/60 bg-background px-2.5 py-1 text-[11px] font-medium text-muted-foreground transition-colors hover:bg-primary/10 hover:text-primary"
-            :class="{ '!bg-primary/15 !text-primary !border-primary/30': state.depositAmount === preset }"
-            @click="setDepositPreset(preset)"
-          >
-            {{ formatWon(preset) }}
-          </button>
-        </div>
+        <ShPresetGroup
+          :model-value="state.depositAmount"
+          :options="depositPresetOptions"
+          label="전세 보증금 빠른 선택"
+          @update:model-value="setDepositPreset"
+        />
       </div>
 
       <div class="grid gap-3 sm:grid-cols-3">
