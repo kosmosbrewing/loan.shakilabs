@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import SEOHead from "@/components/common/SEOHead.vue";
+import FaqAccordionPanel from "@/components/common/FaqAccordionPanel.vue";
 import SeoRichGuide from "@/components/common/SeoRichGuide.vue";
 import { LOAN_HOME_GUIDE } from "@/data/seoGuides";
 import FreshBadge from "@/components/common/FreshBadge.vue";
@@ -70,17 +71,7 @@ const faqJsonLd = computed(() => ({
       </div>
     </div>
 
-    <div class="retro-panel overflow-hidden">
-      <div class="retro-titlebar rounded-t-2xl">
-        <h2 class="retro-title">자주 묻는 질문</h2>
-      </div>
-      <div class="retro-panel-content space-y-3">
-        <details v-for="faq in faqItems" :key="faq.q" class="retro-panel-muted p-4">
-          <summary class="cursor-pointer list-none text-body font-semibold text-foreground">{{ faq.q }}</summary>
-          <p class="mt-2 text-caption leading-relaxed text-muted-foreground">{{ faq.a }}</p>
-        </details>
-      </div>
-    </div>
+    <FaqAccordionPanel :items="faqItems" />
 
     <SeoRichGuide
       :title="LOAN_HOME_GUIDE.title"
