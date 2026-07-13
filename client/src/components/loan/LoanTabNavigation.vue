@@ -8,7 +8,7 @@ import {
 
 const route = useRoute();
 const tabs: readonly PrimaryNavigationItem[] = [
-  { key: "home", label: "홈", to: "/", href: "/loan" },
+  { key: "home", label: "대출 도구", to: "/", href: "/loan" },
   { key: "refinance", label: "갈아타기", to: "/refinance" },
   { key: "dsr", label: "DSR", to: "/dsr" },
   { key: "repayment", label: "상환방식", to: "/repayment" },
