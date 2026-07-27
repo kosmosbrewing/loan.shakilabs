@@ -7,6 +7,7 @@ import { LOAN_DSR_GUIDE } from "@/data/seoGuides";
 import FreshBadge from "@/components/common/FreshBadge.vue";
 import DsrCalculator from "@/components/loan/DsrCalculator.vue";
 import CalculatorPageHeader from "@/components/loan/CalculatorPageHeader.vue";
+import CalculatorInteractionTracker from "@/components/analytics/CalculatorInteractionTracker.vue";
 import SessionDraftControl from "@/components/loan/SessionDraftControl.vue";
 import DsrNextActions from "@/components/loan/DsrNextActions.vue";
 import { LOAN_BADGE_MESSAGE } from "@/data/loanPresets";
@@ -71,7 +72,9 @@ const faqJsonLd = computed(() => ({
       </div>
       <div class="retro-panel-content space-y-4">
         <p class="text-caption leading-relaxed text-muted-foreground">가정한 금리와 만기 기준으로 DSR 한도 안에서 감당 가능한 월 상환액과 추정 최대 대출액을 계산합니다.</p>
-        <DsrCalculator :initial-income="initialIncome" />
+        <CalculatorInteractionTracker calculator-id="dsr" page-path="/loan/dsr">
+          <DsrCalculator :initial-income="initialIncome" />
+        </CalculatorInteractionTracker>
       </div>
     </div>
 

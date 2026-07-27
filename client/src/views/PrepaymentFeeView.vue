@@ -7,6 +7,7 @@ import { LOAN_HOME_GUIDE } from "@/data/seoGuides";
 import FreshBadge from "@/components/common/FreshBadge.vue";
 import PrepaymentFeeCalculator from "@/components/loan/PrepaymentFeeCalculator.vue";
 import CalculatorPageHeader from "@/components/loan/CalculatorPageHeader.vue";
+import CalculatorInteractionTracker from "@/components/analytics/CalculatorInteractionTracker.vue";
 import { PREPAYMENT_FEE_FAQS, PREPAYMENT_FEE_UPDATED } from "@/data/loanExtraTools";
 import { formatManWon } from "@/lib/utils";
 
@@ -54,7 +55,9 @@ const faqJsonLd = {
         <p class="text-caption leading-relaxed text-muted-foreground">
           은행 설명서에서 자주 쓰는 비례 차감 방식을 기준으로 참고 계산합니다.
         </p>
-        <PrepaymentFeeCalculator :initial-amount="initialAmount" />
+        <CalculatorInteractionTracker calculator-id="prepayment_fee" page-path="/loan/prepayment-fee">
+          <PrepaymentFeeCalculator :initial-amount="initialAmount" />
+        </CalculatorInteractionTracker>
       </div>
     </div>
 

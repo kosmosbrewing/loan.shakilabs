@@ -7,6 +7,7 @@ import { LOAN_HOME_GUIDE } from "@/data/seoGuides";
 import FreshBadge from "@/components/common/FreshBadge.vue";
 import RefinanceCalculator from "@/components/loan/RefinanceCalculator.vue";
 import CalculatorPageHeader from "@/components/loan/CalculatorPageHeader.vue";
+import CalculatorInteractionTracker from "@/components/analytics/CalculatorInteractionTracker.vue";
 import { LOAN_BADGE_MESSAGE } from "@/data/loanPresets";
 import { formatManWon } from "@/lib/utils";
 
@@ -67,7 +68,9 @@ const faqJsonLd = computed(() => ({
       </div>
       <div class="retro-panel-content space-y-4">
         <p class="text-caption leading-relaxed text-muted-foreground">월 납입액, 총이자, 초기비용 회수 시점을 함께 봐야 실제 효과를 판단할 수 있습니다.</p>
-        <RefinanceCalculator :initial-balance="initialBalance" />
+        <CalculatorInteractionTracker calculator-id="refinance" page-path="/loan/refinance">
+          <RefinanceCalculator :initial-balance="initialBalance" />
+        </CalculatorInteractionTracker>
       </div>
     </div>
 
