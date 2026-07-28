@@ -74,13 +74,12 @@ const faqJsonLd = computed(() => ({
       </div>
     </div>
 
-    <FaqAccordionPanel :items="faqItems" />
+    <FaqAccordionPanel :items="faqItems" :extra="LOAN_REPAYMENT_GUIDE.faqs" />
 
     <SeoRichGuide
       :title="LOAN_REPAYMENT_GUIDE.title"
       :intro="LOAN_REPAYMENT_GUIDE.intro"
       :sections="LOAN_REPAYMENT_GUIDE.sections"
-      :faqs="LOAN_REPAYMENT_GUIDE.faqs"
       :disclaimer="LOAN_REPAYMENT_GUIDE.disclaimer"
     />
   </div>
