@@ -7,6 +7,7 @@ import { LOAN_HOME_GUIDE } from "@/data/seoGuides";
 import FreshBadge from "@/components/common/FreshBadge.vue";
 import StudentLoanCalculator from "@/components/loan/StudentLoanCalculator.vue";
 import CalculatorPageHeader from "@/components/loan/CalculatorPageHeader.vue";
+import CalculatorInteractionTracker from "@/components/analytics/CalculatorInteractionTracker.vue";
 import { STUDENT_LOAN_FAQS, STUDENT_LOAN_UPDATED } from "@/data/loanExtraTools";
 import { formatManWon } from "@/lib/utils";
 
@@ -54,7 +55,9 @@ const faqJsonLd = {
         <p class="text-caption leading-relaxed text-muted-foreground">
           취업 후 상환 학자금대출의 연간 의무상환액을 빠르게 확인하는 참고용 계산기입니다.
         </p>
-        <StudentLoanCalculator :initial-balance="initialBalance" />
+        <CalculatorInteractionTracker calculator-id="student_loan" page-path="/loan/student-loan">
+          <StudentLoanCalculator :initial-balance="initialBalance" />
+        </CalculatorInteractionTracker>
       </div>
     </div>
 

@@ -7,6 +7,7 @@ import { LOAN_HOME_GUIDE } from "@/data/seoGuides";
 import FreshBadge from "@/components/common/FreshBadge.vue";
 import SteppingStoneLoanCalculator from "@/components/loan/SteppingStoneLoanCalculator.vue";
 import CalculatorPageHeader from "@/components/loan/CalculatorPageHeader.vue";
+import CalculatorInteractionTracker from "@/components/analytics/CalculatorInteractionTracker.vue";
 import { STEPPING_STONE_FAQS, STEPPING_STONE_UPDATED } from "@/data/steppingStoneLoan";
 import { formatManWon } from "@/lib/utils";
 
@@ -54,7 +55,9 @@ const faqJsonLd = {
         <p class="text-caption leading-relaxed text-muted-foreground">
           소득·주택가격·유형을 입력하면 디딤돌대출 자격, 적용 금리, 대출 한도, 상환 계획을 확인합니다.
         </p>
-        <SteppingStoneLoanCalculator :initial-property-price="initialPropertyPrice" />
+        <CalculatorInteractionTracker calculator-id="stepping_stone_loan" page-path="/loan/stepping-stone-loan">
+          <SteppingStoneLoanCalculator :initial-property-price="initialPropertyPrice" />
+        </CalculatorInteractionTracker>
       </div>
     </div>
 

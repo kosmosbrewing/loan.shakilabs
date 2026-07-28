@@ -7,6 +7,7 @@ import { LOAN_JEONSE_GUIDE } from "@/data/seoGuides";
 import FreshBadge from "@/components/common/FreshBadge.vue";
 import JeonseLoanCalculator from "@/components/loan/JeonseLoanCalculator.vue";
 import CalculatorPageHeader from "@/components/loan/CalculatorPageHeader.vue";
+import CalculatorInteractionTracker from "@/components/analytics/CalculatorInteractionTracker.vue";
 import { JEONSE_LOAN_FAQS, JEONSE_LOAN_UPDATED } from "@/data/jeonseLoan";
 import { formatManWon } from "@/lib/utils";
 
@@ -54,7 +55,9 @@ const faqJsonLd = {
         <p class="text-caption leading-relaxed text-muted-foreground">
           전세보증금과 금리를 입력하면 월 이자를 계산하고, 청년전용·버팀목·시중은행 상품별 이자를 비교합니다.
         </p>
-        <JeonseLoanCalculator :initial-deposit="initialDeposit" />
+        <CalculatorInteractionTracker calculator-id="jeonse_loan" page-path="/loan/jeonse-loan">
+          <JeonseLoanCalculator :initial-deposit="initialDeposit" />
+        </CalculatorInteractionTracker>
       </div>
     </div>
 

@@ -7,6 +7,7 @@ import { LOAN_LTV_GUIDE } from "@/data/seoGuides";
 import FreshBadge from "@/components/common/FreshBadge.vue";
 import LtvDtiCalculator from "@/components/loan/LtvDtiCalculator.vue";
 import CalculatorPageHeader from "@/components/loan/CalculatorPageHeader.vue";
+import CalculatorInteractionTracker from "@/components/analytics/CalculatorInteractionTracker.vue";
 import { LTV_DTI_FAQS, LTV_DTI_UPDATED } from "@/data/ltvDti";
 import { formatManWon } from "@/lib/utils";
 
@@ -54,7 +55,9 @@ const faqJsonLd = {
         <p class="text-caption leading-relaxed text-muted-foreground">
           주택가격·소득·기존 대출을 입력하면 LTV, DTI, DSR 규제별 대출 한도를 비교하고 최종 가능 금액을 확인합니다.
         </p>
-        <LtvDtiCalculator :initial-property-price="initialPropertyPrice" />
+        <CalculatorInteractionTracker calculator-id="ltv_dti" page-path="/loan/ltv-dti">
+          <LtvDtiCalculator :initial-property-price="initialPropertyPrice" />
+        </CalculatorInteractionTracker>
       </div>
     </div>
 

@@ -7,6 +7,7 @@ import { LOAN_REPAYMENT_GUIDE } from "@/data/seoGuides";
 import FreshBadge from "@/components/common/FreshBadge.vue";
 import RepaymentCalculator from "@/components/loan/RepaymentCalculator.vue";
 import CalculatorPageHeader from "@/components/loan/CalculatorPageHeader.vue";
+import CalculatorInteractionTracker from "@/components/analytics/CalculatorInteractionTracker.vue";
 import { LOAN_BADGE_MESSAGE } from "@/data/loanPresets";
 import { formatManWon } from "@/lib/utils";
 
@@ -67,7 +68,9 @@ const faqJsonLd = computed(() => ({
       </div>
       <div class="retro-panel-content space-y-4">
         <p class="text-caption leading-relaxed text-muted-foreground">총이자를 줄이고 싶다면 원금균등, 월 현금흐름 안정이 우선이면 원리금균등이 일반적으로 유리합니다.</p>
-        <RepaymentCalculator :initial-principal="initialPrincipal" />
+        <CalculatorInteractionTracker calculator-id="repayment" page-path="/loan/repayment">
+          <RepaymentCalculator :initial-principal="initialPrincipal" />
+        </CalculatorInteractionTracker>
       </div>
     </div>
 

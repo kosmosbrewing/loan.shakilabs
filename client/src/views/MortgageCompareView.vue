@@ -7,6 +7,7 @@ import { LOAN_MORTGAGE_GUIDE } from "@/data/seoGuides";
 import FreshBadge from "@/components/common/FreshBadge.vue";
 import MortgageCompareCalculator from "@/components/loan/MortgageCompareCalculator.vue";
 import CalculatorPageHeader from "@/components/loan/CalculatorPageHeader.vue";
+import CalculatorInteractionTracker from "@/components/analytics/CalculatorInteractionTracker.vue";
 import { MORTGAGE_COMPARE_FAQS, MORTGAGE_DATA_UPDATED } from "@/data/mortgageRates";
 import { formatManWon } from "@/lib/utils";
 
@@ -54,7 +55,9 @@ const faqJsonLd = {
         <p class="text-caption leading-relaxed text-muted-foreground">
           대출금액과 기간을 설정하면 주요 시중은행의 주담대 금리·월 상환액을 비교합니다.
         </p>
-        <MortgageCompareCalculator :initial-loan-amount="initialLoanAmount" />
+        <CalculatorInteractionTracker calculator-id="mortgage_compare" page-path="/loan/mortgage-compare">
+          <MortgageCompareCalculator :initial-loan-amount="initialLoanAmount" />
+        </CalculatorInteractionTracker>
       </div>
     </div>
 
