@@ -44,6 +44,7 @@ const basePriority = {
   "/dsr": "0.9",
   "/repayment": "0.9",
   "/prepayment-fee": "0.8",
+  "/jeonse-guarantee-fee": "0.9",
   "/student-loan": "0.8",
   "/mortgage-compare": "0.9",
   "/jeonse-loan": "0.9",

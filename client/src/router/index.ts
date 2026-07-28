@@ -63,6 +63,11 @@ export const routes: RouteRecordRaw[] = [
     }),
   },
   {
+    path: "/jeonse-guarantee-fee",
+    name: "JeonseGuaranteeFee",
+    component: () => import("@/views/JeonseGuaranteeFeeView.vue"),
+  },
+  {
     path: "/student-loan",
     name: "StudentLoan",
     component: () => import("@/views/StudentLoanView.vue"),
