@@ -15,6 +15,7 @@ export const SEO_ROUTES = [
   "/dsr",
   "/refinance",
   "/prepayment-fee",
+  "/jeonse-guarantee-fee",
   "/student-loan",
   "/mortgage-compare",
   "/jeonse-loan",
