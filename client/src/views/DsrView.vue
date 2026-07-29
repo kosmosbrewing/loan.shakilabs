@@ -80,13 +80,12 @@ const faqJsonLd = computed(() => ({
 
     <DsrNextActions />
 
-    <FaqAccordionPanel :items="faqItems" />
+    <FaqAccordionPanel :items="faqItems" :extra="LOAN_DSR_GUIDE.faqs" />
 
     <SeoRichGuide
       :title="LOAN_DSR_GUIDE.title"
       :intro="LOAN_DSR_GUIDE.intro"
       :sections="LOAN_DSR_GUIDE.sections"
-      :faqs="LOAN_DSR_GUIDE.faqs"
       :disclaimer="LOAN_DSR_GUIDE.disclaimer"
     />
   </div>

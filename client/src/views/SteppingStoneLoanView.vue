@@ -61,13 +61,12 @@ const faqJsonLd = {
       </div>
     </div>
 
-    <FaqAccordionPanel :items="STEPPING_STONE_FAQS" />
+    <FaqAccordionPanel :items="STEPPING_STONE_FAQS" :extra="LOAN_HOME_GUIDE.faqs" />
 
     <SeoRichGuide
       :title="LOAN_HOME_GUIDE.title"
       :intro="LOAN_HOME_GUIDE.intro"
       :sections="LOAN_HOME_GUIDE.sections"
-      :faqs="LOAN_HOME_GUIDE.faqs"
       :disclaimer="LOAN_HOME_GUIDE.disclaimer"
     />
   </div>
