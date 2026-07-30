@@ -3,6 +3,7 @@ import { computed } from "vue";
 import SEOHead from "@/components/common/SEOHead.vue";
 import FaqAccordionPanel from "@/components/common/FaqAccordionPanel.vue";
 import SeoRichGuide from "@/components/common/SeoRichGuide.vue";
+import { mergeFaqs } from "@/lib/faqMerge";
 import { LOAN_LTV_GUIDE } from "@/data/seoGuides";
 import FreshBadge from "@/components/common/FreshBadge.vue";
 import LtvDtiCalculator from "@/components/loan/LtvDtiCalculator.vue";
@@ -30,10 +31,13 @@ const seoDescription = computed(() =>
     : "주택가격과 소득을 입력하면 LTV, DTI, DSR 규제별 대출 가능 금액을 비교하고 제한 요인을 확인합니다.",
 );
 
+// 화면 아코디언과 구조화 데이터가 같은 병합 결과를 쓰도록 한 번만 계산한다
+const mergedFaqs = mergeFaqs(LTV_DTI_FAQS, LOAN_LTV_GUIDE.faqs);
+
 const faqJsonLd = {
   "@context": "https://schema.org",
   "@type": "FAQPage",
-  mainEntity: LTV_DTI_FAQS.map((faq) => ({
+  mainEntity: mergedFaqs.map((faq) => ({
     "@type": "Question",
     name: faq.q,
     acceptedAnswer: { "@type": "Answer", text: faq.a },
@@ -61,7 +65,7 @@ const faqJsonLd = {
       </div>
     </div>
 
-    <FaqAccordionPanel :items="LTV_DTI_FAQS" :extra="LOAN_LTV_GUIDE.faqs" />
+    <FaqAccordionPanel :items="mergedFaqs" />
 
     <SeoRichGuide
       :title="LOAN_LTV_GUIDE.title"

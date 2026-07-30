@@ -6,6 +6,7 @@ import FreshBadge from "@/components/common/FreshBadge.vue";
 import CalculatorPageHeader from "@/components/loan/CalculatorPageHeader.vue";
 import CalculatorInteractionTracker from "@/components/analytics/CalculatorInteractionTracker.vue";
 import JeonseGuaranteeCalculator from "@/components/loan/JeonseGuaranteeCalculator.vue";
+import { mergeFaqs } from "@/lib/faqMerge";
 import {
   JEONSE_GUARANTEE_FAQS,
   JEONSE_GUARANTEE_UPDATED,
@@ -16,10 +17,13 @@ const seoTitle = "전세보증보험 보증료 계산기 | HUG 전세보증금�
 const seoDescription =
   "보증금·기간·주택유형·부채비율로 HUG 전세보증금반환보증 보증료(연 0.097~0.211%)를 계산합니다. 한도·할인까지 확인하세요.";
 
+// 화면 아코디언과 구조화 데이터가 같은 병합 결과를 쓰도록 한 번만 계산한다
+const mergedFaqs = mergeFaqs(JEONSE_GUARANTEE_FAQS, LOAN_JEONSE_GUARANTEE_GUIDE.faqs);
+
 const faqJsonLd = {
   "@context": "https://schema.org",
   "@type": "FAQPage",
-  mainEntity: JEONSE_GUARANTEE_FAQS.map((faq) => ({
+  mainEntity: mergedFaqs.map((faq) => ({
     "@type": "Question",
     name: faq.q,
     acceptedAnswer: { "@type": "Answer", text: faq.a },
@@ -47,7 +51,7 @@ const faqJsonLd = {
       </div>
     </div>
 
-    <FaqAccordionPanel :items="[...JEONSE_GUARANTEE_FAQS]" :extra="LOAN_JEONSE_GUARANTEE_GUIDE.faqs" />
+    <FaqAccordionPanel :items="mergedFaqs" />
 
     <SeoRichGuide
       :title="LOAN_JEONSE_GUARANTEE_GUIDE.title"
