@@ -3,6 +3,7 @@ import { computed } from "vue";
 import SEOHead from "@/components/common/SEOHead.vue";
 import FaqAccordionPanel from "@/components/common/FaqAccordionPanel.vue";
 import SeoRichGuide from "@/components/common/SeoRichGuide.vue";
+import { mergeFaqs } from "@/lib/faqMerge";
 import { LOAN_REPAYMENT_GUIDE } from "@/data/seoGuides";
 import FreshBadge from "@/components/common/FreshBadge.vue";
 import RepaymentCalculator from "@/components/loan/RepaymentCalculator.vue";
@@ -45,10 +46,13 @@ const faqItems = [
   },
 ] as const;
 
+// 화면 아코디언과 구조화 데이터가 같은 병합 결과를 쓰도록 한 번만 계산한다
+const mergedFaqs = mergeFaqs(faqItems, LOAN_REPAYMENT_GUIDE.faqs);
+
 const faqJsonLd = computed(() => ({
   "@context": "https://schema.org",
   "@type": "FAQPage",
-  mainEntity: faqItems.map((faq) => ({
+  mainEntity: mergedFaqs.map((faq) => ({
     "@type": "Question",
     name: faq.q,
     acceptedAnswer: { "@type": "Answer", text: faq.a },
@@ -74,7 +78,7 @@ const faqJsonLd = computed(() => ({
       </div>
     </div>
 
-    <FaqAccordionPanel :items="faqItems" :extra="LOAN_REPAYMENT_GUIDE.faqs" />
+    <FaqAccordionPanel :items="mergedFaqs" />
 
     <SeoRichGuide
       :title="LOAN_REPAYMENT_GUIDE.title"

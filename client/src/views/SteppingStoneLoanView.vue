@@ -3,6 +3,7 @@ import { computed } from "vue";
 import SEOHead from "@/components/common/SEOHead.vue";
 import FaqAccordionPanel from "@/components/common/FaqAccordionPanel.vue";
 import SeoRichGuide from "@/components/common/SeoRichGuide.vue";
+import { mergeFaqs } from "@/lib/faqMerge";
 import { LOAN_HOME_GUIDE } from "@/data/seoGuides";
 import FreshBadge from "@/components/common/FreshBadge.vue";
 import SteppingStoneLoanCalculator from "@/components/loan/SteppingStoneLoanCalculator.vue";
@@ -30,10 +31,13 @@ const seoDescription = computed(() =>
     : "소득과 주택가격을 입력하면 디딤돌대출 자격, 적용 금리, 대출 한도, 상환 계획을 한눈에 확인합니다.",
 );
 
+// 화면 아코디언과 구조화 데이터가 같은 병합 결과를 쓰도록 한 번만 계산한다
+const mergedFaqs = mergeFaqs(STEPPING_STONE_FAQS, LOAN_HOME_GUIDE.faqs);
+
 const faqJsonLd = {
   "@context": "https://schema.org",
   "@type": "FAQPage",
-  mainEntity: STEPPING_STONE_FAQS.map((faq) => ({
+  mainEntity: mergedFaqs.map((faq) => ({
     "@type": "Question",
     name: faq.q,
     acceptedAnswer: { "@type": "Answer", text: faq.a },
@@ -61,7 +65,7 @@ const faqJsonLd = {
       </div>
     </div>
 
-    <FaqAccordionPanel :items="STEPPING_STONE_FAQS" :extra="LOAN_HOME_GUIDE.faqs" />
+    <FaqAccordionPanel :items="mergedFaqs" />
 
     <SeoRichGuide
       :title="LOAN_HOME_GUIDE.title"

@@ -3,6 +3,7 @@ import { computed } from "vue";
 import SEOHead from "@/components/common/SEOHead.vue";
 import FaqAccordionPanel from "@/components/common/FaqAccordionPanel.vue";
 import SeoRichGuide from "@/components/common/SeoRichGuide.vue";
+import { mergeFaqs } from "@/lib/faqMerge";
 import { LOAN_JEONSE_GUIDE } from "@/data/seoGuides";
 import FreshBadge from "@/components/common/FreshBadge.vue";
 import JeonseLoanCalculator from "@/components/loan/JeonseLoanCalculator.vue";
@@ -30,10 +31,13 @@ const seoDescription = computed(() =>
     : "전세보증금과 금리를 입력하면 월 이자, 총이자를 계산하고 청년·버팀목·시중은행 상품을 비교합니다.",
 );
 
+// 화면 아코디언과 구조화 데이터가 같은 병합 결과를 쓰도록 한 번만 계산한다
+const mergedFaqs = mergeFaqs(JEONSE_LOAN_FAQS, LOAN_JEONSE_GUIDE.faqs);
+
 const faqJsonLd = {
   "@context": "https://schema.org",
   "@type": "FAQPage",
-  mainEntity: JEONSE_LOAN_FAQS.map((faq) => ({
+  mainEntity: mergedFaqs.map((faq) => ({
     "@type": "Question",
     name: faq.q,
     acceptedAnswer: { "@type": "Answer", text: faq.a },
@@ -61,7 +65,7 @@ const faqJsonLd = {
       </div>
     </div>
 
-    <FaqAccordionPanel :items="JEONSE_LOAN_FAQS" :extra="LOAN_JEONSE_GUIDE.faqs" />
+    <FaqAccordionPanel :items="mergedFaqs" />
 
     <SeoRichGuide
       :title="LOAN_JEONSE_GUIDE.title"

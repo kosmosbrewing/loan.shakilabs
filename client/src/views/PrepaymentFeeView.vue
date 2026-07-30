@@ -3,6 +3,7 @@ import { computed } from "vue";
 import SEOHead from "@/components/common/SEOHead.vue";
 import FaqAccordionPanel from "@/components/common/FaqAccordionPanel.vue";
 import SeoRichGuide from "@/components/common/SeoRichGuide.vue";
+import { mergeFaqs } from "@/lib/faqMerge";
 import { LOAN_HOME_GUIDE } from "@/data/seoGuides";
 import FreshBadge from "@/components/common/FreshBadge.vue";
 import PrepaymentFeeCalculator from "@/components/loan/PrepaymentFeeCalculator.vue";
@@ -30,10 +31,13 @@ const seoDescription = computed(() =>
     : "상환원금, 수수료율, 잔여 부과기간, 연간 면제한도를 기준으로 예상 중도상환수수료를 계산합니다.",
 );
 
+// 화면 아코디언과 구조화 데이터가 같은 병합 결과를 쓰도록 한 번만 계산한다
+const mergedFaqs = mergeFaqs(PREPAYMENT_FEE_FAQS, LOAN_HOME_GUIDE.faqs);
+
 const faqJsonLd = {
   "@context": "https://schema.org",
   "@type": "FAQPage",
-  mainEntity: PREPAYMENT_FEE_FAQS.map((faq) => ({
+  mainEntity: mergedFaqs.map((faq) => ({
     "@type": "Question",
     name: faq.q,
     acceptedAnswer: { "@type": "Answer", text: faq.a },
@@ -61,7 +65,7 @@ const faqJsonLd = {
       </div>
     </div>
 
-    <FaqAccordionPanel :items="PREPAYMENT_FEE_FAQS" :extra="LOAN_HOME_GUIDE.faqs" />
+    <FaqAccordionPanel :items="mergedFaqs" />
 
     <SeoRichGuide
       :title="LOAN_HOME_GUIDE.title"
