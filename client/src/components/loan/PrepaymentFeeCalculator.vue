@@ -10,7 +10,7 @@ import {
 } from "@/lib/validators";
 import { calcPrepaymentFee } from "@/utils/loanExtraCalculator";
 import { PREPAYMENT_FEE_SOURCES } from "@/data/loanExtraTools";
-import { formatPercent, formatWon, parseNumericInput } from "@/lib/utils";
+import { formatRatioAsPercent, formatWon, parseNumericInput } from "@/lib/utils";
 
 const props = defineProps<{ initialAmount?: number }>();
 const form = reactive({
@@ -72,7 +72,7 @@ const statIconClasses = [
           { label: '예상 수수료', value: formatWon(result.feeAmount), cls: 'text-fee' },
           { label: '면제 처리 금액', value: formatWon(result.waivedAmount), cls: '' },
           { label: '과금 대상 원금', value: formatWon(result.feeTargetAmount), cls: '' },
-          { label: '실효 부담률', value: formatPercent(result.effectiveRate, 2), cls: '' },
+          { label: '실효 부담률', value: formatRatioAsPercent(result.effectiveRate, 2), cls: '' },
         ]"
         :key="stat.label"
         class="border-border/50 bg-muted/30"

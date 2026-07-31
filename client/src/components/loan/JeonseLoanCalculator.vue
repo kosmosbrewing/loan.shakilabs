@@ -13,7 +13,7 @@ import {
   jeonseLoanPresets,
 } from "@/data/jeonseLoan";
 import { useJeonseLoan } from "@/composables/useJeonseLoan";
-import { formatWon, formatPercent, parseNumericInput } from "@/lib/utils";
+import { formatWon, formatPercentValue, parseNumericInput } from "@/lib/utils";
 
 const props = defineProps<{ initialDeposit?: number }>();
 const override = props.initialDeposit ? { depositAmount: props.initialDeposit } : undefined;
@@ -41,7 +41,7 @@ const metrics = computed(() => [
   },
   {
     label: "적용 금리",
-    value: formatPercent(result.value.annualRate, 1),
+    value: formatPercentValue(result.value.annualRate, 1),
     helper: "연이율 기준",
   },
 ]);
@@ -57,7 +57,7 @@ const productMetrics = computed(() => {
         label: row.product.name,
         value: row.monthlyInterest,
         highlight: row.totalInterest === lowestInterest,
-        detail: `최저금리 ${formatPercent(row.product.minRate, 1)}`,
+        detail: `최저금리 ${formatPercentValue(row.product.minRate, 1)}`,
       })),
     },
     {
@@ -171,7 +171,7 @@ function setDepositPreset(amount: number): void {
                 <span class="block text-[10px] text-muted-foreground mt-0.5">{{ row.product.description }}</span>
               </td>
               <td class="px-3 py-2.5 text-right tabular-nums text-foreground">
-                {{ formatPercent(row.product.minRate, 1) }}
+                {{ formatPercentValue(row.product.minRate, 1) }}
               </td>
               <td class="px-3 py-2.5 text-right tabular-nums text-foreground">
                 {{ formatWon(row.monthlyInterest) }}

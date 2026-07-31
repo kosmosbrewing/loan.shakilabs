@@ -13,7 +13,7 @@ import {
   type BorrowerCategory,
 } from "@/data/ltvDti";
 import { useLtvDti } from "@/composables/useLtvDti";
-import { formatWon, formatPercent, parseNumericInput } from "@/lib/utils";
+import { formatWon, formatPercentValue, formatRatioAsPercent, parseNumericInput } from "@/lib/utils";
 
 const props = defineProps<{ initialPropertyPrice?: number }>();
 const override = props.initialPropertyPrice ? { propertyPrice: props.initialPropertyPrice } : undefined;
@@ -28,7 +28,7 @@ const metrics = computed(() => [
   {
     label: "LTV 한도",
     value: formatWon(result.value.maxByLtv),
-    helper: `LTV ${formatPercent(result.value.ltvRate * 100, 0)}`,
+    helper: `LTV ${formatRatioAsPercent(result.value.ltvRate, 0)}`,
   },
   {
     label: "월 납입액",
@@ -38,7 +38,7 @@ const metrics = computed(() => [
   {
     label: "총 이자",
     value: formatWon(result.value.totalInterest),
-    helper: `금리 ${formatPercent(state.loanRate, 1)} 기준`,
+    helper: `금리 ${formatPercentValue(state.loanRate, 1)} 기준`,
   },
 ]);
 const constraints = computed(() => [
@@ -164,7 +164,7 @@ const borrowerCategories: { value: BorrowerCategory; label: string }[] = [
           <tbody>
             <tr class="border-t border-border/60" :class="{ 'bg-primary/5': result.limitingFactor === 'LTV' }">
               <td class="px-3 py-2.5 text-foreground">LTV</td>
-              <td class="px-3 py-2.5 text-right tabular-nums text-muted-foreground">{{ formatPercent(result.ltvRate * 100, 0) }}</td>
+              <td class="px-3 py-2.5 text-right tabular-nums text-muted-foreground">{{ formatRatioAsPercent(result.ltvRate, 0) }}</td>
               <td class="px-3 py-2.5 text-right tabular-nums font-medium" :class="result.limitingFactor === 'LTV' ? 'text-primary' : 'text-foreground'">{{ formatWon(result.maxByLtv) }}</td>
             </tr>
             <tr v-if="result.maxByAbsolute > 0" class="border-t border-border/60" :class="{ 'bg-primary/5': result.limitingFactor === '절대한도' }">
@@ -174,7 +174,7 @@ const borrowerCategories: { value: BorrowerCategory; label: string }[] = [
             </tr>
             <tr class="border-t border-border/60" :class="{ 'bg-primary/5': result.limitingFactor === 'DTI' }">
               <td class="px-3 py-2.5 text-foreground">DTI</td>
-              <td class="px-3 py-2.5 text-right tabular-nums text-muted-foreground">{{ formatPercent(result.dtiRate * 100, 0) }}</td>
+              <td class="px-3 py-2.5 text-right tabular-nums text-muted-foreground">{{ formatRatioAsPercent(result.dtiRate, 0) }}</td>
               <td class="px-3 py-2.5 text-right tabular-nums font-medium" :class="result.limitingFactor === 'DTI' ? 'text-primary' : 'text-foreground'">{{ formatWon(result.maxByDti) }}</td>
             </tr>
             <tr class="border-t border-border/60" :class="{ 'bg-primary/5': result.limitingFactor === 'DSR' }">
@@ -182,7 +182,7 @@ const borrowerCategories: { value: BorrowerCategory; label: string }[] = [
                 <span>DSR</span>
                 <span class="block text-[10px] text-muted-foreground">스트레스 +{{ result.stressRate }}%p</span>
               </td>
-              <td class="px-3 py-2.5 text-right tabular-nums text-muted-foreground">{{ formatPercent(result.dsrRate * 100, 0) }}</td>
+              <td class="px-3 py-2.5 text-right tabular-nums text-muted-foreground">{{ formatRatioAsPercent(result.dsrRate, 0) }}</td>
               <td class="px-3 py-2.5 text-right tabular-nums font-medium" :class="result.limitingFactor === 'DSR' ? 'text-primary' : 'text-foreground'">{{ formatWon(result.maxByDsr) }}</td>
             </tr>
             <tr class="border-t-2 border-primary/30 bg-primary/5">

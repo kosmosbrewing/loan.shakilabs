@@ -14,7 +14,7 @@ import {
   type BorrowerType,
 } from "@/data/steppingStoneLoan";
 import { useSteppingStoneLoan } from "@/composables/useSteppingStoneLoan";
-import { formatWon, formatPercent, parseNumericInput } from "@/lib/utils";
+import { formatWon, formatPercentValue, parseNumericInput } from "@/lib/utils";
 
 const props = defineProps<{ initialPropertyPrice?: number }>();
 const override = props.initialPropertyPrice ? { propertyPrice: props.initialPropertyPrice } : undefined;
@@ -23,7 +23,7 @@ const { state, result, reset } = useSteppingStoneLoan(override);
 const metrics = computed(() => [
   {
     label: "적용 금리",
-    value: formatPercent(result.value.applicableRate, 2),
+    value: formatPercentValue(result.value.applicableRate, 2),
     helper: result.value.incomeBracketLabel,
   },
   {

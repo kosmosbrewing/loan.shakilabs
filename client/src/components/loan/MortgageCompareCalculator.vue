@@ -8,7 +8,7 @@ import CompareSourceFooter from "@/components/common/CompareSourceFooter.vue";
 import { LOAN_ASSUMPTION_NOTE, TERM_OPTIONS } from "@/data/loanPresets";
 import { MORTGAGE_AMOUNT_PRESETS, MORTGAGE_COMPARE_SOURCES, MORTGAGE_DATA_UPDATED, mortgageComparePresets } from "@/data/mortgageRates";
 import { useMortgageCompare } from "@/composables/useMortgageCompare";
-import { formatWon, formatPercent, parseNumericInput } from "@/lib/utils";
+import { formatWon, formatPercentValue, parseNumericInput } from "@/lib/utils";
 
 const props = defineProps<{ initialLoanAmount?: number }>();
 const override = props.initialLoanAmount ? { loanAmount: props.initialLoanAmount } : undefined;
@@ -23,7 +23,7 @@ const metrics = computed(() => {
   return [
     {
       label: "최저금리 은행",
-      value: r.bestBank ? `${r.bestBank.bank} ${formatPercent(r.bestBank.bestRate, 2)}` : "-",
+      value: r.bestBank ? `${r.bestBank.bank} ${formatPercentValue(r.bestBank.bestRate, 2)}` : "-",
       helper: r.bestBank ? `월 ${formatWon(r.bestBank.bestMonthlyPayment)}` : undefined,
     },
     {
@@ -52,7 +52,7 @@ const bankMetrics = computed(() => [
       label: row.bank,
       value: row.bestMonthlyPayment,
       highlight: index === 0,
-      detail: `최저금리 ${formatPercent(row.bestRate, 2)}`,
+      detail: `최저금리 ${formatPercentValue(row.bestRate, 2)}`,
     })),
   },
   {
@@ -162,7 +162,7 @@ function setAmountPreset(amount: number): void {
                 {{ row.bank }}
               </td>
               <td class="px-3 py-2.5 text-right font-medium tabular-nums" :class="idx === 0 ? 'text-primary' : 'text-foreground'">
-                {{ formatPercent(row.bestRate, 2) }}
+                {{ formatPercentValue(row.bestRate, 2) }}
               </td>
               <td class="px-3 py-2.5 text-right tabular-nums text-foreground">
                 {{ formatWon(row.bestMonthlyPayment) }}
@@ -171,10 +171,10 @@ function setAmountPreset(amount: number): void {
                 {{ formatWon(row.bestTotalInterest) }}
               </td>
               <td class="px-3 py-2.5 text-right tabular-nums text-muted-foreground whitespace-nowrap">
-                {{ formatPercent(row.fixedMinRate, 2) }}~{{ formatPercent(row.fixedMaxRate, 2) }}
+                {{ formatPercentValue(row.fixedMinRate, 2) }}~{{ formatPercentValue(row.fixedMaxRate, 2) }}
               </td>
               <td class="px-3 py-2.5 text-right tabular-nums text-muted-foreground whitespace-nowrap">
-                {{ formatPercent(row.variableMinRate, 2) }}~{{ formatPercent(row.variableMaxRate, 2) }}
+                {{ formatPercentValue(row.variableMinRate, 2) }}~{{ formatPercentValue(row.variableMaxRate, 2) }}
               </td>
             </tr>
           </tbody>
