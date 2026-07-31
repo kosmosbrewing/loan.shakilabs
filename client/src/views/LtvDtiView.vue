@@ -9,6 +9,7 @@ import FreshBadge from "@/components/common/FreshBadge.vue";
 import LtvDtiCalculator from "@/components/loan/LtvDtiCalculator.vue";
 import CalculatorPageHeader from "@/components/loan/CalculatorPageHeader.vue";
 import CalculatorInteractionTracker from "@/components/analytics/CalculatorInteractionTracker.vue";
+import RelatedCalculators from "@/components/loan/RelatedCalculators.vue";
 import { LTV_DTI_FAQS, LTV_DTI_UPDATED } from "@/data/ltvDti";
 import { formatManWon } from "@/lib/utils";
 
@@ -64,6 +65,9 @@ const faqJsonLd = {
         </CalculatorInteractionTracker>
       </div>
     </div>
+
+    <RelatedCalculators />
+
 
     <FaqAccordionPanel :items="mergedFaqs" />
 

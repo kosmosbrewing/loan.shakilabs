@@ -6,6 +6,7 @@ import FreshBadge from "@/components/common/FreshBadge.vue";
 import CalculatorPageHeader from "@/components/loan/CalculatorPageHeader.vue";
 import CalculatorInteractionTracker from "@/components/analytics/CalculatorInteractionTracker.vue";
 import JeonseGuaranteeCalculator from "@/components/loan/JeonseGuaranteeCalculator.vue";
+import RelatedCalculators from "@/components/loan/RelatedCalculators.vue";
 import { mergeFaqs } from "@/lib/faqMerge";
 import {
   JEONSE_GUARANTEE_FAQS,
@@ -50,6 +51,9 @@ const faqJsonLd = {
         </CalculatorInteractionTracker>
       </div>
     </div>
+
+    <RelatedCalculators />
+
 
     <FaqAccordionPanel :items="mergedFaqs" />
 

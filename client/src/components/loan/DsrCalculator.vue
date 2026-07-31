@@ -44,8 +44,10 @@ function selectPreset(key: string): void {
   <div class="space-y-4">
     <LoanScenarioChips :items="dsrPresets" @select="selectPreset" />
 
+    <!-- 네이버 유입은 답만 보고 이탈하는 성향이 강하다. 모바일에서는 결과를 입력보다
+         먼저 보여 첫 화면 안에서 답이 끝나게 한다(데스크톱 2열 배치는 유지). -->
     <div class="grid gap-4 xl:grid-cols-[1.2fr_0.8fr]">
-      <section class="retro-panel-muted p-4 space-y-4">
+      <section class="retro-panel-muted order-2 p-4 space-y-4 xl:order-none">
         <div class="grid gap-3 sm:grid-cols-2">
           <label class="space-y-1.5">
             <span class="text-caption font-semibold text-foreground">연소득</span>
@@ -89,7 +91,7 @@ function selectPreset(key: string): void {
         </div>
       </section>
 
-      <section class="retro-panel p-4 space-y-3">
+      <section class="retro-panel order-1 p-4 space-y-3 xl:order-none">
         <div class="rounded-2xl border border-primary/20 bg-primary/10 px-4 py-3">
           <p class="text-caption font-semibold text-primary">한도 해석</p>
           <p class="mt-1 text-body text-foreground">
