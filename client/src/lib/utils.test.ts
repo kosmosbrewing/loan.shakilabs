@@ -3,7 +3,8 @@ import {
   formatNumber,
   formatWon,
   formatWonShort,
-  formatPercent,
+  formatRatioAsPercent,
+  formatPercentValue,
   formatCurrency,
 } from "./utils";
 
@@ -23,11 +24,26 @@ describe("utils formatters", () => {
     expect(formatWonShort(-54_000)).toBe("-5만원");
   });
 
-  it("formatPercent는 소수점 자릿수를 반영한다", () => {
-    expect(formatPercent(0.1234)).toBe("12.3%");
-    expect(formatPercent(0.1234, 2)).toBe("12.34%");
-    expect(formatPercent(0.0099, 2)).toBe("0.99%");
-    expect(formatPercent(null)).toBe("-");
+  it("formatRatioAsPercent는 비율(0~1)에 100을 곱해 표기한다", () => {
+    expect(formatRatioAsPercent(0.1234)).toBe("12.3%");
+    expect(formatRatioAsPercent(0.1234, 2)).toBe("12.34%");
+    expect(formatRatioAsPercent(0.0099, 2)).toBe("0.99%");
+    expect(formatRatioAsPercent(null)).toBe("-");
+  });
+
+  it("formatPercentValue는 퍼센트 값에 100을 다시 곱하지 않는다", () => {
+    // 회귀 방지: 적용 금리 3.6이 "360.00%"로 표시되던 이중 곱 사고
+    expect(formatPercentValue(3.6, 2)).toBe("3.60%");
+    expect(formatPercentValue(3.33, 2)).toBe("3.33%");
+    expect(formatPercentValue(4.5, 1)).toBe("4.5%");
+    expect(formatPercentValue(0)).toBe("0.0%");
+    expect(formatPercentValue(undefined)).toBe("-");
+  });
+
+  it("두 포맷터는 같은 실수치를 같은 문자열로 만든다 (단위만 다르다)", () => {
+    // 비율 0.036 == 퍼센트 3.6 — 어느 쪽 함수를 쓰든 결과가 같아야 계약이 일관된다
+    expect(formatRatioAsPercent(0.036, 2)).toBe(formatPercentValue(3.6, 2));
+    expect(formatRatioAsPercent(0.4, 0)).toBe(formatPercentValue(40, 0));
   });
 
   it("formatCurrency는 통화 규칙에 맞게 표기한다", () => {

@@ -5,7 +5,7 @@ import LoanMetricGrid from "@/components/loan/LoanMetricGrid.vue";
 import LoanScenarioChips from "@/components/loan/LoanScenarioChips.vue";
 import { DSR_LIMIT_OPTIONS, LOAN_ASSUMPTION_NOTE, TERM_OPTIONS, dsrPresets } from "@/data/loanPresets";
 import { useDsrCalculator } from "@/composables/useDsrCalculator";
-import { formatPercent, formatWon, parseNumericInput } from "@/lib/utils";
+import { formatRatioAsPercent, formatWon, parseNumericInput } from "@/lib/utils";
 
 const props = defineProps<{ initialIncome?: number }>();
 const override = props.initialIncome ? { annualIncome: props.initialIncome } : undefined;
@@ -29,7 +29,7 @@ const metrics = computed(() => [
   },
   {
     label: "현재 DSR",
-    value: formatPercent(result.value.currentDsr, 1),
+    value: formatRatioAsPercent(result.value.currentDsr, 1),
     helper: "기존 원리금 기준",
   },
 ]);
@@ -107,7 +107,7 @@ function selectPreset(key: string): void {
       label="현재 DSR 한도 사용률"
       :value="result.currentDsr"
       :limit="state.dsrLimit"
-      :format-value="(value) => formatPercent(value, 1)"
+      :format-value="(value) => formatRatioAsPercent(value, 1)"
       limit-label="규제 한도"
       note="막대 전체는 선택한 DSR 규제 한도이며 끝 눈금이 기준점을 표시합니다."
     />
