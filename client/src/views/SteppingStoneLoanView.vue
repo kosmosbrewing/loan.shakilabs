@@ -9,6 +9,7 @@ import FreshBadge from "@/components/common/FreshBadge.vue";
 import SteppingStoneLoanCalculator from "@/components/loan/SteppingStoneLoanCalculator.vue";
 import CalculatorPageHeader from "@/components/loan/CalculatorPageHeader.vue";
 import CalculatorInteractionTracker from "@/components/analytics/CalculatorInteractionTracker.vue";
+import RelatedCalculators from "@/components/loan/RelatedCalculators.vue";
 import { STEPPING_STONE_FAQS, STEPPING_STONE_UPDATED } from "@/data/steppingStoneLoan";
 import { formatManWon } from "@/lib/utils";
 
@@ -64,6 +65,9 @@ const faqJsonLd = {
         </CalculatorInteractionTracker>
       </div>
     </div>
+
+    <RelatedCalculators />
+
 
     <FaqAccordionPanel :items="mergedFaqs" />
 

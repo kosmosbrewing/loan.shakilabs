@@ -9,6 +9,7 @@ import FreshBadge from "@/components/common/FreshBadge.vue";
 import RepaymentCalculator from "@/components/loan/RepaymentCalculator.vue";
 import CalculatorPageHeader from "@/components/loan/CalculatorPageHeader.vue";
 import CalculatorInteractionTracker from "@/components/analytics/CalculatorInteractionTracker.vue";
+import RelatedCalculators from "@/components/loan/RelatedCalculators.vue";
 import { LOAN_BADGE_MESSAGE } from "@/data/loanPresets";
 import { formatManWon } from "@/lib/utils";
 
@@ -77,6 +78,9 @@ const faqJsonLd = computed(() => ({
         </CalculatorInteractionTracker>
       </div>
     </div>
+
+    <RelatedCalculators />
+
 
     <FaqAccordionPanel :items="mergedFaqs" />
 

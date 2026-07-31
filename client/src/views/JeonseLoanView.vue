@@ -9,6 +9,7 @@ import FreshBadge from "@/components/common/FreshBadge.vue";
 import JeonseLoanCalculator from "@/components/loan/JeonseLoanCalculator.vue";
 import CalculatorPageHeader from "@/components/loan/CalculatorPageHeader.vue";
 import CalculatorInteractionTracker from "@/components/analytics/CalculatorInteractionTracker.vue";
+import RelatedCalculators from "@/components/loan/RelatedCalculators.vue";
 import { JEONSE_LOAN_FAQS, JEONSE_LOAN_UPDATED } from "@/data/jeonseLoan";
 import { formatManWon } from "@/lib/utils";
 
@@ -64,6 +65,9 @@ const faqJsonLd = {
         </CalculatorInteractionTracker>
       </div>
     </div>
+
+    <RelatedCalculators />
+
 
     <FaqAccordionPanel :items="mergedFaqs" />
 

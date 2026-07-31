@@ -10,7 +10,7 @@ import DsrCalculator from "@/components/loan/DsrCalculator.vue";
 import CalculatorPageHeader from "@/components/loan/CalculatorPageHeader.vue";
 import CalculatorInteractionTracker from "@/components/analytics/CalculatorInteractionTracker.vue";
 import SessionDraftControl from "@/components/loan/SessionDraftControl.vue";
-import DsrNextActions from "@/components/loan/DsrNextActions.vue";
+import RelatedCalculators from "@/components/loan/RelatedCalculators.vue";
 import { LOAN_BADGE_MESSAGE } from "@/data/loanPresets";
 import { formatManWon } from "@/lib/utils";
 
@@ -82,7 +82,7 @@ const faqJsonLd = computed(() => ({
       </div>
     </div>
 
-    <DsrNextActions />
+    <RelatedCalculators />
 
     <FaqAccordionPanel :items="mergedFaqs" />
 
