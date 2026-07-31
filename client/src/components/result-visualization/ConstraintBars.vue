@@ -1,6 +1,8 @@
 <script setup lang="ts">
-import { computed, useId } from "vue";
-import { positiveBarWidth } from "@/utils/chartMath";
+// 차트 본체는 @shakilabs/ui ShRankedBars — 이 파일은 loan 패널 크롬과 '제한' 표기만 맡는다.
+import { computed } from "vue";
+import { ShRankedBars } from "@shakilabs/ui";
+import type { RankedBarItem } from "@shakilabs/ui";
 
 type Constraint = { key: string; label: string; value: number; limiting?: boolean; detail?: string };
 const props = defineProps<{
@@ -8,31 +10,30 @@ const props = defineProps<{
   items: readonly Constraint[];
   formatValue: (value: number) => string;
 }>();
-const titleId = `constraints-${useId()}`;
-const maximum = computed(() => Math.max(...props.items.map((item) => item.value), 0));
+
+// '제한' 표기는 라벨에 접미해 유지한다 — 이 배지가 화면의 핵심 신호다
+const rankedItems = computed<RankedBarItem[]>(() => props.items.map((item) => ({
+  key: item.key,
+  label: item.limiting ? `${item.label} · 제한` : item.label,
+  value: item.value,
+  highlight: item.limiting,
+  detail: item.detail,
+})));
+
+function format(value: number | null): string {
+  return value === null ? "-" : props.formatValue(value);
+}
 </script>
 
 <template>
-  <section class="retro-panel overflow-hidden" :aria-labelledby="titleId">
-    <div class="p-4 pb-2">
-      <h3 :id="titleId" class="text-caption font-semibold text-foreground">{{ title }}</h3>
-      <p class="mt-1 text-tiny text-muted-foreground">가장 짧은 한도가 실제 대출 가능액을 제한합니다.</p>
+  <section class="retro-panel overflow-hidden">
+    <div class="p-4">
+      <ShRankedBars
+        :title="title"
+        note="가장 짧은 한도가 실제 대출 가능액을 제한합니다."
+        :items="rankedItems"
+        :format-value="format"
+      />
     </div>
-    <ol class="space-y-3 p-4 pt-2">
-      <li v-for="item in items" :key="item.key" class="space-y-1.5">
-        <div class="flex items-baseline justify-between gap-3 text-caption">
-          <span class="font-semibold" :class="item.limiting ? 'text-primary' : 'text-foreground'">
-            {{ item.label }}<span v-if="item.limiting" class="ml-1 text-tiny">제한</span>
-          </span>
-          <strong class="tabular-nums" :class="item.limiting ? 'text-primary' : 'text-foreground'">{{ formatValue(item.value) }}</strong>
-        </div>
-        <div class="h-3 overflow-hidden rounded-full bg-muted/55">
-          <svg viewBox="0 0 100 12" preserveAspectRatio="none" class="block h-full w-full" aria-hidden="true">
-            <rect :width="positiveBarWidth(item.value, maximum)" height="12" rx="4" :class="item.limiting ? 'fill-primary' : 'fill-muted-foreground/45'" />
-          </svg>
-        </div>
-        <p v-if="item.detail" class="text-tiny text-muted-foreground">{{ item.detail }}</p>
-      </li>
-    </ol>
   </section>
 </template>

@@ -1,49 +1,26 @@
 <script setup lang="ts">
-import { computed, useId } from "vue";
-import { positiveBarWidth } from "@/utils/chartMath";
+// 차트 본체는 @shakilabs/ui ShMetricBars — 이 파일은 loan 패널 크롬만 입힌다.
+// 호출부 5곳의 props는 그대로 유지한다.
+import { ShMetricBars } from "@shakilabs/ui";
+import type { MetricBarGroup } from "@shakilabs/ui";
 
-type BarValue = { key: string; label: string; value: number; highlight?: boolean; detail?: string };
-type Metric = { key: string; label: string; values: readonly BarValue[] };
-const props = defineProps<{
+defineProps<{
   title: string;
   note: string;
-  metrics: readonly Metric[];
+  metrics: readonly MetricBarGroup[];
   formatValue: (value: number) => string;
 }>();
-const titleId = `metric-bars-${useId()}`;
-const maxima = computed(() => new Map(props.metrics.map((metric) => [
-  metric.key,
-  Math.max(...metric.values.map((item) => item.value), 0),
-])));
 </script>
 
 <template>
-  <section class="retro-panel overflow-hidden" :aria-labelledby="titleId">
-    <div class="p-4 pb-2">
-      <h3 :id="titleId" class="text-caption font-semibold text-foreground">{{ title }}</h3>
-      <p class="mt-1 text-tiny leading-relaxed text-muted-foreground">{{ note }}</p>
+  <section class="retro-panel overflow-hidden">
+    <div class="p-4 pb-0">
+      <ShMetricBars :metrics="metrics" :note="note" :format-value="formatValue">
+        <template #header="{ titleId }">
+          <h3 :id="titleId" class="sh-chart__heading">{{ title }}</h3>
+        </template>
+      </ShMetricBars>
     </div>
-    <div class="space-y-5 p-4 pt-2">
-      <div v-for="metric in metrics" :key="metric.key" class="space-y-3">
-        <p class="border-b border-border/50 pb-1.5 text-tiny font-semibold text-muted-foreground">{{ metric.label }}</p>
-        <div v-for="item in metric.values" :key="item.key" class="space-y-1.5">
-          <div class="flex items-baseline justify-between gap-3 text-caption">
-            <span class="font-semibold" :class="item.highlight ? 'text-primary' : 'text-foreground'">{{ item.label }}</span>
-            <strong class="shrink-0 tabular-nums" :class="item.highlight ? 'text-primary' : 'text-foreground'">{{ formatValue(item.value) }}</strong>
-          </div>
-          <div class="h-3 overflow-hidden rounded-full bg-muted/55">
-            <svg viewBox="0 0 100 12" preserveAspectRatio="none" class="block h-full w-full" aria-hidden="true">
-              <rect
-                :width="positiveBarWidth(item.value, maxima.get(metric.key) ?? 0)"
-                height="12"
-                rx="4"
-                :class="item.highlight ? 'fill-primary' : 'fill-muted-foreground/45'"
-              />
-            </svg>
-          </div>
-          <p v-if="item.detail" class="text-tiny text-muted-foreground">{{ item.detail }}</p>
-        </div>
-      </div>
-    </div>
+    <div class="pb-4" />
   </section>
 </template>
