@@ -36,3 +36,11 @@ jobs:
 
       - name: Build
         run: npm run build
+
+      # 네트워크·npm 재실행 없이 1초 미만. SBOM은 재생성하지 않고 신원 필드만 대조한다
+      # (timestamp·documentNamespace가 비결정적이라 재생성 후 diff는 상시 red가 된다).
+      # SBOM을 커밋하지 않는 앱에서는 no-op이라 12개 앱에 그대로 붙일 수 있다.
+      - name: Verify vendored artifacts
+        run: |
+          node scripts/verify-sbom-identity.mjs
+          node scripts/verify-vendor-readme.mjs
