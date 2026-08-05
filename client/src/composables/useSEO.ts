@@ -21,6 +21,11 @@ type SEOOptions = {
   jsonLd?: MaybeRefOrGetter<
     Record<string, unknown> | Record<string, unknown>[] | undefined
   >;
+  /**
+   * 변종 URL을 대표 URL로 통합할 때 지정한다 ("/repayment" 등).
+   * canonical·hreflang·og:url이 모두 이 경로 기준으로 계산된다.
+   */
+  canonicalPath?: MaybeRefOrGetter<string | undefined>;
 };
 
 function normalizeTitle(rawTitle: string): string {
@@ -47,6 +52,7 @@ export function useSEO({
   ogImage,
   noindex = false,
   jsonLd,
+  canonicalPath,
 }: SEOOptions): void {
   const route = useRoute();
 
@@ -65,7 +71,8 @@ export function useSEO({
         ? [resolvedJsonLd]
         : [];
     const siteUrl = getSiteUrl().replace(/\/+$/, "");
-    const currentPath = route.path || "/";
+    // canonicalPath가 지정되면 실제 경로 대신 대표 경로로 canonical류 메타를 통일한다
+    const currentPath = toValue(canonicalPath) ?? (route.path || "/");
     const currentUrl = currentPath === "/" ? siteUrl : `${siteUrl}${currentPath}`;
 
     return {

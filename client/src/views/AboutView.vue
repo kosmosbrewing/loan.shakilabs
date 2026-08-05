@@ -37,6 +37,14 @@ import { LOAN_ABOUT_GUIDE, LOAN_HOME_GUIDE } from "@/data/seoGuides";
           </div>
         </div>
         <p class="text-caption leading-relaxed text-muted-foreground">{{ LOAN_ASSUMPTION_NOTE }}</p>
+        <div class="retro-panel-muted space-y-2 p-4">
+          <p class="text-caption font-bold text-foreground">운영: ShakiLabs · 문의: skdba1313@gmail.com</p>
+          <p class="text-caption leading-relaxed text-muted-foreground">
+            모든 계산식과 기준값은 금융감독원 금융상품통합비교공시·주택도시기금 등 공공기관의 공시 자료와
+            대조해 검증하며, 법령이나 금리 기준이 바뀌면 확인일을 명시해 갱신합니다. 오류 제보를 보내주시면
+            확인 후 신속히 반영합니다.
+          </p>
+        </div>
       </div>
     </div>
 

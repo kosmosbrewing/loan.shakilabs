@@ -90,6 +90,7 @@ const faqJsonLd = computed(() => ({
       :title="LOAN_DSR_GUIDE.title"
       :intro="LOAN_DSR_GUIDE.intro"
       :sections="LOAN_DSR_GUIDE.sections"
+      :sources="LOAN_DSR_GUIDE.sources"
       :disclaimer="LOAN_DSR_GUIDE.disclaimer"
     />
   </div>

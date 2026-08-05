@@ -15,6 +15,12 @@ import { formatManWon } from "@/lib/utils";
 
 const props = defineProps<{ initialPrincipal?: number }>();
 
+// 금액 변종(/repayment/{금액})은 고유 본문이 얇아 대표 URL로 canonical을 통합한다.
+// 라우트·프리렌더는 유지하되 canonical·hreflang·og:url만 /repayment를 가리킨다.
+const canonicalPath = computed(() =>
+  props.initialPrincipal != null ? "/repayment" : undefined,
+);
+
 const amountLabel = computed(() => {
   if (!props.initialPrincipal) return null;
   return formatManWon(props.initialPrincipal / 10000);
@@ -62,7 +68,12 @@ const faqJsonLd = computed(() => ({
 </script>
 
 <template>
-  <SEOHead :title="seoTitle" :description="seoDescription" :json-ld="faqJsonLd" />
+  <SEOHead
+    :title="seoTitle"
+    :description="seoDescription"
+    :json-ld="faqJsonLd"
+    :canonical-path="canonicalPath"
+  />
   <div class="container space-y-5 py-5">
     <CalculatorPageHeader title="대출 상환방식 비교" />
 
