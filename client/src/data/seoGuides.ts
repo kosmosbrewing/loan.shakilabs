@@ -2,12 +2,15 @@
 export interface GuideSection { h2: string; body: string; }
 export interface GuideFaq { q: string; a: string; }
 export interface GuideChecklist { title: string; items: string[]; }
+// 공공기관 공식 출처 링크 — 콘텐츠 신뢰도(E-E-A-T) 근거로 가이드 하단에 노출한다
+export interface GuideSource { label: string; url: string; }
 export interface GuideData {
   title: string;
   intro: string;
   sections?: GuideSection[];
   faqs?: GuideFaq[];
   checklist?: GuideChecklist;
+  sources?: GuideSource[];
   disclaimer?: string;
 }
 
@@ -113,6 +116,16 @@ export const LOAN_DSR_GUIDE: GuideData = {
       a: "2026년 기준 특례보금자리론, 디딤돌대출, 신생아특례대출 등 정책 대출은 DSR 산정에서 일부 제외됩니다. 사회초년생·신혼부부·저소득층 대상 우대 상품이 많으니 정책 대출을 먼저 검토하는 것이 좋습니다.",
     },
   ],
+  sources: [
+    {
+      label: "금융감독원 금융상품통합비교공시 (대출 금리·조건 비교)",
+      url: "https://finlife.fss.or.kr",
+    },
+    {
+      label: "주택도시기금 (디딤돌·버팀목 등 정책 대출 기준)",
+      url: "https://nhuf.molit.go.kr",
+    },
+  ],
   disclaimer: COMMON_DISCLAIMER,
 };
 
@@ -162,6 +175,16 @@ export const LOAN_LTV_GUIDE: GuideData = {
     {
       q: "규제지역 지정 해제 후 LTV가 다시 높아지나요?",
       a: "네. 규제지역 지정이 해제되면 해당 지역의 LTV 한도가 즉시 상향되며, 새로 신청하는 대출부터 적용됩니다. 기존 대출은 원래 한도를 유지합니다.",
+    },
+  ],
+  sources: [
+    {
+      label: "금융감독원 금융상품통합비교공시 (주택담보대출 비교)",
+      url: "https://finlife.fss.or.kr",
+    },
+    {
+      label: "주택도시보증공사 HUG (전세보증·보증 상품 기준)",
+      url: "https://www.khug.or.kr",
     },
   ],
   disclaimer: COMMON_DISCLAIMER,

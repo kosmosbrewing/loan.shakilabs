@@ -75,6 +75,7 @@ const faqJsonLd = {
       :title="LOAN_LTV_GUIDE.title"
       :intro="LOAN_LTV_GUIDE.intro"
       :sections="LOAN_LTV_GUIDE.sections"
+      :sources="LOAN_LTV_GUIDE.sources"
       :disclaimer="LOAN_LTV_GUIDE.disclaimer"
     />
   </div>

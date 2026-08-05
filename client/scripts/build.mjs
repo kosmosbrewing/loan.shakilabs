@@ -4,7 +4,7 @@ import { fileURLToPath } from "node:url";
 import { spawnSync } from "node:child_process";
 import {
   SEO_ROUTES,
-  REPAYMENT_AMOUNTS,
+  SITEMAP_ROUTES,
   DSR_INCOMES,
   REFINANCE_BALANCES,
   PREPAYMENT_AMOUNTS,
@@ -26,8 +26,8 @@ const viteSsgBin = resolve(
 );
 
 // 파라미터 라우트 집합 (priority/changefreq 분기용)
+// repayment 변종은 canonical 통합으로 사이트맵에서 빠지므로 여기 포함하지 않는다
 const paramPaths = new Set([
-  ...REPAYMENT_AMOUNTS.map((a) => `/repayment/${a}`),
   ...DSR_INCOMES.map((i) => `/dsr/${i}`),
   ...REFINANCE_BALANCES.map((b) => `/refinance/${b}`),
   ...PREPAYMENT_AMOUNTS.map((a) => `/prepayment-fee/${a}`),
@@ -79,7 +79,8 @@ function resolveBuildDate() {
 
 function renderSitemap(buildDate) {
   const baseUrl = "https://shakilabs.com/loan";
-  const urls = SEO_ROUTES.map((path) => {
+  // 사이트맵은 canonical 대표 URL만 담는다 (repayment 변종 제외 — 프리렌더는 SEO_ROUTES 전체 유지)
+  const urls = SITEMAP_ROUTES.map((path) => {
     const { changefreq, priority } = getRouteConfig(path);
     const loc = path === "/" ? baseUrl : `${baseUrl}${path}`;
     return `  <url>
