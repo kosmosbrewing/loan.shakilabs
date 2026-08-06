@@ -145,6 +145,8 @@ function selectPreset(key: string): void {
       :limit="state.remainingMonths"
       :format-value="formatMonths"
       limit-label="남은 대출 기간"
+      polarity="lower-better"
+      primary="value"
       note="막대 전체는 현재 대출의 남은 기간이며 끝 눈금 전에 비용을 회수하는지 보여줍니다."
     />
   </div>
