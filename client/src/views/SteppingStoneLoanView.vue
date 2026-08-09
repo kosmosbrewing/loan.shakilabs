@@ -15,6 +15,12 @@ import { formatManWon } from "@/lib/utils";
 
 const props = defineProps<{ initialPropertyPrice?: number }>();
 
+// 주택가격 변종(/stepping-stone-loan/{가격})은 /40000 이 부모와 100% 동일해 대표 URL로
+// canonical을 통합한다. 라우트·프리렌더는 유지한다.
+const canonicalPath = computed(() =>
+  props.initialPropertyPrice != null ? "/stepping-stone-loan" : undefined,
+);
+
 const amountLabel = computed(() => {
   if (!props.initialPropertyPrice) return null;
   return formatManWon(props.initialPropertyPrice / 10000);
@@ -47,7 +53,12 @@ const faqJsonLd = {
 </script>
 
 <template>
-  <SEOHead :title="seoTitle" :description="seoDescription" :json-ld="faqJsonLd" />
+  <SEOHead
+    :title="seoTitle"
+    :description="seoDescription"
+    :json-ld="faqJsonLd"
+    :canonical-path="canonicalPath"
+  />
   <div class="container space-y-5 py-5">
     <CalculatorPageHeader title="디딤돌대출 계산기" />
 

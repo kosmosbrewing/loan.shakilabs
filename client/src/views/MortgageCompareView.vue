@@ -15,6 +15,12 @@ import { formatManWon } from "@/lib/utils";
 
 const props = defineProps<{ initialLoanAmount?: number }>();
 
+// 금액 변종(/mortgage-compare/{금액})은 /30000 이 부모와 100% 동일해 대표 URL로 canonical을
+// 통합한다. 자식끼리만 비교하면 0.945라 표본 감사에서 놓치기 쉬운 케이스였다.
+const canonicalPath = computed(() =>
+  props.initialLoanAmount != null ? "/mortgage-compare" : undefined,
+);
+
 const amountLabel = computed(() => {
   if (!props.initialLoanAmount) return null;
   return formatManWon(props.initialLoanAmount / 10000);
@@ -47,7 +53,12 @@ const faqJsonLd = {
 </script>
 
 <template>
-  <SEOHead :title="seoTitle" :description="seoDescription" :json-ld="faqJsonLd" />
+  <SEOHead
+    :title="seoTitle"
+    :description="seoDescription"
+    :json-ld="faqJsonLd"
+    :canonical-path="canonicalPath"
+  />
   <div class="container space-y-5 py-5">
     <CalculatorPageHeader title="주택담보대출 금리 비교" />
 

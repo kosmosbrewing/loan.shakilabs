@@ -15,6 +15,12 @@ import { formatManWon } from "@/lib/utils";
 
 const props = defineProps<{ initialBalance?: number }>();
 
+// 잔액 변종(/student-loan/{잔액})은 형제 간 최악 쌍 유사도 0.996으로 고유 본문이 없어
+// 대표 URL로 canonical을 통합한다. 라우트·프리렌더는 유지한다.
+const canonicalPath = computed(() =>
+  props.initialBalance != null ? "/student-loan" : undefined,
+);
+
 const balanceLabel = computed(() => {
   if (!props.initialBalance) return null;
   return formatManWon(props.initialBalance / 10000);
@@ -47,7 +53,12 @@ const faqJsonLd = {
 </script>
 
 <template>
-  <SEOHead :title="seoTitle" :description="seoDescription" :json-ld="faqJsonLd" />
+  <SEOHead
+    :title="seoTitle"
+    :description="seoDescription"
+    :json-ld="faqJsonLd"
+    :canonical-path="canonicalPath"
+  />
   <div class="container space-y-5 py-5">
     <CalculatorPageHeader title="학자금 대출 상환 계산기" />
 
