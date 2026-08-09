@@ -15,6 +15,12 @@ import { formatManWon } from "@/lib/utils";
 
 const props = defineProps<{ initialDeposit?: number }>();
 
+// 보증금 변종(/jeonse-loan/{보증금})은 /20000 이 부모와 100% 동일해 대표 URL로 canonical을
+// 통합한다. 라우트·프리렌더는 유지한다.
+const canonicalPath = computed(() =>
+  props.initialDeposit != null ? "/jeonse-loan" : undefined,
+);
+
 const amountLabel = computed(() => {
   if (!props.initialDeposit) return null;
   return formatManWon(props.initialDeposit / 10000);
@@ -47,7 +53,12 @@ const faqJsonLd = {
 </script>
 
 <template>
-  <SEOHead :title="seoTitle" :description="seoDescription" :json-ld="faqJsonLd" />
+  <SEOHead
+    :title="seoTitle"
+    :description="seoDescription"
+    :json-ld="faqJsonLd"
+    :canonical-path="canonicalPath"
+  />
   <div class="container space-y-5 py-5">
     <CalculatorPageHeader title="전세대출 이자 계산기" />
 

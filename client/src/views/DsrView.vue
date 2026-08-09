@@ -16,6 +16,12 @@ import { formatManWon } from "@/lib/utils";
 
 const props = defineProps<{ initialIncome?: number }>();
 
+// 소득 변종(/dsr/{연소득})은 부모와 본문이 사실상 동일해 대표 URL로 canonical을 통합한다.
+// 라우트·프리렌더는 유지하되 canonical·hreflang·og:url만 /dsr을 가리킨다.
+const canonicalPath = computed(() =>
+  props.initialIncome != null ? "/dsr" : undefined,
+);
+
 const incomeLabel = computed(() => {
   if (!props.initialIncome) return null;
   return formatManWon(props.initialIncome / 10000);
@@ -63,7 +69,12 @@ const faqJsonLd = computed(() => ({
 </script>
 
 <template>
-  <SEOHead :title="seoTitle" :description="seoDescription" :json-ld="faqJsonLd" />
+  <SEOHead
+    :title="seoTitle"
+    :description="seoDescription"
+    :json-ld="faqJsonLd"
+    :canonical-path="canonicalPath"
+  />
   <div class="container space-y-5 py-5">
     <CalculatorPageHeader title="DSR 계산기" />
 

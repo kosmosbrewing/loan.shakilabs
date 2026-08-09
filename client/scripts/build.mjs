@@ -5,14 +5,7 @@ import { spawnSync } from "node:child_process";
 import {
   SEO_ROUTES,
   SITEMAP_ROUTES,
-  DSR_INCOMES,
-  REFINANCE_BALANCES,
-  PREPAYMENT_AMOUNTS,
-  STUDENT_LOAN_BALANCES,
-  MORTGAGE_AMOUNTS,
-  JEONSE_LOAN_AMOUNTS,
-  STEPPING_STONE_AMOUNTS,
-  LTV_DTI_AMOUNTS,
+  PARAM_ROUTES,
 } from "./seo-routes.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -25,18 +18,10 @@ const viteSsgBin = resolve(
   process.platform === "win32" ? "vite-ssg.cmd" : "vite-ssg"
 );
 
-// 파라미터 라우트 집합 (priority/changefreq 분기용)
-// repayment 변종은 canonical 통합으로 사이트맵에서 빠지므로 여기 포함하지 않는다
-const paramPaths = new Set([
-  ...DSR_INCOMES.map((i) => `/dsr/${i}`),
-  ...REFINANCE_BALANCES.map((b) => `/refinance/${b}`),
-  ...PREPAYMENT_AMOUNTS.map((a) => `/prepayment-fee/${a}`),
-  ...STUDENT_LOAN_BALANCES.map((b) => `/student-loan/${b}`),
-  ...MORTGAGE_AMOUNTS.map((a) => `/mortgage-compare/${a}`),
-  ...JEONSE_LOAN_AMOUNTS.map((a) => `/jeonse-loan/${a}`),
-  ...STEPPING_STONE_AMOUNTS.map((a) => `/stepping-stone-loan/${a}`),
-  ...LTV_DTI_AMOUNTS.map((a) => `/ltv-dti/${a}`),
-]);
+// 파라미터 라우트 집합 (priority/changefreq 분기용).
+// 현재는 모든 변종이 canonical 통합되어 사이트맵에 오르지 않지만, 통합을 되돌리면
+// (seo-routes.mjs의 VARIANT_FAMILIES에서 패밀리 제거) 이 분기가 그대로 다시 동작한다.
+const paramPaths = new Set(PARAM_ROUTES);
 
 const basePriority = {
   "/": "1.0",
@@ -79,7 +64,7 @@ function resolveBuildDate() {
 
 function renderSitemap(buildDate) {
   const baseUrl = "https://shakilabs.com/loan";
-  // 사이트맵은 canonical 대표 URL만 담는다 (repayment 변종 제외 — 프리렌더는 SEO_ROUTES 전체 유지)
+  // 사이트맵은 canonical 대표 URL만 담는다 (통합 변종 제외 — 프리렌더는 SEO_ROUTES 전체 유지)
   const urls = SITEMAP_ROUTES.map((path) => {
     const { changefreq, priority } = getRouteConfig(path);
     const loc = path === "/" ? baseUrl : `${baseUrl}${path}`;

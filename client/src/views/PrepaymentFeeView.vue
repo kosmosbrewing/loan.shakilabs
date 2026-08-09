@@ -15,6 +15,12 @@ import { formatManWon } from "@/lib/utils";
 
 const props = defineProps<{ initialAmount?: number }>();
 
+// 금액 변종(/prepayment-fee/{금액})은 형제 간 최악 쌍 유사도 0.997로 고유 본문이 없어
+// 대표 URL로 canonical을 통합한다. 라우트·프리렌더는 유지한다.
+const canonicalPath = computed(() =>
+  props.initialAmount != null ? "/prepayment-fee" : undefined,
+);
+
 const amountLabel = computed(() => {
   if (!props.initialAmount) return null;
   return formatManWon(props.initialAmount / 10000);
@@ -47,7 +53,12 @@ const faqJsonLd = {
 </script>
 
 <template>
-  <SEOHead :title="seoTitle" :description="seoDescription" :json-ld="faqJsonLd" />
+  <SEOHead
+    :title="seoTitle"
+    :description="seoDescription"
+    :json-ld="faqJsonLd"
+    :canonical-path="canonicalPath"
+  />
   <div class="container space-y-5 py-5">
     <CalculatorPageHeader title="중도상환수수료 계산기" />
 
