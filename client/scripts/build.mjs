@@ -89,6 +89,22 @@ function routeOutputPath(route) {
     : resolve(projectRoot, "dist", `${route.slice(1)}.html`);
 }
 
+// 404 화면은 제목 한 줄과 복귀 링크뿐(실측 75자)이다. index.html 셸이 모든 라우트에 심는
+// AdSense 로더가 여기까지 따라오면 Auto ads가 본문 없는 화면에 슬롯을 만들고, 이는 구글
+// "Valuable Inventory" 정책 위반이다. noindex는 색인만 막을 뿐 정책 판정은 로더의 존재로
+// 하므로 파일에서 태그 자체를 걷어낸다. 셸을 공유하는 다른 라우트는 건드리지 않는다.
+function removeAdsenseLoaderFromNotFound() {
+  const outputPath = routeOutputPath("/404");
+  if (!existsSync(outputPath)) return;
+
+  const html = readFileSync(outputPath, "utf8");
+  const nextHtml = html.replace(
+    /\n?\s*<script[^>]*\bdata-adsense="true"[^>]*><\/script>/gi,
+    "",
+  );
+  writeFileSync(outputPath, nextHtml, "utf8");
+}
+
 function removeRenderedNoscriptFallbacks() {
   for (const route of [...SEO_ROUTES, "/404"]) {
     const outputPath = routeOutputPath(route);
@@ -122,6 +138,7 @@ if (result.status !== 0) {
 }
 
 removeRenderedNoscriptFallbacks();
+removeAdsenseLoaderFromNotFound();
 
 const validationResult = spawnSync(
   process.execPath,
