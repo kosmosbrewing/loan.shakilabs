@@ -79,16 +79,50 @@ function validateSitemap() {
     `Sitemap URL count mismatch: expected ${SITEMAP_ROUTES.length}, found ${locs.length}`);
 }
 
+// 애드센스 필수 3요소는 방침을 다시 쓸 때 가장 먼저 사라지는 문장들이다.
+// 심사에서 이게 빠지면 광고 배선과 무관하게 사이트 전체가 거절되므로 빌드에서 강제한다.
+// 운영자 신원(13자산 공통 기준)도 같은 이유로 함께 잠근다.
+function validatePolicyDisclosures() {
+  const privacy = readFileSync(routeOutputPath("/privacy"), "utf8");
+  const terms = readFileSync(routeOutputPath("/terms"), "utf8");
+
+  for (const link of ["https://adssettings.google.com", "https://www.aboutads.info/choices"]) {
+    assert(privacy.includes(link), `/privacy must keep the AdSense opt-out link ${link}`);
+  }
+  assert(/제3자 광고 사업자는 쿠키를 사용/.test(privacy),
+    "/privacy must disclose third-party advertising cookies");
+  assert(/맞춤 광고/.test(privacy), "/privacy must disclose personalized advertising");
+
+  for (const [route, html] of [["/privacy", privacy], ["/terms", terms]]) {
+    assert(html.includes("운영: ShakiLabs"), `${route} must name the operator`);
+    assert(html.includes("skdba1313@gmail.com"), `${route} must publish a contact address`);
+  }
+
+  // 이 앱은 대출 계산기다. "금융 자문이 아님" 고지가 빠지면 YMYL 심사에서 가장 먼저 걸린다.
+  assert(/금융상품판매업자|금융상품자문업자/.test(terms),
+    "/terms must disclaim being a financial product seller/advisor");
+  assert(/대출모집인/.test(terms), "/terms must disclaim being a registered loan broker");
+}
+
 validateVercelConfig(resolve(repositoryRoot, "vercel.json"));
 validateVercelConfig(resolve(projectRoot, "vercel.json"));
 SEO_ROUTES.forEach(validateRoute);
 validateSitemap();
+validatePolicyDisclosures();
 
 const notFoundPath = resolve(distRoot, "404.html");
 assert(existsSync(notFoundPath), "Missing custom 404.html output");
 const notFoundHtml = readFileSync(notFoundPath, "utf8");
 assert(/name="robots" content="noindex,nofollow"/.test(notFoundHtml),
   "404.html must be noindex,nofollow");
+// 본문이 수십 자뿐인 화면에 광고를 실으면 "Valuable Inventory" 위반이다. noindex는 색인만
+// 막고 정책 판정은 로더의 존재로 하므로, 셸에서 물려받은 태그가 지워졌는지 여기서 확인한다.
+assert(!/adsbygoogle|googlesyndication/i.test(notFoundHtml),
+  "404.html must not load the AdSense script (Valuable Inventory: no ads on a contentless screen)");
+// 역방향: 정상 라우트의 광고 배선까지 지우면 안 된다. 홈이 로더를 계속 들고 있어야 한다.
+const homeHtml = readFileSync(routeOutputPath("/"), "utf8");
+assert(/googlesyndication\.com\/pagead\/js\/adsbygoogle\.js/.test(homeHtml),
+  "/ must keep the AdSense loader (the 404 fix must not strip it from real routes)");
 
 console.log(
   `Validated ${SEO_ROUTES.length} SEO routes (${SITEMAP_ROUTES.length} sitemap URLs, ` +
