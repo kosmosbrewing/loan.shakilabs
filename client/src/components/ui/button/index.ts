@@ -5,8 +5,10 @@ export const buttonVariants = cva(
   {
     variants: {
       variant: {
-        default: "border border-primary bg-primary text-white hover:text-white active:text-white shadow-sm hover:-translate-y-[1px] hover:bg-primary/90 active:translate-y-0 active:scale-[0.985] active:bg-primary/95",
-        destructive: "border border-destructive bg-destructive text-white hover:text-white active:text-white shadow-sm hover:-translate-y-[1px] hover:bg-destructive/90 active:translate-y-0 active:scale-[0.985] active:bg-destructive/95",
+        // text-white 하드코딩은 --primary-foreground / --destructive-foreground 토큰을 우회해
+        // 다크 테마에서 밝은 레드 위 흰 글자(3.81:1)를 만들었다. 반드시 토큰을 통해야 한다.
+        default: "border border-primary bg-primary text-primary-foreground hover:text-primary-foreground active:text-primary-foreground shadow-sm hover:-translate-y-[1px] hover:bg-primary/90 active:translate-y-0 active:scale-[0.985] active:bg-primary/95",
+        destructive: "border border-destructive bg-destructive text-destructive-foreground hover:text-destructive-foreground active:text-destructive-foreground shadow-sm hover:-translate-y-[1px] hover:bg-destructive/90 active:translate-y-0 active:scale-[0.985] active:bg-destructive/95",
         outline: "border border-border bg-background text-muted-foreground hover:-translate-y-[1px] hover:border-primary/40 hover:bg-primary/5 active:translate-y-0 active:scale-[0.985] active:border-primary/45 active:bg-primary/8",
         subtle: "border border-border/70 bg-card text-foreground shadow-sm hover:-translate-y-[1px] hover:border-primary/50 hover:bg-muted/20 active:translate-y-0 active:scale-[0.985] active:border-primary/55 active:bg-muted/30",
         secondary: "bg-secondary text-secondary-foreground hover:bg-secondary/80",

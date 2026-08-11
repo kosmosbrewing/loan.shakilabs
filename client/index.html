@@ -103,15 +103,17 @@
         --accent-foreground: 0 58% 36%;
         --popover: 0 0% 100%;
         --popover-foreground: 222 47% 11%;
-        --destructive: 0 72% 52%;
+        /* WCAG AA: 이 세 색은 본문 텍스트(text-destructive/text-fee/text-profit)로 쓰이므로
+           채움색이 아니라 "글자색" 기준(4.5:1)으로 잡는다. finance·card·house와 동일 계열. */
+        --destructive: 0 74% 42%;
         --destructive-foreground: 210 40% 98%;
         --border: 214 16% 85%;
         --input: 214 16% 85%;
         --ring: 0 65% 38%;
         --radius: 0.4rem;
-        --profit: 148 61% 36%;
+        --profit: 151 70% 26%;
         --profit-foreground: 0 0% 100%;
-        --fee: 0 72% 52%;
+        --fee: 0 74% 42%;
         --fee-foreground: 0 0% 100%;
       }
 
@@ -122,23 +124,29 @@
         --muted-foreground: 215 20% 72%;
         --card: 217 33% 17%;
         --card-foreground: 210 40% 96%;
-        --primary: 0 78% 60%;
-        --primary-foreground: 0 0% 100%;
+        /* 브랜드 hue(0 레드)는 유지하고 명도만 60%→70%로 올린다.
+           다크에서 --primary는 배경(내비·버튼)이자 글자색(retro-link)으로 동시에 쓰여
+           60%로는 카드 위 글자가 3.89:1에 그쳤다. */
+        --primary: 0 78% 70%;
+        /* 흰색 전경은 밝은 레드 위에서 3.81:1 → 앱 hue를 유지한 채 어둡게 뒤집는다.
+           값은 docs/DESIGN_TOKENS.md §2 파생 공식 `{H} {S}% 10%` 그대로다. */
+        --primary-foreground: 0 78% 10%;
         --secondary: 0 12% 19%;
         --secondary-foreground: 210 40% 96%;
         --accent: 0 16% 23%;
         --accent-foreground: 0 74% 84%;
         --popover: 217 33% 17%;
         --popover-foreground: 210 40% 96%;
-        --destructive: 0 72% 58%;
-        --destructive-foreground: 0 0% 100%;
+        --destructive: 0 75% 72%;
+        --destructive-foreground: 0 75% 10%;
         --border: 214 16% 26%;
         --input: 214 16% 30%;
-        --ring: 0 78% 60%;
+        --ring: 0 78% 70%;
         --profit: 148 63% 66%;
-        --profit-foreground: 0 0% 100%;
-        --fee: 0 62% 58%;
-        --fee-foreground: 0 0% 100%;
+        --profit-foreground: 148 63% 10%;
+        /* 8개 저장소가 공유하던 리터럴 0 62% 58%(3.66:1)의 통일 상향값 */
+        --fee: 0 75% 72%;
+        --fee-foreground: 0 75% 10%;
       }
 
       html {
