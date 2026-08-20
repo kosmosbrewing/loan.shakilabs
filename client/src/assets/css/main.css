@@ -42,10 +42,12 @@
 
 @layer base {
   :root {
-    --status-success: 148 61% 36%;
-    --status-warning: 43 88% 43%;
-    --status-caution: 28 82% 48%;
-    --status-danger: 0 70% 52%;
+    /* 라이트 의미색은 전부 "글자색"으로 쓰이므로 4.5:1 기준. finance·card·house와 동일 세트.
+       status-info는 이미 5.10:1로 통과해 값을 유지한다(불필요한 시각 변화 방지). */
+    --status-success: 142 64% 24%;
+    --status-warning: 24 83% 31%;
+    --status-caution: 17 79% 34%;
+    --status-danger: 0 74% 42%;
     --status-info: 212 83% 45%;
   }
 

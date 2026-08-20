@@ -5,8 +5,10 @@
   line-height: 1.4;
 }
 
+/* 값은 라이트에서 흰색 그대로지만, 하드코딩 대신 토큰을 통하게 한다.
+   (다크는 이 규칙 밖이라 패키지의 --primary-foreground를 그대로 쓴다) */
 :root:not(.dark) nav[aria-label="주요 메뉴"] a {
-  color: white;
+  color: hsl(var(--primary-foreground));
 }
 
 .tabular-nums {
