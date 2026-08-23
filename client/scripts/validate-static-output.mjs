@@ -56,6 +56,10 @@ function validateRoute(route) {
   assert(/<title>[^<]+<\/title>/.test(html), `Missing title for ${route}`);
   assert(h1Count === 1, `Expected one H1 for ${route}, found ${h1Count}`);
   assert(html.includes('id="app"'), `Missing app root for ${route}`);
+  // 셸의 noscript 폴백은 프리렌더된 본문과 중복 H1·중복 링크를 만든다.
+  // build.mjs가 걷어내는데, 그 제거가 조용히 깨지면 여기서 잡는다.
+  assert(!/<noscript>/i.test(html),
+    `Rendered route must not retain the shell noscript for ${route}`);
 }
 
 // 사이트맵 = 대표 URL 전수 포함 + canonical 통합 변종 0건 (양방향 검증)
@@ -77,6 +81,71 @@ function validateSitemap() {
   }
   assert(locs.length === SITEMAP_ROUTES.length,
     `Sitemap URL count mismatch: expected ${SITEMAP_ROUTES.length}, found ${locs.length}`);
+  return locSet;
+}
+
+function canonicalUrlFor(route) {
+  return route === "/" ? canonicalBase : `${canonicalBase}${route}`;
+}
+
+// 라우터 소스에서 { path, redirect } 목록을 뜯어낸다.
+// 라우터가 진실의 원천이고 seo-routes.mjs의 BASE_ROUTES는 사람이 손으로 맞추는 사본이다.
+// 추출이 실패하면 폴백 없이 즉시 실패한다 — 조용히 0건을 검사하고 통과하면 게이트가 아니다.
+function parseRouterRoutes(source) {
+  const declarationIndex = source.indexOf("export const routes");
+  assert(declarationIndex !== -1,
+    "router/index.ts: `export const routes` declaration not found — the parity gate cannot read the router");
+
+  const body = source.slice(declarationIndex);
+  const marks = [...body.matchAll(/path:\s*"([^"]+)"/g)].map((match) => ({
+    path: match[1],
+    index: match.index,
+  }));
+  assert(marks.length > 0,
+    "router/index.ts: no route paths could be extracted — parser drifted from the router source");
+
+  return marks.map((mark, i) => ({
+    path: mark.path,
+    // 다음 path: 선언 전까지가 이 라우트의 본문이다
+    redirect: /redirect:/.test(body.slice(mark.index, marks[i + 1]?.index ?? body.length)),
+  }));
+}
+
+// 라우터 ↔ 사이트맵 양방향 대조 (car #46 / travel #45 규약 이식).
+// 왜: SEO_ROUTES는 라우터의 손수 유지되는 사본이라 둘이 어긋나도 빌드·프리렌더·라이브가
+// 전부 200을 돌려준다. 사람이 XML을 세는 것 말고는 잡을 방법이 없던 결함이다.
+//  (1) 정적 라우트 → 사이트맵: 렌더되는 URL이 색인 후보 밖에 남으면 안 된다.
+//  (2) 리다이렉트 라우트 → 사이트맵 제외: (1)만 검사하면 라우트를 리다이렉트로 되돌린 뒤
+//      사이트맵에만 URL을 남기는 더 나쁜 모순 상태를 통과시키게 된다.
+//  (3) 사이트맵 → 정적 라우트: 라우터에 없는 URL을 실으면 캐치올이 404 화면을 렌더한다.
+function validateRouterSitemapParity(sitemapUrls) {
+  const routerSource = readFileSync(
+    resolve(projectRoot, "src", "router", "index.ts"),
+    "utf8"
+  );
+  const routerRoutes = parseRouterRoutes(routerSource);
+  // 파라미터·캐치올 라우트는 정적 URL이 아니다
+  const isStatic = (route) => !route.redirect && !route.path.includes(":");
+  const staticPaths = new Set(routerRoutes.filter(isStatic).map((route) => route.path));
+
+  const indexRoute = routerRoutes.find((route) => route.path === "/");
+  assert(indexRoute, "router/index.ts must register an index route");
+  assert(!indexRoute.redirect,
+    "Index route must render its own view: a redirect home canonicalizes to the target "
+      + "page, and a page whose canonical points elsewhere cannot be listed in the sitemap");
+
+  for (const route of routerRoutes.filter(isStatic)) {
+    assert(sitemapUrls.has(canonicalUrlFor(route.path)),
+      `Router route is missing from the sitemap: ${canonicalUrlFor(route.path)}`);
+  }
+  for (const route of routerRoutes.filter((candidate) => candidate.redirect)) {
+    assert(!sitemapUrls.has(canonicalUrlFor(route.path)),
+      `Sitemap must not list the redirect route: ${canonicalUrlFor(route.path)}`);
+  }
+  for (const route of SITEMAP_ROUTES) {
+    assert(staticPaths.has(route),
+      `Sitemap lists a URL with no static router route: ${canonicalUrlFor(route)}`);
+  }
 }
 
 // 애드센스 필수 3요소는 방침을 다시 쓸 때 가장 먼저 사라지는 문장들이다.
@@ -107,7 +176,8 @@ function validatePolicyDisclosures() {
 validateVercelConfig(resolve(repositoryRoot, "vercel.json"));
 validateVercelConfig(resolve(projectRoot, "vercel.json"));
 SEO_ROUTES.forEach(validateRoute);
-validateSitemap();
+const sitemapUrls = validateSitemap();
+validateRouterSitemapParity(sitemapUrls);
 validatePolicyDisclosures();
 
 const notFoundPath = resolve(distRoot, "404.html");

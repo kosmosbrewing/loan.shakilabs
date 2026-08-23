@@ -158,7 +158,11 @@ function setAmountPreset(amount: number): void {
               :class="{ 'bg-primary/5': idx === 0 }"
             >
               <td class="px-3 py-2.5 font-semibold text-foreground whitespace-nowrap">
-                <span v-if="idx === 0" class="mr-1 inline-block rounded bg-primary/15 px-1.5 py-0.5 text-[10px] font-bold text-primary">최저</span>
+                <!-- 이 뱃지는 bg-primary/5 행 위에 bg-primary/15를 한 번 더 얹고 그 위에 text-primary를
+                     올려서, 같은 토큰의 알파 틴트가 2겹 쌓인 자리였다. 다크에서 실측 4.06:1(기준 미달).
+                     알파를 걷고 --primary / --primary-foreground 짝(Badge default 변형과 같은 규약)을
+                     쓰면 배경 합성과 무관하게 대비가 고정된다 — 다크 6.64:1 / 라이트 7.65:1. -->
+                <span v-if="idx === 0" class="mr-1 inline-block rounded bg-primary px-1.5 py-0.5 text-[10px] font-bold text-primary-foreground">최저</span>
                 {{ row.bank }}
               </td>
               <td class="px-3 py-2.5 text-right font-medium tabular-nums" :class="idx === 0 ? 'text-primary' : 'text-foreground'">
