@@ -121,19 +121,19 @@ const result = computed(() =>
         <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
           <div class="retro-panel-muted px-4 py-3">
             <p class="text-tiny text-muted-foreground">적용 연 요율 ({{ result.periodLabel }})</p>
-            <p class="mt-1 text-h2 font-bold text-foreground">{{ result.annualRate.toFixed(3) }}%</p>
+            <p class="mt-1 text-heading font-bold text-foreground">{{ result.annualRate.toFixed(3) }}%</p>
           </div>
           <div class="retro-panel-muted px-4 py-3">
             <p class="text-tiny text-muted-foreground">총 보증료 (할인 전)</p>
-            <p class="mt-1 text-h2 font-bold text-foreground">{{ formatWon(result.totalFee) }}</p>
+            <p class="mt-1 text-heading font-bold text-foreground">{{ formatWon(result.totalFee) }}</p>
           </div>
           <div class="retro-panel-muted px-4 py-3">
             <p class="text-tiny text-muted-foreground">할인 적용 후</p>
-            <p class="mt-1 text-h2 font-bold text-primary">{{ formatWon(result.discountedFee) }}</p>
+            <p class="mt-1 text-heading font-bold text-primary">{{ formatWon(result.discountedFee) }}</p>
           </div>
           <div class="retro-panel-muted px-4 py-3">
             <p class="text-tiny text-muted-foreground">월 환산 부담</p>
-            <p class="mt-1 text-h2 font-bold text-foreground">{{ formatWon(result.monthlyEquivalent) }}</p>
+            <p class="mt-1 text-heading font-bold text-foreground">{{ formatWon(result.monthlyEquivalent) }}</p>
           </div>
         </div>
         <p class="text-caption leading-relaxed text-muted-foreground">

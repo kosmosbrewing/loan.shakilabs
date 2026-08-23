@@ -6,6 +6,7 @@ import {
   SITEMAP_ROUTES,
   CANONICAL_OVERRIDES,
 } from "./seo-routes.mjs";
+import { validateUtilitiesAreGenerated } from "./validate-tailwind-utilities.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const projectRoot = resolve(__dirname, "..");
@@ -194,7 +195,10 @@ const homeHtml = readFileSync(routeOutputPath("/"), "utf8");
 assert(/googlesyndication\.com\/pagead\/js\/adsbygoogle\.js/.test(homeHtml),
   "/ must keep the AdSense loader (the 404 fix must not strip it from real routes)");
 
+const utilityCount = validateUtilitiesAreGenerated({ projectRoot, distRoot });
+
 console.log(
   `Validated ${SEO_ROUTES.length} SEO routes (${SITEMAP_ROUTES.length} sitemap URLs, ` +
-  `${Object.keys(CANONICAL_OVERRIDES).length} canonicalized variants) and custom 404 output.`
+  `${Object.keys(CANONICAL_OVERRIDES).length} canonicalized variants), ` +
+  `${utilityCount} generated colour utilities, and custom 404 output.`
 );
