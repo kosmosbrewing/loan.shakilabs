@@ -1,4 +1,12 @@
 // SEO 리치 가이드 데이터 (loan 앱)
+//
+// /about의 확인일은 산문에 손으로 적지 않고 데이터 파일의 상수를 그대로 읽는다.
+// 예전에는 "매월 금리 변동 시 즉시 반영합니다"라고 적혀 있었는데, mortgageRates.ts는
+// 2026-03 이후 커밋이 0건이고 저장소에 schedule 워크플로도 없어서 근거가 없었다.
+// 상수를 보간하면 금리표를 새로 확인했을 때 값 하나만 고쳐도 문장이 같이 움직인다.
+import { LOAN_DATA_VERIFIED } from "./loanPresets";
+import { MORTGAGE_DATA_UPDATED } from "./mortgageRates";
+
 export interface GuideSection { h2: string; body: string; }
 export interface GuideFaq { q: string; a: string; }
 export interface GuideChecklist { title: string; items: string[]; }
@@ -353,8 +361,16 @@ export const LOAN_ABOUT_GUIDE: GuideData = {
       body: "10여 개의 대출 계산기를 제공합니다. 원리금 상환 계산기, DSR 계산기, LTV·DTI 계산기, 주담대 비교, 전세자금대출, 디딤돌대출, 학자금대출, 대환대출 절감, 중도상환 수수료 등 대출 관련 모든 상황을 다룹니다.",
     },
     {
-      h2: "데이터 출처",
-      body: "금리 정보는 한국은행 경제통계 시스템, 은행연합회 공시자료, 주택금융공사·주택도시기금 공식 고시를 기반으로 합니다. 정책 대출 한도와 조건은 국토교통부·금융위원회 공식 자료를 참고하며, 매월 금리 변동 시 즉시 반영합니다.",
+      h2: "데이터 출처와 확인일",
+      body:
+        "금리 정보는 한국은행 경제통계 시스템, 은행연합회 공시자료, 주택금융공사·주택도시기금 공식 고시를 기반으로 합니다. " +
+        "정책 대출 한도와 조건은 국토교통부·금융위원회 공식 자료를 참고합니다. " +
+        "금리를 자동으로 받아 오는 장치가 없어 사람이 공시를 직접 열어 확인해 반영하며, 정해진 갱신 주기는 없습니다. " +
+        "확인일은 성격이 다른 두 가지를 따로 적습니다. " +
+        `LTV·DTI·DSR 한도와 상환 계산식 등 정책·계산식 기준일은 ${LOAN_DATA_VERIFIED}이고, ` +
+        `주담대 비교에 쓰는 은행별 주택담보대출 금리표를 마지막으로 확인한 날은 ${MORTGAGE_DATA_UPDATED}입니다. ` +
+        `은행 금리표는 ${MORTGAGE_DATA_UPDATED} 이후 갱신하지 않았으므로 지금의 실제 금리와 차이가 있을 수 있습니다. ` +
+        "대출은 금액이 크고 되돌리기 어려운 결정입니다. 금리 비교 결과는 상환 구조를 이해하기 위한 참고로만 쓰시고, 실제 적용 금리는 각 은행 공시나 창구에서 반드시 확인하시기 바랍니다.",
     },
     {
       h2: "운영 원칙",
