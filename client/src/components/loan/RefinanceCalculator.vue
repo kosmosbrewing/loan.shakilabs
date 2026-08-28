@@ -2,6 +2,7 @@
 import { computed } from "vue";
 import { ShBulletProgress } from "@shakilabs/ui";
 import LoanMetricGrid from "@/components/loan/LoanMetricGrid.vue";
+import LoanResultHero from "@/components/loan/LoanResultHero.vue";
 import LoanScenarioChips from "@/components/loan/LoanScenarioChips.vue";
 import MetricComparisonBars from "@/components/result-visualization/MetricComparisonBars.vue";
 import { LOAN_ASSUMPTION_NOTE, TERM_OPTIONS, refinancePresets } from "@/data/loanPresets";
@@ -27,14 +28,6 @@ const metrics = computed(() => [
     label: "월 현금흐름 개선",
     value: formatWon(result.value.monthlySavings),
     helper: "현재 납입액 대비 차이",
-  },
-  {
-    label: "순절감 예상",
-    value: formatWon(result.value.netSavings),
-    helper:
-      result.value.breakEvenMonths == null
-        ? "초기비용 회수 어려움"
-        : `${result.value.breakEvenMonths}개월 내 비용 회수`,
   },
 ]);
 const comparisonMetrics = computed(() => [
@@ -130,6 +123,11 @@ function selectPreset(key: string): void {
       </section>
     </div>
 
+    <LoanResultHero
+      label="순절감 예상"
+      :value="formatWon(result.netSavings)"
+      :sub="result.breakEvenMonths == null ? '초기비용 회수 어려움' : `${result.breakEvenMonths}개월 내 비용 회수`"
+    />
     <LoanMetricGrid :items="metrics" />
 
     <MetricComparisonBars

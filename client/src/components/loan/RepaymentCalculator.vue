@@ -14,6 +14,7 @@ import {
   ShTableRow,
 } from "@shakilabs/ui";
 import LoanMetricGrid from "@/components/loan/LoanMetricGrid.vue";
+import LoanResultHero from "@/components/loan/LoanResultHero.vue";
 import LoanScenarioChips from "@/components/loan/LoanScenarioChips.vue";
 import MetricComparisonBars from "@/components/result-visualization/MetricComparisonBars.vue";
 import { LOAN_ASSUMPTION_NOTE, TERM_OPTIONS, repaymentPresets } from "@/data/loanPresets";
@@ -34,11 +35,6 @@ const metrics = computed(() => [
     label: "원금균등 총이자",
     value: formatWon(result.value.equalPrincipal.totalInterest),
     helper: `첫 달 ${formatWon(result.value.equalPrincipal.firstPayment)}`,
-  },
-  {
-    label: "총이자 차이",
-    value: formatWon(result.value.interestGap),
-    helper: "원리금균등 - 원금균등",
   },
   {
     label: "첫 달 납입 차이",
@@ -85,7 +81,9 @@ function selectPreset(key: string): void {
               :model-value="state.principal.toLocaleString('ko-KR')"
               inputmode="numeric"
               @update:model-value="state.principal = parseNumericInput($event)"
-            />
+            >
+              <template #suffix>원</template>
+            </ShInput>
           </ShField>
           <ShField>
             <ShLabel for="repayment-rate">금리</ShLabel>
@@ -97,7 +95,9 @@ function selectPreset(key: string): void {
               step="0.1"
               type="number"
               @update:model-value="state.annualRate = Number($event)"
-            />
+            >
+              <template #suffix>%</template>
+            </ShInput>
           </ShField>
           <ShField class="sm:col-span-3">
             <ShLabel for="repayment-term">만기</ShLabel>
@@ -143,6 +143,11 @@ function selectPreset(key: string): void {
       </section>
     </div>
 
+    <LoanResultHero
+      label="총이자 차이"
+      :value="formatWon(result.interestGap)"
+      sub="원리금균등 − 원금균등"
+    />
     <LoanMetricGrid :items="metrics" />
     <MetricComparisonBars
       title="상환 방식 부담 비교"

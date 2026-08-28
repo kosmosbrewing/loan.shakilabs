@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import { computed, reactive } from "vue";
 import { ShBreakdownBar } from "@shakilabs/ui";
-import { TrendingUp, AlertTriangle, CalendarClock, Wallet } from "lucide-vue-next";
+import { TrendingUp, CalendarClock, Wallet } from "lucide-vue-next";
 import { Card, CardContent } from "@/components/ui/card";
+import LoanResultHero from "@/components/loan/LoanResultHero.vue";
 import CompareSourceFooter from "@/components/common/CompareSourceFooter.vue";
 import {
   DEFAULT_STUDENT_LOAN_INPUT,
@@ -28,10 +29,9 @@ function setRepaymentRate(rate: number): void {
   form.repaymentRate = rate;
 }
 
-const statIcons = [TrendingUp, AlertTriangle, CalendarClock, Wallet] as const;
+const statIcons = [TrendingUp, CalendarClock, Wallet] as const;
 const statIconClasses = [
   "bg-muted text-muted-foreground",
-  "bg-fee/10 text-fee",
   "bg-muted text-muted-foreground",
   "bg-primary/10 text-primary",
 ] as const;
@@ -84,11 +84,16 @@ const statIconClasses = [
       </div>
     </section>
 
-    <div class="grid grid-cols-1 gap-2 sm:grid-cols-4">
+    <LoanResultHero
+      label="의무상환액 (연간)"
+      :value="formatWon(result.creditedMandatoryRepayment)"
+      sub="자발적 상환액 차감 반영"
+    />
+
+    <div class="grid grid-cols-1 gap-2 sm:grid-cols-3">
       <Card
         v-for="(stat, index) in [
           { label: '기준소득 초과분', value: formatWon(result.baseExcessIncome), cls: '' },
-          { label: '의무상환액', value: formatWon(result.creditedMandatoryRepayment), cls: 'text-fee' },
           { label: '월 원천공제 환산', value: formatWon(result.monthlyWithholding), cls: '' },
           { label: '연말 잔액 추정', value: formatWon(result.balanceAfterYear), cls: 'text-primary' },
         ]"

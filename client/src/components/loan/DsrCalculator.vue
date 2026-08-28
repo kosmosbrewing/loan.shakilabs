@@ -2,6 +2,7 @@
 import { computed } from "vue";
 import { ShBulletProgress } from "@shakilabs/ui";
 import LoanMetricGrid from "@/components/loan/LoanMetricGrid.vue";
+import LoanResultHero from "@/components/loan/LoanResultHero.vue";
 import LoanScenarioChips from "@/components/loan/LoanScenarioChips.vue";
 import { DSR_LIMIT_OPTIONS, LOAN_ASSUMPTION_NOTE, TERM_OPTIONS, dsrPresets } from "@/data/loanPresets";
 import { useDsrCalculator } from "@/composables/useDsrCalculator";
@@ -21,11 +22,6 @@ const metrics = computed(() => [
     label: "월 상환 가능액",
     value: formatWon(result.value.availableMonthlyBudget),
     helper: "새 대출이 감당해야 할 월 한도",
-  },
-  {
-    label: "추정 최대 대출액",
-    value: formatWon(result.value.maxLoanAmount),
-    helper: `총상환액 ${formatWon(result.value.estimatedTotalRepayment)}`,
   },
   {
     label: "현재 DSR",
@@ -102,6 +98,11 @@ function selectPreset(key: string): void {
       </section>
     </div>
 
+    <LoanResultHero
+      label="추정 최대 대출액"
+      :value="formatWon(result.maxLoanAmount)"
+      :sub="`총상환액 ${formatWon(result.estimatedTotalRepayment)}`"
+    />
     <LoanMetricGrid :items="metrics" />
     <ShBulletProgress
       label="현재 DSR 한도 사용률"
