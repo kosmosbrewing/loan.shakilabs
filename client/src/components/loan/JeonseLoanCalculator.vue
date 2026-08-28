@@ -2,6 +2,7 @@
 import { computed } from "vue";
 import { ShPresetGroup } from "@shakilabs/ui";
 import LoanMetricGrid from "@/components/loan/LoanMetricGrid.vue";
+import LoanResultHero from "@/components/loan/LoanResultHero.vue";
 import LoanScenarioChips from "@/components/loan/LoanScenarioChips.vue";
 import MetricComparisonBars from "@/components/result-visualization/MetricComparisonBars.vue";
 import CompareSourceFooter from "@/components/common/CompareSourceFooter.vue";
@@ -24,11 +25,6 @@ const depositPresetOptions = JEONSE_DEPOSIT_PRESETS.map((value) => ({
 }));
 
 const metrics = computed(() => [
-  {
-    label: "월 납입액",
-    value: formatWon(result.value.monthlyPayment),
-    helper: result.value.isInterestOnly ? "이자만 납부 (거치식)" : "원리금균등 상환",
-  },
   {
     label: "총 이자",
     value: formatWon(result.value.totalInterest),
@@ -133,6 +129,11 @@ function setDepositPreset(amount: number): void {
       </div>
     </section>
 
+    <LoanResultHero
+      label="월 납입액"
+      :value="formatWon(result.monthlyPayment)"
+      :sub="result.isInterestOnly ? '이자만 납부 (거치식)' : '원리금균등 상환'"
+    />
     <LoanMetricGrid :items="metrics" />
 
     <MetricComparisonBars

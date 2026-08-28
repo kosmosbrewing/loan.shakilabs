@@ -2,6 +2,7 @@
 import { computed } from "vue";
 import { ShPresetGroup } from "@shakilabs/ui";
 import LoanMetricGrid from "@/components/loan/LoanMetricGrid.vue";
+import LoanResultHero from "@/components/loan/LoanResultHero.vue";
 import LoanScenarioChips from "@/components/loan/LoanScenarioChips.vue";
 import MetricComparisonBars from "@/components/result-visualization/MetricComparisonBars.vue";
 import CompareSourceFooter from "@/components/common/CompareSourceFooter.vue";
@@ -21,11 +22,6 @@ const amountPresetOptions = MORTGAGE_AMOUNT_PRESETS.map((value) => ({
 const metrics = computed(() => {
   const r = result.value;
   return [
-    {
-      label: "최저금리 은행",
-      value: r.bestBank ? `${r.bestBank.bank} ${formatPercentValue(r.bestBank.bestRate, 2)}` : "-",
-      helper: r.bestBank ? `월 ${formatWon(r.bestBank.bestMonthlyPayment)}` : undefined,
-    },
     {
       label: "월 상환액 차이",
       value: formatWon(r.monthlyPaymentRange),
@@ -123,6 +119,11 @@ function setAmountPreset(amount: number): void {
       </div>
     </section>
 
+    <LoanResultHero
+      label="최저금리 은행"
+      :value="result.bestBank ? `${result.bestBank.bank} ${formatPercentValue(result.bestBank.bestRate, 2)}` : '-'"
+      :sub="result.bestBank ? `월 ${formatWon(result.bestBank.bestMonthlyPayment)}` : undefined"
+    />
     <LoanMetricGrid :items="metrics" />
 
     <MetricComparisonBars

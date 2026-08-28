@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import LoanMetricGrid from "@/components/loan/LoanMetricGrid.vue";
+import LoanResultHero from "@/components/loan/LoanResultHero.vue";
 import LoanScenarioChips from "@/components/loan/LoanScenarioChips.vue";
 import ConstraintBars from "@/components/result-visualization/ConstraintBars.vue";
 import MetricComparisonBars from "@/components/result-visualization/MetricComparisonBars.vue";
@@ -25,11 +26,6 @@ const metrics = computed(() => [
     label: "적용 금리",
     value: formatPercentValue(result.value.applicableRate, 2),
     helper: result.value.incomeBracketLabel,
-  },
-  {
-    label: "대출 가능액",
-    value: formatWon(result.value.effectiveLoanAmount),
-    helper: `한도·LTV·DTI 중 최소`,
   },
   {
     label: "월 납입액",
@@ -151,6 +147,11 @@ const borrowerTypes: { value: BorrowerType; label: string }[] = [
       </ul>
     </div>
 
+    <LoanResultHero
+      label="대출 가능액"
+      :value="formatWon(result.effectiveLoanAmount)"
+      sub="한도·LTV·DTI 중 최소"
+    />
     <LoanMetricGrid :items="metrics" />
     <ConstraintBars title="디딤돌대출 한도 제한" :items="constraints" :format-value="formatWon" />
     <MetricComparisonBars

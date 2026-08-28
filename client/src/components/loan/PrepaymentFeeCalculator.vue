@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import { computed, reactive } from "vue";
 import { ShBreakdownBar } from "@shakilabs/ui";
-import { AlertTriangle, ShieldCheck, Banknote, TrendingDown } from "lucide-vue-next";
+import { ShieldCheck, Banknote, TrendingDown } from "lucide-vue-next";
 import { Card, CardContent } from "@/components/ui/card";
+import LoanResultHero from "@/components/loan/LoanResultHero.vue";
 import CompareSourceFooter from "@/components/common/CompareSourceFooter.vue";
 import {
   DEFAULT_PREPAYMENT_FEE_INPUT,
@@ -24,9 +25,8 @@ const repaymentSegments = computed(() => [
   { key: "target", label: "수수료 과금 대상", value: result.value.feeTargetAmount, tone: "danger" as const },
 ]);
 
-const statIcons = [AlertTriangle, ShieldCheck, Banknote, TrendingDown] as const;
+const statIcons = [ShieldCheck, Banknote, TrendingDown] as const;
 const statIconClasses = [
-  "bg-fee/10 text-fee",
   "bg-muted text-muted-foreground",
   "bg-muted text-muted-foreground",
   "bg-muted text-muted-foreground",
@@ -66,10 +66,15 @@ const statIconClasses = [
       </div>
     </section>
 
-    <div class="grid grid-cols-1 gap-2 sm:grid-cols-4">
+    <LoanResultHero
+      label="예상 수수료"
+      :value="formatWon(result.feeAmount)"
+      sub="이번 상환액 기준"
+    />
+
+    <div class="grid grid-cols-1 gap-2 sm:grid-cols-3">
       <Card
         v-for="(stat, index) in [
-          { label: '예상 수수료', value: formatWon(result.feeAmount), cls: 'text-fee' },
           { label: '면제 처리 금액', value: formatWon(result.waivedAmount), cls: '' },
           { label: '과금 대상 원금', value: formatWon(result.feeTargetAmount), cls: '' },
           { label: '실효 부담률', value: formatRatioAsPercent(result.effectiveRate, 2), cls: '' },

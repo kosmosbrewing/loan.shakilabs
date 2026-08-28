@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import LoanMetricGrid from "@/components/loan/LoanMetricGrid.vue";
+import LoanResultHero from "@/components/loan/LoanResultHero.vue";
 import LoanScenarioChips from "@/components/loan/LoanScenarioChips.vue";
 import ConstraintBars from "@/components/result-visualization/ConstraintBars.vue";
 import CompareSourceFooter from "@/components/common/CompareSourceFooter.vue";
@@ -20,11 +21,6 @@ const override = props.initialPropertyPrice ? { propertyPrice: props.initialProp
 const { state, result, reset } = useLtvDti(override);
 
 const metrics = computed(() => [
-  {
-    label: "최종 대출 한도",
-    value: formatWon(result.value.finalMaxLoan),
-    helper: `제한 요인: ${result.value.limitingFactor}`,
-  },
   {
     label: "LTV 한도",
     value: formatWon(result.value.maxByLtv),
@@ -143,6 +139,11 @@ const borrowerCategories: { value: BorrowerCategory; label: string }[] = [
       </div>
     </section>
 
+    <LoanResultHero
+      label="최종 대출 한도"
+      :value="formatWon(result.finalMaxLoan)"
+      :sub="`제한 요인: ${result.limitingFactor}`"
+    />
     <LoanMetricGrid :items="metrics" />
     <ConstraintBars title="규제별 대출 한도" :items="constraints" :format-value="formatWon" />
 
