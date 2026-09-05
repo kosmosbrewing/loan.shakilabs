@@ -4,7 +4,7 @@ import SEOHead from "@/components/common/SEOHead.vue";
 import FaqAccordionPanel from "@/components/common/FaqAccordionPanel.vue";
 import SeoRichGuide from "@/components/common/SeoRichGuide.vue";
 import { mergeFaqs } from "@/lib/faqMerge";
-import { LOAN_HOME_GUIDE } from "@/data/seoGuides";
+import { LOAN_STEPPING_STONE_GUIDE } from "@/data/seoGuides";
 import FreshBadge from "@/components/common/FreshBadge.vue";
 import SteppingStoneLoanCalculator from "@/components/loan/SteppingStoneLoanCalculator.vue";
 import CalculatorPageHeader from "@/components/loan/CalculatorPageHeader.vue";
@@ -39,7 +39,7 @@ const seoDescription = computed(() =>
 );
 
 // 화면 아코디언과 구조화 데이터가 같은 병합 결과를 쓰도록 한 번만 계산한다
-const mergedFaqs = mergeFaqs(STEPPING_STONE_FAQS, LOAN_HOME_GUIDE.faqs);
+const mergedFaqs = mergeFaqs(STEPPING_STONE_FAQS, LOAN_STEPPING_STONE_GUIDE.faqs);
 
 const faqJsonLd = {
   "@context": "https://schema.org",
@@ -83,10 +83,10 @@ const faqJsonLd = {
     <FaqAccordionPanel :items="mergedFaqs" />
 
     <SeoRichGuide
-      :title="LOAN_HOME_GUIDE.title"
-      :intro="LOAN_HOME_GUIDE.intro"
-      :sections="LOAN_HOME_GUIDE.sections"
-      :disclaimer="LOAN_HOME_GUIDE.disclaimer"
+      :title="LOAN_STEPPING_STONE_GUIDE.title"
+      :intro="LOAN_STEPPING_STONE_GUIDE.intro"
+      :sections="LOAN_STEPPING_STONE_GUIDE.sections"
+      :disclaimer="LOAN_STEPPING_STONE_GUIDE.disclaimer"
     />
   </div>
 </template>
