@@ -1,66 +1,159 @@
 import { z } from "zod";
 
-const amountSchema = z.coerce.number().int().min(100_000).max(2_000_000_000);
-const optionalAmountSchema = z.coerce.number().int().min(0).max(2_000_000_000);
-const incomeSchema = z.coerce.number().int().min(0).max(1_000_000_000);
-const rateSchema = z.coerce.number().min(0).max(30);
-const termSchema = z.coerce.number().int().min(1).max(480);
-const dsrSchema = z.coerce.number().min(0.1).max(1);
+// 숫자 필드 = zod 스키마 + 범위. 스키마는 타입 추론·형식 검증용이고, sanitize는 범위를 직접 읽어 클램프한다.
+//
+// 예전에는 amountSchema(max 20억)에 뷰별 .max(50억)을 덧씌웠는데, zod는 두 검사를 모두 통과해야 해서
+// 뷰 상한이 무효였다 — 집값 25억을 넣으면 조용히 기본값 7억으로 되돌아가는 오답이 났다.
+// 그래서 상한은 필드마다 한 번만 적고, 범위 밖 입력은 기본값으로 바꾸지 않고 경계로 클램프한다.
+interface NumField {
+  schema: z.ZodType<number>;
+  min: number;
+  max: number;
+  int: boolean;
+}
 
-export const refinanceInputSchema = z.object({
-  balance: amountSchema,
-  currentRate: rateSchema,
-  newRate: rateSchema,
-  remainingMonths: termSchema,
-  newTermMonths: termSchema,
-  refinanceFee: optionalAmountSchema,
-});
+function numField(min: number, max: number, int: boolean): NumField {
+  const base = z.coerce.number().min(min).max(max);
+  return { schema: int ? base.int() : base, min, max, int };
+}
 
-export const dsrInputSchema = z.object({
-  annualIncome: incomeSchema,
-  existingAnnualDebtService: optionalAmountSchema,
-  dsrLimit: dsrSchema,
-  newLoanRate: rateSchema,
-  termMonths: termSchema,
-});
+const AMOUNT_MAX = 2_000_000_000;
+const amount = (max = AMOUNT_MAX) => numField(100_000, max, true);
+const optionalAmount = (max = AMOUNT_MAX) => numField(0, max, true);
+const income = (max = 1_000_000_000) => numField(0, max, true);
+const rate = (max = 30) => numField(0, max, false);
+const term = (max = 480) => numField(1, max, true);
+const ratio = (min: number, max: number) => numField(min, max, false);
 
-export const repaymentInputSchema = z.object({
-  principal: amountSchema,
-  annualRate: rateSchema,
-  termMonths: termSchema,
-});
+// 각 계산기가 쓰는 필드 정의 — 스키마와 sanitize가 같은 객체를 읽는다
+const FIELDS = {
+  refinance: {
+    balance: amount(),
+    currentRate: rate(),
+    newRate: rate(),
+    remainingMonths: term(),
+    newTermMonths: term(),
+    refinanceFee: optionalAmount(),
+  },
+  dsr: {
+    annualIncome: income(),
+    existingAnnualDebtService: optionalAmount(),
+    dsrLimit: ratio(0.1, 1),
+    newLoanRate: rate(),
+    termMonths: term(),
+  },
+  repayment: { principal: amount(), annualRate: rate(), termMonths: term() },
+  prepayment: {
+    originalLoanAmount: amount(5_000_000_000),
+    repaymentAmount: optionalAmount(5_000_000_000),
+    feeRate: ratio(0, 5),
+    chargePeriodMonths: term(120),
+    elapsedMonths: numField(0, 120, true),
+    annualFreeRate: ratio(0, 100),
+  },
+  studentLoan: {
+    loanBalance: amount(500_000_000),
+    annualIncome: income(),
+    thresholdIncome: income(100_000_000),
+    repaymentRate: ratio(0, 100),
+    voluntaryRepayment: optionalAmount(500_000_000),
+    interestRate: rate(10),
+  },
+  jeonseLoan: { depositAmount: amount(5_000_000_000), annualRate: rate(), termMonths: term() },
+  mortgageCompare: { loanAmount: amount(5_000_000_000), termMonths: term() },
+  steppingStone: {
+    householdIncome: income(),
+    propertyPrice: amount(5_000_000_000),
+    termYears: numField(10, 30, true),
+  },
+  ltvDti: {
+    propertyPrice: amount(10_000_000_000),
+    annualIncome: income(),
+    existingDebtPayment: optionalAmount(),
+    loanRate: rate(),
+    termMonths: term(),
+  },
+} as const;
 
-export const prepaymentFeeInputSchema = z.object({
-  originalLoanAmount: amountSchema.max(5_000_000_000),
-  repaymentAmount: optionalAmountSchema.max(5_000_000_000),
-  feeRate: z.coerce.number().min(0).max(5),
-  chargePeriodMonths: termSchema.max(120),
-  elapsedMonths: z.coerce.number().int().min(0).max(120),
-  annualFreeRate: z.coerce.number().min(0).max(100),
-});
+// 클램프가 일어났을 때 화면에 알리기 위한 필드 이름. 조용히 자르면 입력칸(200억)과 결과(100억)가
+// 어긋난 채 남아 또 다른 조용한 오답이 된다.
+const FIELD_LABELS: Record<string, string> = {
+  balance: "대출 잔액",
+  refinanceFee: "대환 비용",
+  annualIncome: "연소득",
+  householdIncome: "부부합산 연소득",
+  existingAnnualDebtService: "기존 대출 연 상환액",
+  existingDebtPayment: "기존 대출 연 상환액",
+  principal: "대출 원금",
+  originalLoanAmount: "최초 대출 금액",
+  repaymentAmount: "중도상환 금액",
+  loanBalance: "학자금 잔액",
+  thresholdIncome: "상환기준소득",
+  voluntaryRepayment: "자발 상환액",
+  depositAmount: "전세보증금",
+  loanAmount: "대출 금액",
+  propertyPrice: "주택 가격",
+  currentRate: "현재 금리",
+  newRate: "신규 금리",
+  annualRate: "금리",
+  loanRate: "금리",
+  newLoanRate: "금리",
+  interestRate: "이자율",
+  feeRate: "수수료율",
+  annualFreeRate: "연 면제 비율",
+  repaymentRate: "상환율",
+  dsrLimit: "DSR 한도",
+  remainingMonths: "잔여 기간",
+  newTermMonths: "신규 기간",
+  termMonths: "대출 기간",
+  chargePeriodMonths: "수수료 부과 기간",
+  elapsedMonths: "경과 개월",
+  termYears: "대출 기간",
+};
 
-export const studentLoanInputSchema = z.object({
-  loanBalance: amountSchema.max(500_000_000),
-  annualIncome: incomeSchema,
-  thresholdIncome: incomeSchema.max(100_000_000),
-  repaymentRate: z.coerce.number().min(0).max(100),
-  voluntaryRepayment: optionalAmountSchema.max(500_000_000),
-  interestRate: z.coerce.number().min(0).max(10),
-});
+export interface ClampNotice {
+  key: string;
+  label: string;
+  entered: number;
+  applied: number;
+}
+
+/** 입력이 범위 밖이라 잘린 필드 목록. 비어 있으면 입력 그대로 계산된 것이다. */
+export function clampNotices(kind: keyof typeof FIELDS, input: Record<string, unknown>): ClampNotice[] {
+  const fields = FIELDS[kind] as Record<string, NumField>;
+  const notices: ClampNotice[] = [];
+  for (const [key, field] of Object.entries(fields)) {
+    const raw = input[key];
+    if (typeof raw !== "number" || !Number.isFinite(raw)) continue;
+    if (raw >= field.min && raw <= field.max) continue;
+    notices.push({
+      key,
+      label: FIELD_LABELS[key] ?? key,
+      entered: raw,
+      applied: Math.min(field.max, Math.max(field.min, raw)),
+    });
+  }
+  return notices;
+}
+
+type SchemaOf<T extends Record<string, NumField>> = { [K in keyof T]: T[K]["schema"] };
+function schemasOf<T extends Record<string, NumField>>(fields: T): SchemaOf<T> {
+  return Object.fromEntries(Object.entries(fields).map(([k, f]) => [k, f.schema])) as SchemaOf<T>;
+}
+
+export const refinanceInputSchema = z.object(schemasOf(FIELDS.refinance));
+export const dsrInputSchema = z.object(schemasOf(FIELDS.dsr));
+export const repaymentInputSchema = z.object(schemasOf(FIELDS.repayment));
+export const prepaymentFeeInputSchema = z.object(schemasOf(FIELDS.prepayment));
+export const studentLoanInputSchema = z.object(schemasOf(FIELDS.studentLoan));
 
 const repaymentMethodValues = ["annuity", "equalPrincipal"] as const;
 export type RepaymentMethod = (typeof repaymentMethodValues)[number];
 
-export const jeonseLoanInputSchema = z.object({
-  depositAmount: amountSchema.max(5_000_000_000),
-  annualRate: rateSchema,
-  termMonths: termSchema,
-  isInterestOnly: z.boolean(),
-});
+export const jeonseLoanInputSchema = z.object({ ...schemasOf(FIELDS.jeonseLoan), isInterestOnly: z.boolean() });
 
 export const mortgageCompareInputSchema = z.object({
-  loanAmount: amountSchema.max(5_000_000_000),
-  termMonths: termSchema,
+  ...schemasOf(FIELDS.mortgageCompare),
   repaymentMethod: z.enum(repaymentMethodValues),
 });
 
@@ -68,10 +161,8 @@ const borrowerTypeValues = ["general", "firstTime", "newlywed"] as const;
 export type BorrowerType = (typeof borrowerTypeValues)[number];
 
 export const steppingStoneLoanInputSchema = z.object({
-  householdIncome: incomeSchema,
-  propertyPrice: amountSchema.max(5_000_000_000),
+  ...schemasOf(FIELDS.steppingStone),
   borrowerType: z.enum(borrowerTypeValues),
-  termYears: z.coerce.number().int().min(10).max(30),
   isMetro: z.boolean(),
 });
 
@@ -79,11 +170,7 @@ const regionTypeValues = ["speculative", "nonRegulated"] as const;
 const borrowerCategoryValues = ["general", "firstTime", "lowIncome"] as const;
 
 export const ltvDtiInputSchema = z.object({
-  propertyPrice: amountSchema.max(10_000_000_000),
-  annualIncome: incomeSchema,
-  existingDebtPayment: optionalAmountSchema,
-  loanRate: rateSchema,
-  termMonths: termSchema,
+  ...schemasOf(FIELDS.ltvDti),
   region: z.enum(regionTypeValues),
   borrowerCategory: z.enum(borrowerCategoryValues),
 });
@@ -170,80 +257,48 @@ export const DEFAULT_LTV_DTI_INPUT: LtvDtiInput = {
   borrowerCategory: "general",
 };
 
-function readField<T>(schema: z.ZodType<T>, value: unknown, fallback: T): T {
-  const parsed = schema.safeParse(value);
-  return parsed.success ? parsed.data : fallback;
+/**
+ * 숫자 입력 정규화. 범위 밖이면 기본값으로 되돌리지 않고 경계로 클램프한다 — 25억을 넣은 사용자에게
+ * 7억 결과를 보여 주는 조용한 오답보다, 상한 100억으로 잘린 결과가 계산기로서 정직하다.
+ * 숫자로 읽을 수 없는 값(빈 문자열·NaN·null)만 기본값으로 간다.
+ */
+function readNumber(field: NumField, value: unknown, fallback: number): number {
+  if (value === null || value === undefined || value === "" || typeof value === "boolean") return fallback;
+  const n = typeof value === "number" ? value : Number(value);
+  if (!Number.isFinite(n)) return fallback;
+  const clamped = Math.min(field.max, Math.max(field.min, n));
+  return field.int ? Math.round(clamped) : clamped;
+}
+
+function readAll<T extends Record<string, NumField>>(
+  fields: T,
+  input: Partial<Record<keyof T, unknown>> | undefined,
+  defaults: Record<keyof T, number>,
+): Record<keyof T, number> {
+  const out = {} as Record<keyof T, number>;
+  for (const key of Object.keys(fields) as (keyof T)[]) out[key] = readNumber(fields[key], input?.[key], defaults[key]);
+  return out;
 }
 
 export function sanitizeRefinanceInput(input?: Partial<RefinanceInput>): RefinanceInput {
-  return {
-    balance: readField(amountSchema, input?.balance, DEFAULT_REFINANCE_INPUT.balance),
-    currentRate: readField(rateSchema, input?.currentRate, DEFAULT_REFINANCE_INPUT.currentRate),
-    newRate: readField(rateSchema, input?.newRate, DEFAULT_REFINANCE_INPUT.newRate),
-    remainingMonths: readField(termSchema, input?.remainingMonths, DEFAULT_REFINANCE_INPUT.remainingMonths),
-    newTermMonths: readField(termSchema, input?.newTermMonths, DEFAULT_REFINANCE_INPUT.newTermMonths),
-    refinanceFee: readField(optionalAmountSchema, input?.refinanceFee, DEFAULT_REFINANCE_INPUT.refinanceFee),
-  };
+  return readAll(FIELDS.refinance, input, DEFAULT_REFINANCE_INPUT);
 }
 
 export function sanitizeDsrInput(input?: Partial<DsrInput>): DsrInput {
-  return {
-    annualIncome: readField(incomeSchema, input?.annualIncome, DEFAULT_DSR_INPUT.annualIncome),
-    existingAnnualDebtService: readField(
-      optionalAmountSchema,
-      input?.existingAnnualDebtService,
-      DEFAULT_DSR_INPUT.existingAnnualDebtService,
-    ),
-    dsrLimit: readField(dsrSchema, input?.dsrLimit, DEFAULT_DSR_INPUT.dsrLimit),
-    newLoanRate: readField(rateSchema, input?.newLoanRate, DEFAULT_DSR_INPUT.newLoanRate),
-    termMonths: readField(termSchema, input?.termMonths, DEFAULT_DSR_INPUT.termMonths),
-  };
+  return readAll(FIELDS.dsr, input, DEFAULT_DSR_INPUT);
 }
 
 export function sanitizeRepaymentInput(input?: Partial<RepaymentInput>): RepaymentInput {
-  return {
-    principal: readField(amountSchema, input?.principal, DEFAULT_REPAYMENT_INPUT.principal),
-    annualRate: readField(rateSchema, input?.annualRate, DEFAULT_REPAYMENT_INPUT.annualRate),
-    termMonths: readField(termSchema, input?.termMonths, DEFAULT_REPAYMENT_INPUT.termMonths),
-  };
+  return readAll(FIELDS.repayment, input, DEFAULT_REPAYMENT_INPUT);
 }
 
 export function sanitizePrepaymentFeeInput(input?: Partial<PrepaymentFeeInput>): PrepaymentFeeInput {
-  return {
-    originalLoanAmount: readField(
-      amountSchema.max(5_000_000_000),
-      input?.originalLoanAmount,
-      DEFAULT_PREPAYMENT_FEE_INPUT.originalLoanAmount,
-    ),
-    repaymentAmount: readField(
-      optionalAmountSchema.max(5_000_000_000),
-      input?.repaymentAmount,
-      DEFAULT_PREPAYMENT_FEE_INPUT.repaymentAmount,
-    ),
-    feeRate: readField(z.coerce.number().min(0).max(5), input?.feeRate, DEFAULT_PREPAYMENT_FEE_INPUT.feeRate),
-    chargePeriodMonths: readField(
-      termSchema.max(120),
-      input?.chargePeriodMonths,
-      DEFAULT_PREPAYMENT_FEE_INPUT.chargePeriodMonths,
-    ),
-    elapsedMonths: readField(
-      z.coerce.number().int().min(0).max(120),
-      input?.elapsedMonths,
-      DEFAULT_PREPAYMENT_FEE_INPUT.elapsedMonths,
-    ),
-    annualFreeRate: readField(
-      z.coerce.number().min(0).max(100),
-      input?.annualFreeRate,
-      DEFAULT_PREPAYMENT_FEE_INPUT.annualFreeRate,
-    ),
-  };
+  return readAll(FIELDS.prepayment, input, DEFAULT_PREPAYMENT_FEE_INPUT);
 }
 
 export function sanitizeJeonseLoanInput(input?: Partial<JeonseLoanInput>): JeonseLoanInput {
   return {
-    depositAmount: readField(amountSchema.max(5_000_000_000), input?.depositAmount, DEFAULT_JEONSE_LOAN_INPUT.depositAmount),
-    annualRate: readField(rateSchema, input?.annualRate, DEFAULT_JEONSE_LOAN_INPUT.annualRate),
-    termMonths: readField(termSchema, input?.termMonths, DEFAULT_JEONSE_LOAN_INPUT.termMonths),
+    ...readAll(FIELDS.jeonseLoan, input, DEFAULT_JEONSE_LOAN_INPUT),
     isInterestOnly: typeof input?.isInterestOnly === "boolean" ? input.isInterestOnly : DEFAULT_JEONSE_LOAN_INPUT.isInterestOnly,
   };
 }
@@ -256,41 +311,13 @@ function parseRepaymentMethod(value: unknown): RepaymentMethod | null {
 
 export function sanitizeMortgageCompareInput(input?: Partial<MortgageCompareInput>): MortgageCompareInput {
   return {
-    loanAmount: readField(amountSchema.max(5_000_000_000), input?.loanAmount, DEFAULT_MORTGAGE_COMPARE_INPUT.loanAmount),
-    termMonths: readField(termSchema, input?.termMonths, DEFAULT_MORTGAGE_COMPARE_INPUT.termMonths),
+    ...readAll(FIELDS.mortgageCompare, input, DEFAULT_MORTGAGE_COMPARE_INPUT),
     repaymentMethod: parseRepaymentMethod(input?.repaymentMethod) ?? DEFAULT_MORTGAGE_COMPARE_INPUT.repaymentMethod,
   };
 }
 
 export function sanitizeStudentLoanInput(input?: Partial<StudentLoanInput>): StudentLoanInput {
-  return {
-    loanBalance: readField(
-      amountSchema.max(500_000_000),
-      input?.loanBalance,
-      DEFAULT_STUDENT_LOAN_INPUT.loanBalance,
-    ),
-    annualIncome: readField(incomeSchema, input?.annualIncome, DEFAULT_STUDENT_LOAN_INPUT.annualIncome),
-    thresholdIncome: readField(
-      incomeSchema.max(100_000_000),
-      input?.thresholdIncome,
-      DEFAULT_STUDENT_LOAN_INPUT.thresholdIncome,
-    ),
-    repaymentRate: readField(
-      z.coerce.number().min(0).max(100),
-      input?.repaymentRate,
-      DEFAULT_STUDENT_LOAN_INPUT.repaymentRate,
-    ),
-    voluntaryRepayment: readField(
-      optionalAmountSchema.max(500_000_000),
-      input?.voluntaryRepayment,
-      DEFAULT_STUDENT_LOAN_INPUT.voluntaryRepayment,
-    ),
-    interestRate: readField(
-      z.coerce.number().min(0).max(10),
-      input?.interestRate,
-      DEFAULT_STUDENT_LOAN_INPUT.interestRate,
-    ),
-  };
+  return readAll(FIELDS.studentLoan, input, DEFAULT_STUDENT_LOAN_INPUT);
 }
 
 function parseBorrowerType(value: unknown): BorrowerType | null {
@@ -301,10 +328,8 @@ function parseBorrowerType(value: unknown): BorrowerType | null {
 
 export function sanitizeSteppingStoneLoanInput(input?: Partial<SteppingStoneLoanInput>): SteppingStoneLoanInput {
   return {
-    householdIncome: readField(incomeSchema, input?.householdIncome, DEFAULT_STEPPING_STONE_INPUT.householdIncome),
-    propertyPrice: readField(amountSchema.max(5_000_000_000), input?.propertyPrice, DEFAULT_STEPPING_STONE_INPUT.propertyPrice),
+    ...readAll(FIELDS.steppingStone, input, DEFAULT_STEPPING_STONE_INPUT),
     borrowerType: parseBorrowerType(input?.borrowerType) ?? DEFAULT_STEPPING_STONE_INPUT.borrowerType,
-    termYears: readField(z.coerce.number().int().min(10).max(30), input?.termYears, DEFAULT_STEPPING_STONE_INPUT.termYears),
     isMetro: typeof input?.isMetro === "boolean" ? input.isMetro : DEFAULT_STEPPING_STONE_INPUT.isMetro,
   };
 }
@@ -323,11 +348,7 @@ function parseBorrowerCategory(value: unknown): LtvDtiInput["borrowerCategory"] 
 
 export function sanitizeLtvDtiInput(input?: Partial<LtvDtiInput>): LtvDtiInput {
   return {
-    propertyPrice: readField(amountSchema.max(10_000_000_000), input?.propertyPrice, DEFAULT_LTV_DTI_INPUT.propertyPrice),
-    annualIncome: readField(incomeSchema, input?.annualIncome, DEFAULT_LTV_DTI_INPUT.annualIncome),
-    existingDebtPayment: readField(optionalAmountSchema, input?.existingDebtPayment, DEFAULT_LTV_DTI_INPUT.existingDebtPayment),
-    loanRate: readField(rateSchema, input?.loanRate, DEFAULT_LTV_DTI_INPUT.loanRate),
-    termMonths: readField(termSchema, input?.termMonths, DEFAULT_LTV_DTI_INPUT.termMonths),
+    ...readAll(FIELDS.ltvDti, input, DEFAULT_LTV_DTI_INPUT),
     region: parseRegionType(input?.region) ?? DEFAULT_LTV_DTI_INPUT.region,
     borrowerCategory: parseBorrowerCategory(input?.borrowerCategory) ?? DEFAULT_LTV_DTI_INPUT.borrowerCategory,
   };

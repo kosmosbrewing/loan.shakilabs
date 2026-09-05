@@ -4,7 +4,7 @@
 
 import { DEFAULT_LTV_DTI_INPUT } from "@/lib/validators";
 import { calcLtvDti } from "@/utils/ltvDtiCalc";
-import { type Finding, eul, eun, ga, manwon, pct, pp, rate, ro, term, times, wa, won } from "./format";
+import { type Finding, eul, eun, ga, manwon, pct, pp, rate, ro, term, times, won } from "./format";
 
 const D = DEFAULT_LTV_DTI_INPUT; // 7억, 소득 8천만, 기존 600만, 4.5%, 30년, 규제지역, 일반
 const run = (patch: Partial<typeof D>) => calcLtvDti({ ...D, ...patch });
@@ -63,14 +63,15 @@ function absoluteCliff(): Finding {
   const HIGH_INCOME = 300_000_000; // DSR·DTI가 걸리지 않도록 높게 둔 가정 소득
   const at15 = run({ propertyPrice: 1_500_000_000, annualIncome: HIGH_INCOME });
   const over15 = run({ propertyPrice: 1_500_000_000 + 1_000_000, annualIncome: HIGH_INCOME });
-  const at12 = run({ propertyPrice: 1_200_000_000, annualIncome: HIGH_INCOME });
+  const at25 = run({ propertyPrice: 2_500_000_000, annualIncome: HIGH_INCOME });
+  const over25 = run({ propertyPrice: 2_500_000_000 + 1_000_000, annualIncome: HIGH_INCOME });
   return {
-    h2: `집값 ${manwon(1_500_000_000)}에서 ${manwon(1_501_000_000)}으로 100만원 오르면 한도가 ${manwon(at15.finalMaxLoan - over15.finalMaxLoan)} 떨어진다`,
+    h2: `집값 ${manwon(1_500_000_000)}에서 100만원 오르면 한도가 ${manwon(at15.finalMaxLoan - over15.finalMaxLoan)}, ${manwon(2_500_000_000)}에서 100만원 오르면 ${manwon(at25.finalMaxLoan - over25.finalMaxLoan)} 떨어진다`,
     body:
       `규제지역 절대한도는 집값 구간별 고정 금액이라 경계에서 절벽이 생깁니다. 소득 ${manwon(HIGH_INCOME)}(DSR·DTI가 걸리지 않도록 높게 가정)일 때 집값 ${manwon(1_500_000_000)}의 한도는 ${won(at15.finalMaxLoan)}(${at15.limitingFactor})인데, ${manwon(1_501_000_000)}이면 ${won(over15.finalMaxLoan)}(${over15.limitingFactor})로 ${won(at15.finalMaxLoan - over15.finalMaxLoan)} 줄어듭니다. ` +
-      `LTV ${pct(at15.ltvRate, 0)}로 계산한 ${wa(won(at15.maxByLtv))} ${eun(won(over15.maxByLtv))} 거의 같지만 절대한도가 이를 덮어씁니다. ` +
-      `집값 ${manwon(1_200_000_000)}의 LTV 한도 ${eun(won(at12.maxByLtv))} 절대한도 ${won(at12.maxByAbsolute)} 안이라 그대로 한도가 되고, 이 구간(${manwon(1_500_000_000)} 이하)에서는 절대한도가 LTV와 같은 ${manwon(1_500_000_000)}에서만 딱 만납니다. ` +
-      `경계 바로 위 집을 살 때 필요한 자기자본은 ${manwon(1_501_000_000 - over15.finalMaxLoan)}으로, 경계 아래 ${manwon(1_500_000_000 - at15.finalMaxLoan)}보다 ${manwon((1_501_000_000 - over15.finalMaxLoan) - (1_500_000_000 - at15.finalMaxLoan))} 많습니다.`,
+      `${manwon(2_500_000_000)}에서 ${ro(manwon(2_501_000_000))} 넘어갈 때도 ${won(at25.finalMaxLoan)}에서 ${ro(won(over25.finalMaxLoan))} ${won(at25.finalMaxLoan - over25.finalMaxLoan)} 떨어집니다. ` +
+      `LTV ${pct(at15.ltvRate, 0)}로 계산한 값은 ${manwon(1_500_000_000)}에서 ${won(at15.maxByLtv)}, ${manwon(2_500_000_000)}에서 ${ro(won(at25.maxByLtv))} 집값을 따라 오르지만, 절대한도가 이를 ${won(at15.maxByAbsolute)}·${won(over15.maxByAbsolute)}·${ro(won(over25.maxByAbsolute))} 덮어써 집값이 오를수록 빌릴 수 있는 돈은 오히려 줄어듭니다. ` +
+      `경계 바로 위 집을 살 때 필요한 자기자본은 ${manwon(1_501_000_000 - over15.finalMaxLoan)}, ${manwon(2_501_000_000 - over25.finalMaxLoan)}으로, 경계 아래(${manwon(1_500_000_000 - at15.finalMaxLoan)}·${manwon(2_500_000_000 - at25.finalMaxLoan)})보다 각각 ${manwon((1_501_000_000 - over15.finalMaxLoan) - (1_500_000_000 - at15.finalMaxLoan))}, ${manwon((2_501_000_000 - over25.finalMaxLoan) - (2_500_000_000 - at25.finalMaxLoan))} 많습니다.`,
   };
 }
 

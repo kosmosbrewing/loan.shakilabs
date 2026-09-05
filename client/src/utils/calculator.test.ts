@@ -138,30 +138,30 @@ describe("compareMortgageRates", () => {
     expect(large.totalInterestRange).toBeGreaterThan(small.totalInterestRange);
   });
 
-  it("잘못된 입력은 기본값으로 sanitize된다", () => {
-    expect(sanitizeMortgageCompareInput({ loanAmount: -1 })).toEqual(DEFAULT_MORTGAGE_COMPARE_INPUT);
+  it("범위 밖 입력은 기본값이 아니라 경계로 클램프된다", () => {
+    expect(sanitizeMortgageCompareInput({ loanAmount: -1 })).toEqual({ ...DEFAULT_MORTGAGE_COMPARE_INPUT, loanAmount: 100_000 });
   });
 });
 
 describe("sanitize input", () => {
   it("잘못된 갈아타기 입력은 기본값으로 대체한다", () => {
-    expect(sanitizeRefinanceInput({ balance: -1 })).toEqual(DEFAULT_REFINANCE_INPUT);
+    expect(sanitizeRefinanceInput({ balance: -1 })).toEqual({ ...DEFAULT_REFINANCE_INPUT, balance: 100_000 });
   });
 
   it("잘못된 DSR 입력은 기본값으로 대체한다", () => {
-    expect(sanitizeDsrInput({ dsrLimit: 9 })).toEqual(DEFAULT_DSR_INPUT);
+    expect(sanitizeDsrInput({ dsrLimit: 9 })).toEqual({ ...DEFAULT_DSR_INPUT, dsrLimit: 1 });
   });
 
   it("잘못된 상환방식 입력은 기본값으로 대체한다", () => {
-    expect(sanitizeRepaymentInput({ principal: 1 })).toEqual(DEFAULT_REPAYMENT_INPUT);
+    expect(sanitizeRepaymentInput({ principal: 1 })).toEqual({ ...DEFAULT_REPAYMENT_INPUT, principal: 100_000 });
   });
 
   it("잘못된 중도상환 입력은 기본값으로 대체한다", () => {
-    expect(sanitizePrepaymentFeeInput({ feeRate: 9 })).toEqual(DEFAULT_PREPAYMENT_FEE_INPUT);
+    expect(sanitizePrepaymentFeeInput({ feeRate: 9 })).toEqual({ ...DEFAULT_PREPAYMENT_FEE_INPUT, feeRate: 5 });
   });
 
   it("잘못된 학자금 입력은 기본값으로 대체한다", () => {
-    expect(sanitizeStudentLoanInput({ repaymentRate: 120 })).toEqual(DEFAULT_STUDENT_LOAN_INPUT);
+    expect(sanitizeStudentLoanInput({ repaymentRate: 120 })).toEqual({ ...DEFAULT_STUDENT_LOAN_INPUT, repaymentRate: 100 });
   });
 });
 
@@ -249,8 +249,8 @@ describe("calcSteppingStoneLoan", () => {
     expect(result.equalPrincipalPlan.totalInterest).toBeLessThan(result.annuityPlan.totalInterest);
   });
 
-  it("잘못된 입력은 기본값으로 sanitize된다", () => {
-    expect(sanitizeSteppingStoneLoanInput({ termYears: 5 })).toEqual(DEFAULT_STEPPING_STONE_INPUT);
+  it("범위 밖 입력은 기본값이 아니라 경계로 클램프된다", () => {
+    expect(sanitizeSteppingStoneLoanInput({ termYears: 5 })).toEqual({ ...DEFAULT_STEPPING_STONE_INPUT, termYears: 10 });
   });
 });
 
@@ -285,8 +285,8 @@ describe("calcLtvDti", () => {
     expect(result.ltvRate).toBe(0.7);
   });
 
-  it("잘못된 입력은 기본값으로 sanitize된다", () => {
-    expect(sanitizeLtvDtiInput({ loanRate: -1 })).toEqual(DEFAULT_LTV_DTI_INPUT);
+  it("범위 밖 입력은 기본값이 아니라 경계로 클램프된다", () => {
+    expect(sanitizeLtvDtiInput({ loanRate: -1 })).toEqual({ ...DEFAULT_LTV_DTI_INPUT, loanRate: 0 });
   });
 });
 

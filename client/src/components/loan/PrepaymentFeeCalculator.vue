@@ -12,6 +12,8 @@ import {
 import { calcPrepaymentFee } from "@/utils/loanExtraCalculator";
 import { PREPAYMENT_FEE_SOURCES } from "@/data/loanExtraTools";
 import { formatRatioAsPercent, formatWon, parseNumericInput } from "@/lib/utils";
+import InputRangeNotice from "@/components/loan/InputRangeNotice.vue";
+import { clampNotices } from "@/lib/validators";
 
 const props = defineProps<{ initialAmount?: number }>();
 const form = reactive({
@@ -20,6 +22,8 @@ const form = reactive({
 });
 const sanitized = computed(() => sanitizePrepaymentFeeInput(form));
 const result = computed(() => calcPrepaymentFee(sanitized.value));
+// 범위 밖 입력은 기본값으로 되돌리지 않고 경계로 자른 뒤 그 사실을 화면에 알린다
+const rangeNotices = computed(() => clampNotices("prepayment", form));
 const repaymentSegments = computed(() => [
   { key: "waived", label: "면제 처리 금액", value: result.value.waivedAmount, tone: "success" as const },
   { key: "target", label: "수수료 과금 대상", value: result.value.feeTargetAmount, tone: "danger" as const },
@@ -65,6 +69,8 @@ const statIconClasses = [
         </label>
       </div>
     </section>
+
+    <InputRangeNotice :notices="rangeNotices" />
 
     <LoanResultHero
       label="예상 수수료"
