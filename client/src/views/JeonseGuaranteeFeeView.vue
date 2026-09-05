@@ -8,10 +8,10 @@ import CalculatorInteractionTracker from "@/components/analytics/CalculatorInter
 import JeonseGuaranteeCalculator from "@/components/loan/JeonseGuaranteeCalculator.vue";
 import RelatedCalculators from "@/components/loan/RelatedCalculators.vue";
 import { mergeFaqs } from "@/lib/faqMerge";
+import { LOAN_JEONSE_GUARANTEE_PAGE_GUIDE } from "@/data/seoGuides";
 import {
   JEONSE_GUARANTEE_FAQS,
   JEONSE_GUARANTEE_UPDATED,
-  LOAN_JEONSE_GUARANTEE_GUIDE,
 } from "@/data/jeonseGuarantee";
 
 const seoTitle = "전세보증보험 보증료 계산기 | HUG 전세보증금반환보증";
@@ -19,7 +19,7 @@ const seoDescription =
   "보증금·기간·주택유형·부채비율로 HUG 전세보증금반환보증 보증료(연 0.097~0.211%)를 계산합니다. 한도·할인까지 확인하세요.";
 
 // 화면 아코디언과 구조화 데이터가 같은 병합 결과를 쓰도록 한 번만 계산한다
-const mergedFaqs = mergeFaqs(JEONSE_GUARANTEE_FAQS, LOAN_JEONSE_GUARANTEE_GUIDE.faqs);
+const mergedFaqs = mergeFaqs(JEONSE_GUARANTEE_FAQS, LOAN_JEONSE_GUARANTEE_PAGE_GUIDE.faqs);
 
 const faqJsonLd = {
   "@context": "https://schema.org",
@@ -58,10 +58,10 @@ const faqJsonLd = {
     <FaqAccordionPanel :items="mergedFaqs" />
 
     <SeoRichGuide
-      :title="LOAN_JEONSE_GUARANTEE_GUIDE.title"
-      :intro="LOAN_JEONSE_GUARANTEE_GUIDE.intro"
-      :sections="LOAN_JEONSE_GUARANTEE_GUIDE.sections"
-      :disclaimer="LOAN_JEONSE_GUARANTEE_GUIDE.disclaimer"
+      :title="LOAN_JEONSE_GUARANTEE_PAGE_GUIDE.title"
+      :intro="LOAN_JEONSE_GUARANTEE_PAGE_GUIDE.intro"
+      :sections="LOAN_JEONSE_GUARANTEE_PAGE_GUIDE.sections"
+      :disclaimer="LOAN_JEONSE_GUARANTEE_PAGE_GUIDE.disclaimer"
     />
   </div>
 </template>

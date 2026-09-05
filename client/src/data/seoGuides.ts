@@ -6,6 +6,21 @@
 // 상수를 보간하면 금리표를 새로 확인했을 때 값 하나만 고쳐도 문장이 같이 움직인다.
 import { LOAN_DATA_VERIFIED } from "./loanPresets";
 import { MORTGAGE_DATA_UPDATED } from "./mortgageRates";
+// 파생 다이제스트 — 계산 엔진을 여러 조건으로 돌려 "역전점·경계·차액"을 적은 페이지 고유 산문.
+// 일반 안내 섹션보다 앞에 둔다: 페이지 고유 내용이 먼저, 어디에나 있는 설명은 뒤에.
+import { LOAN_JEONSE_GUARANTEE_GUIDE } from "./jeonseGuarantee";
+import {
+  DSR_DIGEST,
+  JEONSE_GUARANTEE_DIGEST,
+  JEONSE_LOAN_DIGEST,
+  LTV_DTI_DIGEST,
+  MORTGAGE_COMPARE_DIGEST,
+  PREPAYMENT_DIGEST,
+  REFINANCE_DIGEST,
+  REPAYMENT_DIGEST,
+  STEPPING_STONE_DIGEST,
+  STUDENT_LOAN_DIGEST,
+} from "./digests";
 
 export interface GuideSection { h2: string; body: string; }
 export interface GuideFaq { q: string; a: string; }
@@ -20,6 +35,19 @@ export interface GuideData {
   checklist?: GuideChecklist;
   sources?: GuideSource[];
   disclaimer?: string;
+}
+
+/**
+ * 다이제스트 뒤에 붙는 계산 기준 문단. 은행 금리표(확인일이 다름)는 근거로 쓰지 않았음을 밝히고,
+ * 계산식 기준일은 /about과 같은 상수에서 읽는다. 페이지별 기본 가정을 넣어 문단이 페이지마다 다르게 한다.
+ */
+export function digestBasis(assumptions: string): GuideSection {
+  return {
+    h2: "위 발견의 계산 기준",
+    body:
+      `위 항목의 숫자는 이 페이지 계산기와 같은 산식을 여러 조건으로 반복 실행해 얻은 값이며, 계산식 기준일은 ${LOAN_DATA_VERIFIED}입니다. ` +
+      `${assumptions} 금리·기간·금액은 결과를 설명하기 위한 가정값이고 은행별 금리표는 근거로 쓰지 않았으므로, 본인 조건을 계산기에 직접 넣어 확인하세요.`,
+  };
 }
 
 const COMMON_DISCLAIMER =
@@ -81,6 +109,8 @@ export const LOAN_DSR_GUIDE: GuideData = {
   intro:
     "DSR(Debt Service Ratio)은 연 소득 대비 모든 대출 원리금 상환액의 비율로, 2026년 현재 은행권 대출의 핵심 심사 기준입니다. DSR 40% 한도 내에서만 신규 대출이 실행 가능하며, 주담대·신용대출·전세대출·자동차할부 등 모든 대출이 합산 계산됩니다.",
   sections: [
+    ...DSR_DIGEST,
+    digestBasis("기본 가정은 연소득 7,200만원, 기존 연 원리금 840만원, DSR 40%, 연 4.5%·30년 원리금균등입니다."),
     {
       h2: "DSR 계산 공식",
       body: "DSR = (모든 대출의 연간 원리금 상환액 합계) ÷ 연 소득 × 100. 예를 들어 연 소득 6천만원, 주담대 월 상환 150만원, 신용대출 월 상환 30만원이면 DSR = (180 × 12) / 60,000 × 100 = 36%입니다. 은행 대출은 40% 이하여야 가능합니다.",
@@ -142,6 +172,8 @@ export const LOAN_LTV_GUIDE: GuideData = {
   intro:
     "LTV(Loan-to-Value)는 주택 담보 가치 대비 대출 가능 금액의 비율로, 주택담보대출의 핵심 한도입니다. 2026년 현재 투기지역·조정지역 등 규제 지역에 따라 40~70%로 차등 적용되며, 생애최초 구매자는 80%까지 가능합니다.",
   sections: [
+    ...LTV_DTI_DIGEST,
+    digestBasis("기본 가정은 규제지역 7억원 주택, 연소득 8,000만원, 기존 대출 연 600만원, 연 4.5%·30년입니다."),
     {
       h2: "2026년 LTV 한도",
       body: "① 투기지역: 일반 40%, 15억 초과 0%, 9억 초과분 20%. ② 조정대상지역: 일반 50%, 9억 초과분 30%. ③ 비규제지역: 일반 70%. ④ 생애최초 구매자: 지역 무관 80% (금액 한도 있음). ⑤ 서민·실수요자: 추가 10%p 우대. 규제는 수시로 변경되므로 대출 시점 기준 정확한 확인이 필요합니다.",
@@ -203,6 +235,8 @@ export const LOAN_REPAYMENT_GUIDE: GuideData = {
   intro:
     "대출을 받기 전 매월 상환액과 총 이자를 정확히 계산해야 합니다. 원리금균등·원금균등·만기일시 세 가지 상환 방식의 차이와, 대출 기간·금리에 따른 실제 부담을 비교해 최적 조건을 선택할 수 있습니다.",
   sections: [
+    ...REPAYMENT_DIGEST,
+    digestBasis("기본 가정은 원금 3억원, 연 4.2%, 30년이며 두 상환방식의 월별 납입액을 전 기간 계산했습니다."),
     {
       h2: "상환 방식별 특징",
       body: "원리금균등상환은 매월 동일 금액을 납부해 예산 관리가 쉬우며 대부분의 주담대에서 기본 방식입니다. 원금균등상환은 매월 원금이 고정이고 이자는 줄어드는 방식으로 초기 부담이 크지만 총 이자가 5~10% 적습니다. 만기일시상환은 이자만 내다가 만기에 원금을 한 번에 상환하는 방식으로 이자 부담이 가장 크지만 현금 흐름이 유연합니다.",
@@ -254,6 +288,8 @@ export const LOAN_JEONSE_GUIDE: GuideData = {
   intro:
     "전세자금대출은 전세보증금을 일부 대출받아 주거를 해결하는 상품으로, 정부 보증 대출과 은행 일반 대출 두 가지가 있습니다. 금리·한도·조건이 크게 다르며, 특히 사회초년생·신혼부부·청년은 정책 대출이 훨씬 유리합니다.",
   sections: [
+    ...JEONSE_LOAN_DIGEST,
+    digestBasis("기본 가정은 보증금 2억원, 연 3.5%, 24개월 거치식이며 정책 상품별 금리는 근거로 쓰지 않았습니다."),
     {
       h2: "정책 전세대출 종류",
       body: "2026년 7월 확인 기준 일반 버팀목은 연 2.5~3.5%, 일반가구 한도는 수도권 1.2억원·수도권 외 8천만원입니다. 청년 전용 버팀목은 연 2.2~3.3%, 최대 1.5억원이며 만 25세 미만 단독세대주는 최대 1.2억원입니다. 신혼·다자녀 가구는 별도 소득·보증금·한도가 적용되므로 주택도시기금에서 확인해야 합니다.",
@@ -305,6 +341,8 @@ export const LOAN_MORTGAGE_GUIDE: GuideData = {
   intro:
     "주택담보대출은 인생에서 가장 큰 금융 결정 중 하나로, 0.1%p의 금리 차이도 수천만원의 차이를 만듭니다. 은행별 금리·수수료·우대 조건·고정/변동 선택까지 종합적으로 비교해야 합리적인 선택이 가능합니다.",
   sections: [
+    ...MORTGAGE_COMPARE_DIGEST,
+    digestBasis("기본 가정은 3억원·30년 원리금균등이며, 비교에 쓴 세 상품은 금리 수준만 다른 가상의 가정 상품입니다."),
     {
       h2: "주담대 금리 종류",
       body: "① 변동금리(코픽스 연동): 6개월·1년 단위로 금리가 조정되며, 현재 금리는 상대적으로 낮음. ② 고정금리(국고채 연동): 5년·10년·전기간 고정, 금리 상승 리스크 보호. ③ 혼합형: 5년 고정 후 변동 전환, 양쪽 장점 결합. 2026년 기준 변동금리 약 4.5%, 고정금리 약 5.3% 수준입니다.",
@@ -386,4 +424,52 @@ export const LOAN_ABOUT_GUIDE: GuideData = {
     },
   ],
   disclaimer: COMMON_DISCLAIMER,
+};
+
+// /refinance·/prepayment-fee·/student-loan·/stepping-stone-loan 네 페이지는 종합 가이드를 공유해 왔다.
+// 페이지 고유 다이제스트를 앞에 붙인 별도 상수로 나눠, 홈(/)은 종합 가이드 원본을 그대로 쓴다.
+export const LOAN_REFINANCE_GUIDE: GuideData = {
+  ...LOAN_HOME_GUIDE,
+  sections: [
+    ...REFINANCE_DIGEST,
+    digestBasis("기본 가정은 잔액 1억 2,000만원, 잔여 20년, 연 5.8%→4.2%, 대환 비용 90만원입니다."),
+    ...(LOAN_HOME_GUIDE.sections ?? []),
+  ],
+};
+
+export const LOAN_PREPAYMENT_GUIDE: GuideData = {
+  ...LOAN_HOME_GUIDE,
+  sections: [
+    ...PREPAYMENT_DIGEST,
+    digestBasis("기본 가정은 원금 3억원, 상환 1억원, 요율 1.2%, 부과 기간 3년 중 14개월 경과, 연 면제 10%이며 이자 비교에는 연 4.2%를 가정했습니다."),
+    ...(LOAN_HOME_GUIDE.sections ?? []),
+  ],
+};
+
+export const LOAN_STUDENT_LOAN_GUIDE: GuideData = {
+  ...LOAN_HOME_GUIDE,
+  sections: [
+    ...STUDENT_LOAN_DIGEST,
+    digestBasis("기본 가정은 잔액 2,800만원, 연소득 4,200만원, 상환기준소득 3,037만원, 상환율 20%, 이자 연 1.7%이며 완납 햇수는 소득이 변하지 않는다고 놓고 해마다 다시 계산했습니다."),
+    ...(LOAN_HOME_GUIDE.sections ?? []),
+  ],
+};
+
+export const LOAN_STEPPING_STONE_GUIDE: GuideData = {
+  ...LOAN_HOME_GUIDE,
+  sections: [
+    ...STEPPING_STONE_DIGEST,
+    digestBasis("기본 가정은 부부합산 연소득 5,000만원, 주택가 4억원, 생애최초, 30년, 수도권이며 금리·한도표는 계산식 기준일의 값입니다."),
+    ...(LOAN_HOME_GUIDE.sections ?? []),
+  ],
+};
+
+// 보증료 가이드 원본은 jeonseGuarantee.ts에 있다(데이터 파일 → 다이제스트 → 엔진 → 데이터 파일의 순환을 피해 여기서 합친다).
+export const LOAN_JEONSE_GUARANTEE_PAGE_GUIDE: GuideData = {
+  ...LOAN_JEONSE_GUARANTEE_GUIDE,
+  sections: [
+    ...JEONSE_GUARANTEE_DIGEST,
+    digestBasis("기본 가정은 보증금 3억원, 24개월, 아파트, 부채비율 70% 이하, 수도권이며 이자 비교에는 연 3.5%를 가정했습니다."),
+    ...(LOAN_JEONSE_GUARANTEE_GUIDE.sections ?? []),
+  ],
 };
