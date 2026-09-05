@@ -15,10 +15,14 @@ import {
 } from "@/data/ltvDti";
 import { useLtvDti } from "@/composables/useLtvDti";
 import { formatWon, formatPercentValue, formatRatioAsPercent, parseNumericInput } from "@/lib/utils";
+import InputRangeNotice from "@/components/loan/InputRangeNotice.vue";
+import { clampNotices } from "@/lib/validators";
 
 const props = defineProps<{ initialPropertyPrice?: number }>();
 const override = props.initialPropertyPrice ? { propertyPrice: props.initialPropertyPrice } : undefined;
 const { state, result, reset } = useLtvDti(override);
+// 범위 밖 입력은 기본값으로 되돌리지 않고 경계로 자른 뒤 그 사실을 화면에 알린다
+const rangeNotices = computed(() => clampNotices("ltvDti", state));
 
 const metrics = computed(() => [
   {
@@ -138,6 +142,8 @@ const borrowerCategories: { value: BorrowerCategory; label: string }[] = [
         </button>
       </div>
     </section>
+
+    <InputRangeNotice :notices="rangeNotices" />
 
     <LoanResultHero
       label="최종 대출 한도"

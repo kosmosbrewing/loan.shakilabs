@@ -10,10 +10,14 @@ import { LOAN_ASSUMPTION_NOTE, TERM_OPTIONS } from "@/data/loanPresets";
 import { MORTGAGE_AMOUNT_PRESETS, MORTGAGE_COMPARE_SOURCES, MORTGAGE_DATA_UPDATED, mortgageComparePresets } from "@/data/mortgageRates";
 import { useMortgageCompare } from "@/composables/useMortgageCompare";
 import { formatWon, formatPercentValue, parseNumericInput } from "@/lib/utils";
+import InputRangeNotice from "@/components/loan/InputRangeNotice.vue";
+import { clampNotices } from "@/lib/validators";
 
 const props = defineProps<{ initialLoanAmount?: number }>();
 const override = props.initialLoanAmount ? { loanAmount: props.initialLoanAmount } : undefined;
 const { state, result, applyPreset, reset } = useMortgageCompare(override);
+// 범위 밖 입력은 기본값으로 되돌리지 않고 경계로 자른 뒤 그 사실을 화면에 알린다
+const rangeNotices = computed(() => clampNotices("mortgageCompare", state));
 const amountPresetOptions = MORTGAGE_AMOUNT_PRESETS.map((value) => ({
   label: formatWon(value),
   value,
@@ -118,6 +122,8 @@ function setAmountPreset(amount: number): void {
         </button>
       </div>
     </section>
+
+    <InputRangeNotice :notices="rangeNotices" />
 
     <LoanResultHero
       label="최저금리 은행"

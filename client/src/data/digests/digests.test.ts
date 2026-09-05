@@ -351,7 +351,13 @@ describe("파생 다이제스트 — 인용 수치 엔진 재계산 일치", () 
     const at15 = calcLtvDti({ ...DEFAULT_LTV_DTI_INPUT, propertyPrice: 1_500_000_000, annualIncome: 300_000_000 });
     const over15 = calcLtvDti({ ...DEFAULT_LTV_DTI_INPUT, propertyPrice: 1_501_000_000, annualIncome: 300_000_000 });
     expect(at15.finalMaxLoan - over15.finalMaxLoan).toBe(200_000_000);
-    expect(bodyOf(LTV_DTI_DIGEST, 3)).toContain(manwon(at15.finalMaxLoan - over15.finalMaxLoan));
-    expect(all(LTV_DTI_DIGEST)).not.toContain("25억");
+    expect(LTV_DTI_DIGEST[3].h2).toContain(manwon(at15.finalMaxLoan - over15.finalMaxLoan));
+    // 입력 상한 버그(#55) 수정으로 25억 구간이 재현 가능해졌다 — 4억→2억 절벽까지 적는다
+    const at25 = calcLtvDti({ ...DEFAULT_LTV_DTI_INPUT, propertyPrice: 2_500_000_000, annualIncome: 300_000_000 });
+    const over25 = calcLtvDti({ ...DEFAULT_LTV_DTI_INPUT, propertyPrice: 2_501_000_000, annualIncome: 300_000_000 });
+    expect(at25.finalMaxLoan - over25.finalMaxLoan).toBe(200_000_000);
+    expect(bodyOf(LTV_DTI_DIGEST, 3)).toContain(won(at25.finalMaxLoan));
+    expect(bodyOf(LTV_DTI_DIGEST, 3)).toContain(won(over25.finalMaxLoan));
+    expect(all(LTV_DTI_DIGEST)).toContain("25억");
   });
 });

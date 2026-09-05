@@ -16,10 +16,14 @@ import {
 } from "@/data/steppingStoneLoan";
 import { useSteppingStoneLoan } from "@/composables/useSteppingStoneLoan";
 import { formatWon, formatPercentValue, parseNumericInput } from "@/lib/utils";
+import InputRangeNotice from "@/components/loan/InputRangeNotice.vue";
+import { clampNotices } from "@/lib/validators";
 
 const props = defineProps<{ initialPropertyPrice?: number }>();
 const override = props.initialPropertyPrice ? { propertyPrice: props.initialPropertyPrice } : undefined;
 const { state, result, reset } = useSteppingStoneLoan(override);
+// 범위 밖 입력은 기본값으로 되돌리지 않고 경계로 자른 뒤 그 사실을 화면에 알린다
+const rangeNotices = computed(() => clampNotices("steppingStone", state));
 
 const metrics = computed(() => [
   {
@@ -135,6 +139,8 @@ const borrowerTypes: { value: BorrowerType; label: string }[] = [
         </button>
       </div>
     </section>
+
+    <InputRangeNotice :notices="rangeNotices" />
 
     <!-- 자격 알림 -->
     <div

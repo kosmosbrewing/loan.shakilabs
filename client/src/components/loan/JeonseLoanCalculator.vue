@@ -15,10 +15,14 @@ import {
 } from "@/data/jeonseLoan";
 import { useJeonseLoan } from "@/composables/useJeonseLoan";
 import { formatWon, formatPercentValue, parseNumericInput } from "@/lib/utils";
+import InputRangeNotice from "@/components/loan/InputRangeNotice.vue";
+import { clampNotices } from "@/lib/validators";
 
 const props = defineProps<{ initialDeposit?: number }>();
 const override = props.initialDeposit ? { depositAmount: props.initialDeposit } : undefined;
 const { state, result, applyPreset, reset } = useJeonseLoan(override);
+// 범위 밖 입력은 기본값으로 되돌리지 않고 경계로 자른 뒤 그 사실을 화면에 알린다
+const rangeNotices = computed(() => clampNotices("jeonseLoan", state));
 const depositPresetOptions = JEONSE_DEPOSIT_PRESETS.map((value) => ({
   label: formatWon(value),
   value,
@@ -128,6 +132,8 @@ function setDepositPreset(amount: number): void {
         </button>
       </div>
     </section>
+
+    <InputRangeNotice :notices="rangeNotices" />
 
     <LoanResultHero
       label="월 납입액"
