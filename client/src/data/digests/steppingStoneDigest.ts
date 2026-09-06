@@ -108,13 +108,15 @@ function incomeCeilingCliff(): Finding {
   const limit = run({ householdIncome: 70_000_000 });
   const over = run({ householdIncome: 70_000_000 + 10_000 });
   const generalLimit = run({ borrowerType: "general", householdIncome: 60_000_000 });
+  const generalOver = run({ borrowerType: "general", householdIncome: 60_010_000 });
   return {
-    h2: `생애최초 소득 상한 ${manwon(70_000_000)}에서 1만원을 넘으면 한도 ${ga(manwon(limit.effectiveLoanAmount))} 통째로 사라진다`,
+    h2: `생애최초 소득 상한 ${eul(manwon(70_000_000))} 1만원 넘기면 자격만 잃는 게 아니라 금리도 ${pp(over.applicableRate - limit.applicableRate)} 오른다`,
     body:
-      `연소득 ${manwon(70_000_000)}(가정 조건)이면 자격이 유지되어 금리 ${rate(limit.applicableRate)}, 한도 ${won(limit.effectiveLoanAmount)}, 월 ${won(limit.monthlyPayment)}이지만, ${won(70_010_000)}이면 계산기가 "${over.ineligibleReasons[0] ?? "자격 미달"}"로 판정해 같은 숫자가 참고값으로만 남습니다. ` +
-      `일반 유형은 ${manwon(60_000_000)}에서 같은 절벽이 있어 ${won(generalLimit.effectiveLoanAmount)}(월 ${won(generalLimit.monthlyPayment)})이 ${won(60_010_000)}부터 자격 밖입니다. ` +
-      `소득구간 경계의 금리 ${pp(0.35)} 안팎 차이와 달리 소득 상한은 0 아니면 전부라, 상한 근처에서는 한도 ${wa(manwon(limit.effectiveLoanAmount))} ${term(D.termYears * 12)} 총이자 ${manwon(limit.totalInterest)}의 조건 전체가 1만원에 걸립니다. ` +
-      `이 계산기는 자격 밖이어도 수치를 계속 보여 주므로, 결과 상단의 자격 판정을 먼저 읽고 숫자를 읽는 순서가 맞습니다.`,
+      `연소득 ${manwon(70_000_000)}(가정 조건)이면 자격이 유지되어 금리 ${rate(limit.applicableRate)}, 한도 ${won(limit.effectiveLoanAmount)}, 월 ${won(limit.monthlyPayment)}, ${term(D.termYears * 12)} 총이자 ${won(limit.totalInterest)}입니다. ` +
+      `${won(70_010_000)}이면 계산기가 "${over.ineligibleReasons[0] ?? "자격 미달"}"로 판정하는데, 이때 그대로 남는 값은 상품 한도 ${won(over.effectiveLoanAmount)} 하나뿐입니다. 소득이 다음 금리 구간(${over.incomeBracketLabel})으로 올라가 금리가 ${ro(rate(over.applicableRate))} 바뀌고 월 납입액 ${won(over.monthlyPayment)}, 총이자 ${won(over.totalInterest)}으로 함께 움직이기 때문입니다. ` +
+      `자격을 잃고도 같은 금액을 빌린다고 놓고 비교하면 1만원의 대가는 월 ${won(over.monthlyPayment - limit.monthlyPayment)}, ${term(D.termYears * 12)} 합계 ${eul(won(over.totalInterest - limit.totalInterest))} 더 내는 조건입니다. ` +
+      `일반 유형의 상한 ${manwon(60_000_000)}은 성격이 다릅니다. ${won(60_010_000)}으로 넘겨도 금리 구간이 그대로라 금리 ${rate(generalOver.applicableRate)}, 한도 ${won(generalOver.effectiveLoanAmount)}, 월 ${won(generalOver.monthlyPayment)}이 ${manwon(60_000_000)}일 때의 ${won(generalLimit.monthlyPayment)}과 1원도 다르지 않고, 결과에는 "${generalOver.ineligibleReasons[0] ?? "자격 미달"}" 판정만 새로 붙습니다. ` +
+      `자격 절벽이 숫자를 얼마나 흔드는지는 상한이 금리표 구간 경계와 겹치는지에 달렸다는 뜻이고, 이 계산기는 자격 밖이어도 수치를 계속 보여 주므로 결과 상단의 자격 판정을 먼저 읽는 순서가 맞습니다.`,
   };
 }
 
