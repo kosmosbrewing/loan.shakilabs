@@ -337,8 +337,23 @@ describe("파생 다이제스트 — 인용 수치 엔진 재계산 일치", () 
     const over = calcSteppingStoneLoan({ ...DEFAULT_STEPPING_STONE_INPUT, householdIncome: 40_010_000 });
     expect(bodyOf(STEPPING_STONE_DIGEST, 1)).toContain(pp(over.applicableRate - under.applicableRate));
     expect(bodyOf(STEPPING_STONE_DIGEST, 1)).toContain(won(over.totalInterest));
-    expect(calcSteppingStoneLoan({ ...DEFAULT_STEPPING_STONE_INPUT, householdIncome: 70_010_000 }).eligible).toBe(false);
-    expect(calcSteppingStoneLoan({ ...DEFAULT_STEPPING_STONE_INPUT, householdIncome: 70_000_000 }).eligible).toBe(true);
+    const atCeiling = calcSteppingStoneLoan({ ...DEFAULT_STEPPING_STONE_INPUT, householdIncome: 70_000_000 });
+    const overCeiling = calcSteppingStoneLoan({ ...DEFAULT_STEPPING_STONE_INPUT, householdIncome: 70_010_000 });
+    expect(overCeiling.eligible).toBe(false);
+    expect(atCeiling.eligible).toBe(true);
+    // 소득 상한을 넘으면 자격만 사라지는 게 아니라 금리 구간이 바뀌어 월납·총이자도 함께 움직인다.
+    // 산문이 "숫자가 그대로 남는다"고 쓰면 여기서 깨진다 — 그대로인 값은 상품 한도 하나뿐이다.
+    expect(overCeiling.effectiveLoanAmount).toBe(atCeiling.effectiveLoanAmount);
+    expect(overCeiling.applicableRate).toBeGreaterThan(atCeiling.applicableRate);
+    expect(overCeiling.monthlyPayment).toBeGreaterThan(atCeiling.monthlyPayment);
+    expect(bodyOf(STEPPING_STONE_DIGEST, 6)).toContain(won(overCeiling.monthlyPayment));
+    expect(bodyOf(STEPPING_STONE_DIGEST, 6)).toContain(rate(overCeiling.applicableRate));
+    // 일반 유형의 상한은 금리표 구간 안쪽이라 실제로 숫자가 그대로다 — 두 절벽의 성격이 다르다.
+    const generalAt = calcSteppingStoneLoan({ ...DEFAULT_STEPPING_STONE_INPUT, borrowerType: "general", householdIncome: 60_000_000 });
+    const generalOver = calcSteppingStoneLoan({ ...DEFAULT_STEPPING_STONE_INPUT, borrowerType: "general", householdIncome: 60_010_000 });
+    expect(generalOver.eligible).toBe(false);
+    expect(generalOver.monthlyPayment).toBe(generalAt.monthlyPayment);
+    expect(bodyOf(STEPPING_STONE_DIGEST, 6)).toContain(won(generalAt.monthlyPayment));
     expect(bodyOf(STEPPING_STONE_DIGEST, 5)).toContain(won(r.equalPrincipalPlan.firstPayment));
   });
 
