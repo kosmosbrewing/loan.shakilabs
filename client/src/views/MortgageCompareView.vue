@@ -28,8 +28,8 @@ const amountLabel = computed(() => {
 
 const seoTitle = computed(() =>
   amountLabel.value
-    ? `${amountLabel.value} 주택담보대출 금리비교 | 은행별 최저금리`
-    : "주택담보대출 금리비교 — 은행별 최저금리·월상환액 비교",
+    ? `${amountLabel.value} 주택담보대출 금리비교 · 은행별 최저금리`
+    : "주택담보대출 금리비교 · 은행별 최저금리·월상환액 비교",
 );
 
 const seoDescription = computed(() =>

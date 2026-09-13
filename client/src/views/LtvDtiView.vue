@@ -29,7 +29,7 @@ const amountLabel = computed(() => {
 const seoTitle = computed(() =>
   amountLabel.value
     ? `${amountLabel.value} LTV·DTI·DSR 대출한도 계산기`
-    : "LTV DTI DSR 계산기 — 대출 가능 금액 한눈에 확인",
+    : "LTV DTI DSR 계산기 · 대출 가능 금액 한눈에 확인",
 );
 
 const seoDescription = computed(() =>

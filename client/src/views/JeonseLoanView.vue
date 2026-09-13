@@ -28,8 +28,8 @@ const amountLabel = computed(() => {
 
 const seoTitle = computed(() =>
   amountLabel.value
-    ? `${amountLabel.value} 전세대출 이자 계산기 | 청년·버팀목 비교`
-    : "전세대출 이자 계산기 — 청년전용·버팀목·시중은행 비교",
+    ? `${amountLabel.value} 전세대출 이자 계산기 · 청년·버팀목 비교`
+    : "전세대출 이자 계산기 · 청년전용·버팀목·시중은행 비교",
 );
 
 const seoDescription = computed(() =>

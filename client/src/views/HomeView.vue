@@ -78,7 +78,7 @@ const faqJsonLd = {
 
 <template>
   <SEOHead
-    title="대출 계산기 | 갈아타기·DSR·상환방식 비교"
+    title="대출 계산기 · 갈아타기·DSR·상환방식 비교 | ShakiLabs"
     description="대환대출 손익, DSR 한도 역산, 원리금균등 vs 원금균등 비교를 한 곳에서 계산하세요."
     :json-ld="faqJsonLd"
   />

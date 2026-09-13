@@ -28,8 +28,8 @@ const amountLabel = computed(() => {
 
 const seoTitle = computed(() =>
   amountLabel.value
-    ? `${amountLabel.value} 대출 원리금균등 vs 원금균등 비교 | shakilabs.com/loan`
-    : "원리금균등 vs 원금균등 비교 | shakilabs.com/loan",
+    ? `${amountLabel.value} 대출 원리금균등 vs 원금균등 비교`
+    : "원리금균등 vs 원금균등 비교",
 );
 
 const seoDescription = computed(() =>

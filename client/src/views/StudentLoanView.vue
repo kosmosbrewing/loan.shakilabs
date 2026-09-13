@@ -28,8 +28,8 @@ const balanceLabel = computed(() => {
 
 const seoTitle = computed(() =>
   balanceLabel.value
-    ? `${balanceLabel.value}원 학자금 대출 상환 계산기 | shakilabs.com/loan`
-    : "학자금 대출 상환 계산기 | shakilabs.com/loan",
+    ? `${balanceLabel.value}원 학자금 대출 상환 계산기`
+    : "학자금 대출 상환 계산기",
 );
 
 const seoDescription = computed(() =>
