@@ -14,7 +14,7 @@ import {
   JEONSE_GUARANTEE_UPDATED,
 } from "@/data/jeonseGuarantee";
 
-const seoTitle = "전세보증보험 보증료 계산기 | HUG 전세보증금반환보증";
+const seoTitle = "전세보증보험 보증료 계산기 · HUG 전세보증금반환보증";
 const seoDescription =
   "보증금·기간·주택유형·부채비율로 HUG 전세보증금반환보증 보증료(연 0.097~0.211%)를 계산합니다. 한도·할인까지 확인하세요.";
 

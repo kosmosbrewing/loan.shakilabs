@@ -29,8 +29,8 @@ const incomeLabel = computed(() => {
 
 const seoTitle = computed(() =>
   incomeLabel.value
-    ? `연봉 ${incomeLabel.value}원 DSR 대출한도 계산기 | shakilabs.com/loan`
-    : "DSR 계산기 | shakilabs.com/loan",
+    ? `연봉 ${incomeLabel.value}원 DSR 대출한도 계산기`
+    : "DSR 계산기",
 );
 
 const seoDescription = computed(() =>

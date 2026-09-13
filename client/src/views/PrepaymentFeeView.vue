@@ -28,8 +28,8 @@ const amountLabel = computed(() => {
 
 const seoTitle = computed(() =>
   amountLabel.value
-    ? `${amountLabel.value} 중도상환수수료 계산기 | shakilabs.com/loan`
-    : "중도상환수수료 계산기 | shakilabs.com/loan",
+    ? `${amountLabel.value} 중도상환수수료 계산기`
+    : "중도상환수수료 계산기",
 );
 
 const seoDescription = computed(() =>

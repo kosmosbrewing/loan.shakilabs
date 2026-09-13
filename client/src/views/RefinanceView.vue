@@ -28,8 +28,8 @@ const balanceLabel = computed(() => {
 
 const seoTitle = computed(() =>
   balanceLabel.value
-    ? `${balanceLabel.value} 대환대출 갈아타기 계산기 | shakilabs.com/loan`
-    : "대환대출 갈아타기 계산기 | shakilabs.com/loan",
+    ? `${balanceLabel.value} 대환대출 갈아타기 계산기`
+    : "대환대출 갈아타기 계산기",
 );
 
 const seoDescription = computed(() =>

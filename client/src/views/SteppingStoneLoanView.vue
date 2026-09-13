@@ -28,8 +28,8 @@ const amountLabel = computed(() => {
 
 const seoTitle = computed(() =>
   amountLabel.value
-    ? `${amountLabel.value} 디딤돌대출 계산기 | 금리·한도 시뮬레이션`
-    : "디딤돌대출 계산기 — 자격·금리·한도 한눈에 확인",
+    ? `${amountLabel.value} 디딤돌대출 계산기 · 금리·한도 시뮬레이션`
+    : "디딤돌대출 계산기 · 자격·금리·한도 한눈에 확인",
 );
 
 const seoDescription = computed(() =>

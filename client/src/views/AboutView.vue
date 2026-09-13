@@ -8,7 +8,7 @@ import { LOAN_ABOUT_GUIDE, LOAN_HOME_GUIDE } from "@/data/seoGuides";
 
 <template>
   <SEOHead
-    title="대출 계산기 소개 | shakilabs.com/loan"
+    title="대출 계산기 소개"
     description="shakilabs.com/loan의 계산 기준과 사용 범위를 안내합니다."
   />
 
