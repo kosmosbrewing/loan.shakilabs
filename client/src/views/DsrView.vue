@@ -9,7 +9,7 @@ import FreshBadge from "@/components/common/FreshBadge.vue";
 import DsrCalculator from "@/components/loan/DsrCalculator.vue";
 import CalculatorPageHeader from "@/components/loan/CalculatorPageHeader.vue";
 import CalculatorInteractionTracker from "@/components/analytics/CalculatorInteractionTracker.vue";
-import SessionDraftControl from "@/components/loan/SessionDraftControl.vue";
+import DsrMemoryControl from "@/components/loan/DsrMemoryControl.vue";
 import RelatedCalculators from "@/components/loan/RelatedCalculators.vue";
 import { LOAN_BADGE_MESSAGE } from "@/data/loanPresets";
 import { formatManWon } from "@/lib/utils";
@@ -76,9 +76,11 @@ const faqJsonLd = computed(() => ({
     :canonical-path="canonicalPath"
   />
   <div class="container space-y-5 py-5">
-    <CalculatorPageHeader title="DSR 계산기" />
-
-    <SessionDraftControl />
+    <CalculatorPageHeader title="DSR 계산기">
+      <template #control>
+        <DsrMemoryControl />
+      </template>
+    </CalculatorPageHeader>
 
     <div class="retro-panel overflow-hidden">
       <div class="retro-titlebar rounded-t-2xl">

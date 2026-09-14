@@ -30,6 +30,11 @@ const metrics = computed(() => [
   },
 ]);
 
+// v3 §4.4 — 위험 상태에서만 빨강. 기존 원리금이 이미 DSR 한도를 먹어 치워
+// 추가 여력이 0이면 "정상 결과"가 아니라 한도 초과다. 판정은 엔진 결과에서만 읽는다
+// (한도 초과 시 allowedAnnualDebtService가 0으로 잘리고 최대 대출액도 0이 된다).
+const overLimit = computed(() => result.value.allowedAnnualDebtService <= 0);
+
 function selectPreset(key: string): void {
   const preset = dsrPresets.find((item) => item.key === key);
   if (preset) applyPreset(preset.input);
@@ -88,9 +93,19 @@ function selectPreset(key: string): void {
       </section>
 
       <section class="retro-panel order-1 p-4 space-y-3 xl:order-none">
-        <div class="rounded-2xl border border-primary/20 bg-primary/10 px-4 py-3">
-          <p class="text-caption font-semibold text-primary">한도 해석</p>
-          <p class="mt-1 text-body text-foreground">
+        <div
+          class="rounded-2xl px-4 py-3"
+          :class="overLimit
+            ? 'border border-status-danger/30 bg-status-danger/10'
+            : 'border border-primary/20 bg-primary/10'"
+        >
+          <p class="text-caption font-semibold" :class="overLimit ? 'text-status-danger' : 'text-primary'">
+            {{ overLimit ? "DSR 한도 초과" : "한도 해석" }}
+          </p>
+          <p v-if="overLimit" class="mt-1 text-body text-foreground">
+            기존 연 원리금이 이미 연소득에 DSR 한도를 곱한 금액을 넘었습니다. 현재 가정으로는 추가 대출 여력이 없습니다.
+          </p>
+          <p v-else class="mt-1 text-body text-foreground">
             현재 가정으로는 월 {{ formatWon(result.availableMonthlyBudget) }}까지 새 대출 상환을 감당하는 구조입니다.
           </p>
         </div>
@@ -102,6 +117,7 @@ function selectPreset(key: string): void {
       label="추정 최대 대출액"
       :value="formatWon(result.maxLoanAmount)"
       :sub="`총상환액 ${formatWon(result.estimatedTotalRepayment)}`"
+      :tone="overLimit ? 'danger' : 'accent'"
     />
     <LoanMetricGrid :items="metrics" />
     <ShBulletProgress

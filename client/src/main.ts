@@ -4,6 +4,8 @@ import App from "./App.vue";
 import { createScrollBehavior, routes, setupRouterGuards } from "./router";
 import "./assets/css/main.css";
 import "@shakilabs/ui/styles.css";
+// v3 셸 오버라이드는 반드시 패키지 스타일 뒤에 온다
+import "./assets/css/shell.css";
 import "./assets/css/responsive-accessibility.css";
 import { initAnalytics, trackEvent } from "./lib/analytics";
 import { initSentry } from "./lib/sentry";

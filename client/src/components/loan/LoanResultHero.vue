@@ -10,13 +10,29 @@
 // - prefers-reduced-motion 이면 즉시 최종값.
 import { onBeforeUnmount, onMounted, ref, watch } from "vue";
 
-const props = defineProps<{
-  label: string;
-  value: string;
-  sub?: string;
-  /** 이미 흰 카드 안에 렌더될 때 패널 크롬을 생략한다 */
-  flat?: boolean;
-}>();
+// v3 §4.4 / §8.5 — 의미색이 브랜드 액센트를 이긴다.
+// tone을 주지 않으면 액센트(loan = 인디고)이고, 한도 초과·손실 같은 위험 상태에서만
+// status-danger(빨강)가 나온다. 빨강이 "그냥 브랜드색"이던 구조를 여기서 끊는다.
+type ResultTone = "accent" | "danger" | "success" | "neutral";
+
+const props = withDefaults(
+  defineProps<{
+    label: string;
+    value: string;
+    sub?: string;
+    /** 이미 흰 카드 안에 렌더될 때 패널 크롬을 생략한다 */
+    flat?: boolean;
+    tone?: ResultTone;
+  }>(),
+  { tone: "accent" },
+);
+
+const TONE_CLASS: Record<ResultTone, string> = {
+  accent: "text-primary",
+  danger: "text-status-danger",
+  success: "text-status-success",
+  neutral: "text-foreground",
+};
 
 const DURATION_MS = 750;
 // 포맷된 문자열("1,234,000원")에서 첫 숫자 토큰만 보간 대상으로 삼는다.
@@ -88,7 +104,7 @@ onBeforeUnmount(() => cancelAnimationFrame(rafId));
 <template>
   <div :class="flat ? 'text-center' : 'retro-panel px-4 py-5 text-center'">
     <p class="text-caption text-muted-foreground">{{ label }}</p>
-    <p class="mt-1 text-display font-bold text-primary tabular-nums">{{ displayValue }}</p>
+    <p class="mt-1 text-display font-bold tabular-nums" :class="TONE_CLASS[props.tone]">{{ displayValue }}</p>
     <p v-if="sub" class="mt-1 text-caption text-muted-foreground">{{ sub }}</p>
   </div>
 </template>

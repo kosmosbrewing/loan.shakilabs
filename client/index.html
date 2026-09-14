@@ -46,9 +46,9 @@
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
 
-    <!-- 테마 — 오렌지 계열 -->
-    <meta name="theme-color" content="hsl(0, 72%, 51%)" media="(prefers-color-scheme: light)" />
-    <meta name="theme-color" content="hsl(222, 47%, 11%)" media="(prefers-color-scheme: dark)" />
+    <!-- 테마 — v3 전역 헤더(#0A0A0A)와 같은 색. 브라우저 크롬이 헤더와 이어져 보인다 -->
+    <meta name="theme-color" content="#0A0A0A" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#0A0A0A" media="(prefers-color-scheme: dark)" />
 
     <script type="application/ld+json">
       {
@@ -86,31 +86,45 @@
         }
       })();
     </script>
-    <!-- Critical CSS: loan 테마 — red-600 -->
+    <!-- Critical CSS: loan 테마 — 인디고 #3730A3 (빨강은 위험 의미색 전용) -->
     <style>
       :root {
-        --background: 210 40% 98%;
-        --foreground: 222 47% 11%;
+        /* v3 §2.1 역할 토큰(Wave2) — canvas/card/ink/ink-muted/line/focus는 hex에서 역산(반올림
+           왕복 검증 완료, travel a035f62 실측값과 동일). --primary(브랜드 인디고)는 건드리지 않는다. */
+        --background: 60 11.11% 96.47%; /* color.canvas #F7F7F5 */
+        --foreground: 0 0% 3.92%; /* color.ink #0A0A0A */
         --muted: 210 40% 96%;
-        --muted-foreground: 215 16% 37%;
-        --card: 0 0% 100%;
-        --card-foreground: 222 47% 11%;
-        --primary: 0 65% 38%;
+        --muted-foreground: 60 3.37% 34.9%; /* color.ink-muted #5C5C56 */
+        --card: 0 0% 100%; /* color.card #FFFFFF */
+        --card-foreground: 0 0% 3.92%;
+        /* v3 §4.4 — loan 브랜드 빨강(0 65% 38%)은 status-danger(#C62828)와 사실상 같은 색이라
+           "정상 결과"와 "한도 초과"를 색으로 구분할 수 없었다. 브랜드를 인디고로 옮기고
+           빨강은 --destructive/--fee/--status-danger 의미색에만 남긴다.
+           값은 목표 hex #3730A3에서 역산했다 (hsl(243.7 54.5% 41.4%) → rgb(55,48,163) 왕복 일치). */
+        --primary: 243.7 54.5% 41.4%;
         --primary-foreground: 0 0% 100%;
-        --secondary: 0 24% 94%;
+        --secondary: 243.7 24% 94%;
         --secondary-foreground: 222 47% 11%;
-        --accent: 0 28% 96%;
-        --accent-foreground: 0 58% 36%;
+        --accent: 243.7 28% 96%;
+        --accent-foreground: 243.7 58% 36%;
         --popover: 0 0% 100%;
-        --popover-foreground: 222 47% 11%;
+        --popover-foreground: 0 0% 3.92%;
         /* WCAG AA: 이 세 색은 본문 텍스트(text-destructive/text-fee/text-profit)로 쓰이므로
            채움색이 아니라 "글자색" 기준(4.5:1)으로 잡는다. finance·card·house와 동일 계열. */
         --destructive: 0 74% 42%;
         --destructive-foreground: 210 40% 98%;
-        --border: 214 16% 85%;
+        --border: 60 8% 90.2%; /* color.line #E8E8E4 */
         --input: 214 16% 85%;
-        --ring: 0 65% 38%;
+        --ring: 0 0% 3.92%; /* color.focus #0A0A0A (v3 §2.1 — 포커스는 브랜드색이 아니라 ink) */
         --radius: 0.4rem;
+        /* @shakilabs/ui 0.3.16 카테고리 액센트 API (v3 §4.1).
+           SecondaryNav 밑줄·ResultAmount·MemoryControl 스위치가 이 값을 읽는다. */
+        --accent-hsl: 243.7 54.5% 41.4%;
+        --accent-muted-hsl: 243.7 54.5% 50%;
+        /* v3 §3.1 — 앵커 오프셋의 단일 출처. 셸 높이를 바꾸면 여기만 고친다 */
+        --header-h: 56px;
+        --secondary-nav-h: 45px;
+        --sh-header-h: var(--header-h);
         --profit: 151 70% 26%;
         --profit-foreground: 0 0% 100%;
         --fee: 0 74% 42%;
@@ -118,30 +132,33 @@
       }
 
       .dark {
-        --background: 222 47% 11%;
-        --foreground: 210 40% 96%;
+        --background: 0 0% 7.06%; /* color.canvas dark #121212 */
+        --foreground: 0 0% 96.08%; /* color.ink dark #F5F5F5 */
         --muted: 217 33% 17%;
-        --muted-foreground: 215 20% 72%;
-        --card: 217 33% 17%;
-        --card-foreground: 210 40% 96%;
-        /* 브랜드 hue(0 레드)는 유지하고 명도만 60%→70%로 올린다.
-           다크에서 --primary는 배경(내비·버튼)이자 글자색(retro-link)으로 동시에 쓰여
-           60%로는 카드 위 글자가 3.89:1에 그쳤다. */
-        --primary: 0 78% 70%;
-        /* 흰색 전경은 밝은 레드 위에서 3.81:1 → 앱 hue를 유지한 채 어둡게 뒤집는다.
-           값은 docs/DESIGN_TOKENS.md §2 파생 공식 `{H} {S}% 10%` 그대로다. */
-        --primary-foreground: 0 78% 10%;
-        --secondary: 0 12% 19%;
+        --muted-foreground: 60 3.33% 64.71%; /* color.ink-muted dark #A8A8A2 */
+        --card: 0 0% 10.98%; /* color.card dark #1C1C1C */
+        --card-foreground: 0 0% 96.08%;
+        /* 라이트와 같은 인디고 hue/채도를 유지하고 명도만 41.4%→76%로 올린다.
+           구 빨강(0 78% 70%)과 같은 명도로는 모자란다 — 파랑 계열은 같은 L에서 상대휘도가
+           낮아 `bg-primary/5~15` 틴트 위 text-primary가 4.11~4.44:1로 떨어졌다(실측, Wave1).
+           Wave2 §4 토큰 교체(카드 217 33% 17%→0 0% 10.98%, 배경 222 47% 11%→0 0% 7.06%) 후
+           재계산: 76%에서 카드 7.11:1 · 배경 7.82:1 — 더 어두워진 중성 배경 덕에 여유 증가. */
+        --primary: 243.7 54.5% 76%;
+        /* 전경은 docs/DESIGN_TOKENS.md §2 파생 공식 `{H} {S}% 10%` 그대로 (7.98:1). */
+        --primary-foreground: 243.7 54.5% 10%;
+        --secondary: 243.7 12% 19%;
         --secondary-foreground: 210 40% 96%;
-        --accent: 0 16% 23%;
-        --accent-foreground: 0 74% 84%;
-        --popover: 217 33% 17%;
-        --popover-foreground: 210 40% 96%;
+        --accent: 243.7 16% 23%;
+        --accent-foreground: 243.7 74% 84%;
+        --popover: 0 0% 10.98%;
+        --popover-foreground: 0 0% 96.08%;
         --destructive: 0 75% 72%;
         --destructive-foreground: 0 75% 10%;
-        --border: 214 16% 26%;
+        --border: 0 0% 16.47%; /* color.line dark #2A2A2A */
         --input: 214 16% 30%;
-        --ring: 0 78% 70%;
+        --ring: 0 0% 96.08%; /* color.focus dark #F5F5F5 */
+        --accent-hsl: 243.7 54.5% 76%;
+        --accent-muted-hsl: 243.7 54.5% 76%;
         --profit: 148 63% 66%;
         --profit-foreground: 148 63% 10%;
         /* 8개 저장소가 공유하던 리터럴 0 62% 58%(3.66:1)의 통일 상향값 */
@@ -152,6 +169,8 @@
       html {
         scroll-behavior: auto;
         font-size: 16px;
+        /* v3 §3.1 — 앵커·H2가 sticky 헤더+2차 내비에 가리지 않게 한다 */
+        scroll-padding-top: calc(var(--header-h) + var(--secondary-nav-h, 0px) + 8px);
       }
 
       body {
