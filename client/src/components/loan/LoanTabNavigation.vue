@@ -22,7 +22,13 @@ const activeItem = computed(() =>
 </script>
 
 <template>
+  <!-- v3 §3.3 — 2차 내비. 풀폭 브랜드 컬러 바(#A02222)를 걷어내고 canvas 배경 +
+       accent underline으로 중성화한다. 배경/글자/밑줄 규칙은 loan-secondary-nav
+       스코프로 main.css에 있다(패키지 기본값이 아직 --sh-color-primary 풀폭이라
+       앱에서 덮는다). -->
   <ShPrimaryNavigation
+    class="loan-secondary-nav"
+    aria-label="대출 계산기 메뉴"
     :items="tabs"
     :active-key="activeItem?.key"
     :link-component="RouterLink"
