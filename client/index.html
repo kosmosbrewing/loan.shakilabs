@@ -89,12 +89,14 @@
     <!-- Critical CSS: loan 테마 — 인디고 #3730A3 (빨강은 위험 의미색 전용) -->
     <style>
       :root {
-        --background: 210 40% 98%;
-        --foreground: 222 47% 11%;
+        /* v3 §2.1 역할 토큰(Wave2) — canvas/card/ink/ink-muted/line/focus는 hex에서 역산(반올림
+           왕복 검증 완료, travel a035f62 실측값과 동일). --primary(브랜드 인디고)는 건드리지 않는다. */
+        --background: 60 11.11% 96.47%; /* color.canvas #F7F7F5 */
+        --foreground: 0 0% 3.92%; /* color.ink #0A0A0A */
         --muted: 210 40% 96%;
-        --muted-foreground: 215 16% 37%;
-        --card: 0 0% 100%;
-        --card-foreground: 222 47% 11%;
+        --muted-foreground: 60 3.37% 34.9%; /* color.ink-muted #5C5C56 */
+        --card: 0 0% 100%; /* color.card #FFFFFF */
+        --card-foreground: 0 0% 3.92%;
         /* v3 §4.4 — loan 브랜드 빨강(0 65% 38%)은 status-danger(#C62828)와 사실상 같은 색이라
            "정상 결과"와 "한도 초과"를 색으로 구분할 수 없었다. 브랜드를 인디고로 옮기고
            빨강은 --destructive/--fee/--status-danger 의미색에만 남긴다.
@@ -106,16 +108,16 @@
         --accent: 243.7 28% 96%;
         --accent-foreground: 243.7 58% 36%;
         --popover: 0 0% 100%;
-        --popover-foreground: 222 47% 11%;
+        --popover-foreground: 0 0% 3.92%;
         /* WCAG AA: 이 세 색은 본문 텍스트(text-destructive/text-fee/text-profit)로 쓰이므로
            채움색이 아니라 "글자색" 기준(4.5:1)으로 잡는다. finance·card·house와 동일 계열. */
         --destructive: 0 74% 42%;
         --destructive-foreground: 210 40% 98%;
-        --border: 214 16% 85%;
+        --border: 60 8% 90.2%; /* color.line #E8E8E4 */
         --input: 214 16% 85%;
-        --ring: 243.7 54.5% 41.4%;
+        --ring: 0 0% 3.92%; /* color.focus #0A0A0A (v3 §2.1 — 포커스는 브랜드색이 아니라 ink) */
         --radius: 0.4rem;
-        /* @shakilabs/ui 0.3.15 카테고리 액센트 API (v3 §4.1).
+        /* @shakilabs/ui 0.3.16 카테고리 액센트 API (v3 §4.1).
            SecondaryNav 밑줄·ResultAmount·MemoryControl 스위치가 이 값을 읽는다. */
         --accent-hsl: 243.7 54.5% 41.4%;
         --accent-muted-hsl: 243.7 54.5% 50%;
@@ -130,16 +132,17 @@
       }
 
       .dark {
-        --background: 222 47% 11%;
-        --foreground: 210 40% 96%;
+        --background: 0 0% 7.06%; /* color.canvas dark #121212 */
+        --foreground: 0 0% 96.08%; /* color.ink dark #F5F5F5 */
         --muted: 217 33% 17%;
-        --muted-foreground: 215 20% 72%;
-        --card: 217 33% 17%;
-        --card-foreground: 210 40% 96%;
+        --muted-foreground: 60 3.33% 64.71%; /* color.ink-muted dark #A8A8A2 */
+        --card: 0 0% 10.98%; /* color.card dark #1C1C1C */
+        --card-foreground: 0 0% 96.08%;
         /* 라이트와 같은 인디고 hue/채도를 유지하고 명도만 41.4%→76%로 올린다.
            구 빨강(0 78% 70%)과 같은 명도로는 모자란다 — 파랑 계열은 같은 L에서 상대휘도가
-           낮아 `bg-primary/5~15` 틴트 위 text-primary가 4.11~4.44:1로 떨어졌다(실측).
-           76%에서 카드(217 33% 17%) 6.18:1 · 배경 7.47:1 · 틴트15% 위 4.70:1. */
+           낮아 `bg-primary/5~15` 틴트 위 text-primary가 4.11~4.44:1로 떨어졌다(실측, Wave1).
+           Wave2 §4 토큰 교체(카드 217 33% 17%→0 0% 10.98%, 배경 222 47% 11%→0 0% 7.06%) 후
+           재계산: 76%에서 카드 7.11:1 · 배경 7.82:1 — 더 어두워진 중성 배경 덕에 여유 증가. */
         --primary: 243.7 54.5% 76%;
         /* 전경은 docs/DESIGN_TOKENS.md §2 파생 공식 `{H} {S}% 10%` 그대로 (7.98:1). */
         --primary-foreground: 243.7 54.5% 10%;
@@ -147,13 +150,13 @@
         --secondary-foreground: 210 40% 96%;
         --accent: 243.7 16% 23%;
         --accent-foreground: 243.7 74% 84%;
-        --popover: 217 33% 17%;
-        --popover-foreground: 210 40% 96%;
+        --popover: 0 0% 10.98%;
+        --popover-foreground: 0 0% 96.08%;
         --destructive: 0 75% 72%;
         --destructive-foreground: 0 75% 10%;
-        --border: 214 16% 26%;
+        --border: 0 0% 16.47%; /* color.line dark #2A2A2A */
         --input: 214 16% 30%;
-        --ring: 243.7 54.5% 76%;
+        --ring: 0 0% 96.08%; /* color.focus dark #F5F5F5 */
         --accent-hsl: 243.7 54.5% 76%;
         --accent-muted-hsl: 243.7 54.5% 76%;
         --profit: 148 63% 66%;
