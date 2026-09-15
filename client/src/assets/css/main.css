@@ -28,12 +28,19 @@
   font-display: swap;
 }
 
-/* 강조 숫자 전용 서브셋(숫자·통화/수량 단위 44자, 14.5KB). 원본 944KB .woff는
-   더 이상 src에 없다 — 참조 안 하면 받아가지 않는다.
-   비-숫자 글리프(제목 등 font-brand 사용처)는 폰트 스택 폴백(Pretendard)이 글리프 단위로 받는다. */
+/* 제목(h1 font-brand, .retro-title) + 히어로 숫자 통합 서브셋(docs/BRAND_FONT_SUBSET.md).
+   왜: 숫자 41자로만 잘랐던 이전 버전은 h1처럼 GmarketSans가 적용되는 한글 제목에서
+   글리프가 없는 글자만 Pretendard로 폴백돼, 한 단어 안에서 서체가 갈리는 문제가 있었다
+   (예: "종합소득세 계산기"에서 "세" 한 글자만 Gmarket). 이 문제를 없애는 정답은 UI
+   전체(962자)로 되돌리는 게 아니라 "실제로 GmarketSans로 렌더되는 문자만" 담는 것 —
+   제목까지 유지하는 비용은 약 8KB뿐이라 굳이 자를 이유가 없다.
+   문자셋은 소스 grep이 아니라 dist 전 라우트(57개 SEO_ROUTES + 404) playwright 렌더
+   스캔으로 얻었다(scripts/brand-font-charset.txt). UI 텍스트가 바뀌면
+   `npm run fonts:subset` 전에 렌더 스캔을 다시 돌려 이 파일을 갱신해야 한다.
+   원본 944KB .woff는 서브셋 소스로만 쓰이고 src에는 없다 — 참조 안 하면 받아가지 않는다. */
 @font-face {
   font-family: "GmarketSans";
-  src: url("/fonts/GmarketSansBold-num-v1.woff2") format("woff2");
+  src: url("/fonts/GmarketSansBold-brand-v1.woff2") format("woff2");
   font-weight: 700;
   font-style: normal;
   font-display: swap;
