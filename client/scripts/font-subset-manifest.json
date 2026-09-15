@@ -1,0 +1,12 @@
+{
+  "schemaVersion": 1,
+  "characterCount": 121,
+  "characterSha256": "c5c32acd555572170a154eef40794c91fdd640f45d7e725a158a33a0f9aeb724",
+  "fonts": [
+    {
+      "publicName": "GmarketSansBold-brand-v1.woff2",
+      "bytes": 8052,
+      "sha256": "f66e39b29a2bb0bbef02aba5d5ef38ca02871dfcafc72b9fbdacac6cab9cb69e"
+    }
+  ]
+}

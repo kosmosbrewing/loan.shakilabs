@@ -140,6 +140,22 @@ if (result.status !== 0) {
 removeRenderedNoscriptFallbacks();
 removeAdsenseLoaderFromNotFound();
 
+// 폰트 서브셋 무결성 게이트 — 빌드마다 항상 돈다. 314c382가 숫자 전용 서브셋으로
+// 조용히 좁혔던 회귀를 다시 만들지 않도록, 검증을 사람이 기억해서 돌리는 별도
+// 절차가 아니라 build 파이프라인에 강제로 배선한다.
+const fontsVerifyResult = spawnSync(
+  process.execPath,
+  [resolve(projectRoot, "scripts", "verify-fonts.mjs")],
+  {
+    cwd: projectRoot,
+    stdio: "inherit",
+  }
+);
+
+if (fontsVerifyResult.status !== 0) {
+  process.exit(fontsVerifyResult.status ?? 1);
+}
+
 const validationResult = spawnSync(
   process.execPath,
   [resolve(projectRoot, "scripts", "validate-static-output.mjs")],
