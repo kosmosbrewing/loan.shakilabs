@@ -1,6 +1,6 @@
 import { execFileSync } from "node:child_process";
-import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
-import { dirname, resolve } from "node:path";
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { basename, dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -42,6 +42,12 @@ function runNpmSbom(args) {
 }
 
 function normalizeCyclonedx(document) {
+  for (const item of document.components ?? []) {
+    for (const reference of item.externalReferences ?? []) {
+      reference.url = toRepoRelativeVendorUrl(reference.url);
+    }
+  }
+
   const component = document.metadata?.component ?? {};
 
   component.type = "application";
@@ -73,6 +79,10 @@ function normalizeCyclonedx(document) {
 }
 
 function normalizeSpdx(document) {
+  for (const item of document.packages ?? []) {
+    item.downloadLocation = toRepoRelativeVendorUrl(item.downloadLocation);
+  }
+
   const rootId = document.documentDescribes?.[0];
   const rootPackage = document.packages?.find((item) => item.SPDXID === rootId) ?? document.packages?.[0];
 
@@ -87,6 +97,22 @@ function normalizeSpdx(document) {
   rootPackage.comment = "Generated from the production dependency graph (package-lock-only, omit=dev, omit=optional).";
 
   document.comment = "Production artifact SBOM generated from npm lockfile.";
+}
+
+// npm은 file: 의존성(vendor tgz)의 위치를 "생성한 머신의 절대 경로"로 기록한다.
+// 저장소 어디에서 재생성하든 같은 값이 나오도록 repo 루트 기준 상대 경로로 되돌린다.
+function toRepoRelativeVendorUrl(url) {
+  if (typeof url !== "string" || !url.startsWith("file:")) {
+    return url;
+  }
+
+  const fileName = basename(url);
+
+  if (!fileName || !existsSync(resolve(projectRoot, "vendor", fileName))) {
+    return url;
+  }
+
+  return `file:client/vendor/${fileName}`;
 }
 
 function mergeVcsReference(references) {

@@ -24,7 +24,8 @@ if (!existsSync(cyclonedxPath)) {
 }
 
 const pkg = readJson(resolve(projectRoot, "package.json"));
-const component = readJson(cyclonedxPath).metadata?.component ?? {};
+const cyclonedx = readJson(cyclonedxPath);
+const component = cyclonedx.metadata?.component ?? {};
 const errors = [];
 
 if (component.name !== pkg.name) {
@@ -33,6 +34,26 @@ if (component.name !== pkg.name) {
 
 if (component.version !== pkg.version) {
   errors.push(`cyclonedx metadata.component.version is "${component.version}", expected "${pkg.version}"`);
+}
+
+// package.json의 @shakilabs/ui 핀(file:vendor/shakilabs-ui-X.Y.Z.tgz)과 SBOM에 기록된
+// @shakilabs/ui component의 version이 어긋나면 실패한다 — SBOM이 name만 맞고 실제
+// 벤더 버전은 낡은 채로도 통과하던 드리프트(0.3.15 고정, 실제 핀 0.3.24)를 다시 흐르지
+// 않게 막는다.
+const vendorPin = pkg.dependencies?.["@shakilabs/ui"];
+const pinnedVersionMatch = typeof vendorPin === "string" ? vendorPin.match(/shakilabs-ui-(\d+\.\d+\.\d+)\.tgz$/) : null;
+
+if (pinnedVersionMatch) {
+  const expectedVendorVersion = pinnedVersionMatch[1];
+  const vendorComponent = (cyclonedx.components ?? []).find((item) => item.name === "@shakilabs/ui");
+
+  if (!vendorComponent) {
+    errors.push(`cyclonedx components has no "@shakilabs/ui" entry, expected version "${expectedVendorVersion}"`);
+  } else if (vendorComponent.version !== expectedVendorVersion) {
+    errors.push(
+      `cyclonedx components "@shakilabs/ui".version is "${vendorComponent.version}", expected "${expectedVendorVersion}" (from package.json dependency pin)`,
+    );
+  }
 }
 
 // GITHUB_REPOSITORY는 CI에서만 주어진다. 로컬 실행에서는 이 검사만 건너뛴다.
