@@ -124,13 +124,6 @@
   }
 }
 
-/* ── BL-005: 헤더에서 내려온 팁 티커 (sticky 아님 = chrome 높이에 안 더해짐) ── */
-.loan-ticker-band {
-  border-bottom: 1px solid hsl(var(--border) / 0.6);
-  background: hsl(var(--muted) / 0.4);
-  padding-block: 0.5rem;
-}
-
 /* ── BL-021: MemoryControl은 PageHeader의 유일한 보조 슬롯 (v3 §7.3) ── */
 .loan-page-header {
   display: flex;
