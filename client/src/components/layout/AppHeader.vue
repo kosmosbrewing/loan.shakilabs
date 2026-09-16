@@ -2,12 +2,15 @@
 // v3 §3.2 — 전역 검정 헤더는 패키지(ShGlobalHeader)가 소유한다.
 // 앱은 링크와 유틸 슬롯(테마 토글)만 채우고 자체 헤더 마크업을 갖지 않는다.
 // 카테고리 색(구 bg-primary/[8%] 틴트)은 헤더에 들어가지 않는다(§4.3).
-// 헤더 중앙에 있던 팁 티커는 본문 eyebrow로 내려갔다(BL-005) — AppLayout 참조.
+// 팁 티커는 0.3.24부터 다시 헤더 중앙(#tip)에 산다 — 패키지가 out-of-flow(absolute)로
+// 렌더해 텍스트 길이가 늘어도 헤더 높이(56px)가 흔들리지 않는다(BL-005 재발 없이 원복).
 import { computed, onMounted, ref } from "vue";
 import { Moon, Sun } from "lucide-vue-next";
 import { RouterLink, useRoute } from "vue-router";
 import { ShGlobalHeader, type GlobalHeaderLink } from "@shakilabs/ui";
 import { LOAN_TABS } from "@/data/loanNavigation";
+import TickerBar from "@/components/common/TickerBar.vue";
+import { tickerMessages } from "@/data/tickerMessages";
 
 const THEME_STORAGE_KEY = "loan-tools:theme:v1";
 type ThemeMode = "light" | "dark";
@@ -53,6 +56,10 @@ onMounted(() => {
     nav-title="대출 도구"
     :link-component="RouterLink"
   >
+    <template #tip>
+      <TickerBar :messages="tickerMessages" />
+    </template>
+
     <template #utility>
       <button
         type="button"
