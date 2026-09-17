@@ -159,3 +159,21 @@
 .loan-page-header .sh-memory-control__switch:hover:not(:disabled) {
   color: hsl(var(--foreground));
 }
+
+/* ── 선택 칩: 진한 fill → 액센트 틴트 (v3 §4.2) ─────────────────────────
+   §4.2는 "선택 칩/세그먼트 한 줄에 1개 · 페이지당 fill CTA 1개"인데, 프리셋 그룹이
+   한 화면에 2~3줄이면 패키지 기본값(.sh-preset-chip[data-selected]:before{
+   background:var(--sh-color-primary)})이 진한 브랜드 fill을 3면까지 쌓았다
+   (라이브 실측 2026-09-17: finance /quit 3면 · /salary 칩+세그먼트, invest /isa 3면,
+   biz /vat-compare 2면, loan /mortgage-compare 1면+최저 배지).
+   선택은 틴트 면 + 액센트 보더 + 액센트 글자로도 충분히 읽힌다 — 색만이 아니라
+   보더 두께까지 같이 바뀌므로 WCAG 1.4.1(색이 유일한 수단 금지)도 만족한다.
+   패키지 규칙이 (0,2,0)이라 셸 클래스를 하나 더 물려 (0,3,0)으로 이긴다. */
+.design-system-shell .sh-preset-chip[data-selected] {
+  color: hsl(var(--accent-foreground));
+}
+
+.design-system-shell .sh-preset-chip[data-selected]::before {
+  border-color: hsl(var(--primary));
+  background: hsl(var(--accent));
+}

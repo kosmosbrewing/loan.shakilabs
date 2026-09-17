@@ -101,12 +101,14 @@
            "정상 결과"와 "한도 초과"를 색으로 구분할 수 없었다. 브랜드를 인디고로 옮기고
            빨강은 --destructive/--fee/--status-danger 의미색에만 남긴다.
            값은 목표 hex #3730A3에서 역산했다 (hsl(243.7 54.5% 41.4%) → rgb(55,48,163) 왕복 일치). */
-        --primary: 243.7 54.5% 41.4%;
+        /* 값을 DESIGN_CLEANUP_PLAN §2.2 확정 표로 정규화했다(소수점 제거). 돈·세금 그룹
+           네 앱(finance·biz·loan·invest)이 같은 문자열을 쓴다 — 게이트가 문자열 일치를 본다. */
+        --primary: 243 55% 41%;
         --primary-foreground: 0 0% 100%;
-        --secondary: 243.7 24% 94%;
+        --secondary: 243 15% 91%;
         --secondary-foreground: 222 47% 11%;
-        --accent: 243.7 28% 96%;
-        --accent-foreground: 243.7 58% 36%;
+        --accent: 243 53% 95%;
+        --accent-foreground: 243 55% 30%;
         --popover: 0 0% 100%;
         --popover-foreground: 0 0% 3.92%;
         /* WCAG AA: 이 세 색은 본문 텍스트(text-destructive/text-fee/text-profit)로 쓰이므로
@@ -115,20 +117,19 @@
         --destructive-foreground: 210 40% 98%;
         --border: 60 8% 90.2%; /* color.line #E8E8E4 */
         --input: 214 16% 85%;
-        --ring: 0 0% 3.92%; /* color.focus #0A0A0A (v3 §2.1 — 포커스는 브랜드색이 아니라 ink) */
+        /* v3 §2.1 color.focus — 포커스 링은 액센트가 아니라 ink다(#0A0A0A / #F5F5F5).
+           패키지 --sh-color-focus가 이 값을 그대로 가져가므로 함대 전체 포커스 링 결정이다.
+           미선언 시 패키지가 리터럴 222 47% 20%(슬레이트)로 조용히 폴백한다 — 반드시 명시한다. */
+        --ring: 0 0% 3.92%;
         --radius: 0.4rem;
         /* @shakilabs/ui 0.3.16 카테고리 액센트 API (v3 §4.1).
            SecondaryNav 밑줄·ResultAmount·MemoryControl 스위치가 이 값을 읽는다. */
-        --accent-hsl: 243.7 54.5% 41.4%;
-        --accent-muted-hsl: 243.7 54.5% 50%;
+        --accent-hsl: 243 55% 41%;
+        --accent-muted-hsl: 243 55% 41%;
         /* v3 §3.1 — 앵커 오프셋의 단일 출처. 셸 높이를 바꾸면 여기만 고친다 */
         --header-h: 56px;
         --secondary-nav-h: 45px;
         --sh-header-h: var(--header-h);
-        --profit: 151 70% 26%;
-        --profit-foreground: 0 0% 100%;
-        --fee: 0 74% 42%;
-        --fee-foreground: 0 0% 100%;
       }
 
       .dark {
@@ -143,27 +144,22 @@
            낮아 `bg-primary/5~15` 틴트 위 text-primary가 4.11~4.44:1로 떨어졌다(실측, Wave1).
            Wave2 §4 토큰 교체(카드 217 33% 17%→0 0% 10.98%, 배경 222 47% 11%→0 0% 7.06%) 후
            재계산: 76%에서 카드 7.11:1 · 배경 7.82:1 — 더 어두워진 중성 배경 덕에 여유 증가. */
-        --primary: 243.7 54.5% 76%;
+        --primary: 243 60% 72%;
         /* 전경은 docs/DESIGN_TOKENS.md §2 파생 공식 `{H} {S}% 10%` 그대로 (7.98:1). */
-        --primary-foreground: 243.7 54.5% 10%;
-        --secondary: 243.7 12% 19%;
+        --primary-foreground: 243 60% 10%;
+        --secondary: 243 15% 20%;
         --secondary-foreground: 210 40% 96%;
-        --accent: 243.7 16% 23%;
-        --accent-foreground: 243.7 74% 84%;
+        --accent: 243 40% 22%;
+        --accent-foreground: 243 60% 78%;
         --popover: 0 0% 10.98%;
         --popover-foreground: 0 0% 96.08%;
         --destructive: 0 75% 72%;
         --destructive-foreground: 0 75% 10%;
         --border: 0 0% 16.47%; /* color.line dark #2A2A2A */
         --input: 214 16% 30%;
-        --ring: 0 0% 96.08%; /* color.focus dark #F5F5F5 */
-        --accent-hsl: 243.7 54.5% 76%;
-        --accent-muted-hsl: 243.7 54.5% 76%;
-        --profit: 148 63% 66%;
-        --profit-foreground: 148 63% 10%;
-        /* 8개 저장소가 공유하던 리터럴 0 62% 58%(3.66:1)의 통일 상향값 */
-        --fee: 0 75% 72%;
-        --fee-foreground: 0 75% 10%;
+        --ring: 0 0% 96.08%;
+        --accent-hsl: 243 60% 72%;
+        --accent-muted-hsl: 243 60% 72%;
       }
 
       html {
