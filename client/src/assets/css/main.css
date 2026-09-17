@@ -48,22 +48,20 @@
 @tailwind utilities;
 
 @layer base {
+  /* v3 §2.1 의미색 — 12앱 공통 고정 hex. HSL은 목표 hex에서 역산·왕복 검증했다.
+     앱이 명도를 다시 고르지 않는다. --status-caution(5번째 단계)은 폐기했다. */
   :root {
-    /* 라이트 의미색은 전부 "글자색"으로 쓰이므로 4.5:1 기준. finance·card·house와 동일 세트.
-       status-info는 이미 5.10:1로 통과해 값을 유지한다(불필요한 시각 변화 방지). */
-    --status-success: 142 64% 24%;
-    --status-warning: 24 83% 31%;
-    --status-caution: 17 79% 34%;
-    --status-danger: 0 74% 42%;
-    --status-info: 212 83% 45%;
+    --status-success: 149.7 63.8% 29.2%; /* #1B7A4A */
+    --status-warning: 26 90.5% 37.1%; /* #B45309 */
+    --status-danger: 0 66.4% 46.7%; /* #C62828 */
+    --status-info: 213.5 65.7% 33.1%; /* #1D4E8C */
   }
 
   .dark {
-    --status-success: 148 63% 66%;
-    --status-warning: 43 95% 70%;
-    --status-caution: 28 91% 66%;
-    --status-danger: 0 86% 73%;
-    --status-info: 205 90% 72%;
+    --status-success: 147 50.7% 57.8%; /* #5DCA8E */
+    --status-warning: 41.9 86.9% 55.1%; /* #F0B429 */
+    --status-danger: 0 80.9% 69.2%; /* #F07171 */
+    --status-info: 213.5 66.9% 72.7%; /* #8BB4E8 */
   }
 
   * {

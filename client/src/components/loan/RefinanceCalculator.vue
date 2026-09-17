@@ -106,9 +106,9 @@ function selectPreset(key: string): void {
       <section class="refinance-summary-panel retro-panel space-y-3 p-4">
         <div
           class="refinance-status rounded-2xl border px-4 py-3"
-          :class="result.isSwitchWorthIt ? 'border-profit/30 bg-profit/10' : 'border-fee/20 bg-fee/10'"
+          :class="result.isSwitchWorthIt ? 'border-status-success/30' : 'border-status-warning/30'"
         >
-          <p class="text-caption font-semibold" :class="result.isSwitchWorthIt ? 'text-profit' : 'text-fee'">
+          <p class="text-caption font-semibold" :class="result.isSwitchWorthIt ? 'text-status-success' : 'text-status-warning'">
             {{ result.isSwitchWorthIt ? "갈아타기 유리" : "추가 검토 필요" }}
           </p>
           <p class="mt-1 text-body text-foreground">

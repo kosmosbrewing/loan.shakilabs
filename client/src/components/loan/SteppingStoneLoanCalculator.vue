@@ -220,7 +220,7 @@ const borrowerTypes: { value: BorrowerType; label: string }[] = [
             <tr class="border-t border-border/60">
               <td class="px-3 py-2.5 text-foreground">원리금균등</td>
               <td class="px-3 py-2.5 text-right tabular-nums text-foreground">{{ formatWon(result.annuityPlan.monthlyPayment) }}</td>
-              <td class="px-3 py-2.5 text-right tabular-nums text-fee">{{ formatWon(result.annuityPlan.totalInterest) }}</td>
+              <td class="px-3 py-2.5 text-right tabular-nums text-foreground">{{ formatWon(result.annuityPlan.totalInterest) }}</td>
             </tr>
             <tr class="border-t border-border/60">
               <td class="px-3 py-2.5 text-foreground">
@@ -228,7 +228,7 @@ const borrowerTypes: { value: BorrowerType; label: string }[] = [
                 <span class="block text-[10px] text-muted-foreground">첫 달 {{ formatWon(result.equalPrincipalPlan.firstPayment) }}</span>
               </td>
               <td class="px-3 py-2.5 text-right tabular-nums text-foreground">{{ formatWon(result.equalPrincipalPlan.monthlyPayment) }}</td>
-              <td class="px-3 py-2.5 text-right tabular-nums text-fee">{{ formatWon(result.equalPrincipalPlan.totalInterest) }}</td>
+              <td class="px-3 py-2.5 text-right tabular-nums text-foreground">{{ formatWon(result.equalPrincipalPlan.totalInterest) }}</td>
             </tr>
           </tbody>
         </table>

@@ -178,7 +178,7 @@ function setAmountPreset(amount: number): void {
               <td class="px-3 py-2.5 text-right tabular-nums text-foreground">
                 {{ formatWon(row.bestMonthlyPayment) }}
               </td>
-              <td class="px-3 py-2.5 text-right tabular-nums text-fee">
+              <td class="px-3 py-2.5 text-right tabular-nums text-foreground">
                 {{ formatWon(row.bestTotalInterest) }}
               </td>
               <td class="px-3 py-2.5 text-right tabular-nums text-muted-foreground whitespace-nowrap">

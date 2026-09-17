@@ -183,7 +183,7 @@ function setDepositPreset(amount: number): void {
               <td class="px-3 py-2.5 text-right tabular-nums text-foreground">
                 {{ formatWon(row.monthlyInterest) }}
               </td>
-              <td class="px-3 py-2.5 text-right tabular-nums text-fee">
+              <td class="px-3 py-2.5 text-right tabular-nums text-foreground">
                 {{ formatWon(row.totalInterest) }}
               </td>
               <td class="px-3 py-2.5 text-center">
