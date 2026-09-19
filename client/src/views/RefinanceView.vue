@@ -74,7 +74,7 @@ const faqJsonLd = computed(() => ({
     :json-ld="faqJsonLd"
     :canonical-path="canonicalPath"
   />
-  <div class="text-resize-layout container space-y-5 py-5">
+  <div class="text-resize-layout sh-container sh-container--tool space-y-5 py-5">
     <CalculatorPageHeader title="대환대출 갈아타기 계산기" />
 
     <div class="retro-panel overflow-hidden">

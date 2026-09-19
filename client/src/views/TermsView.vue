@@ -8,7 +8,7 @@ import SEOHead from "@/components/common/SEOHead.vue";
     description="ShakiLabs 대출 계산기 이용약관입니다. 계산기 10종의 제공 범위, 금융 자문·대출 중개가 아니라는 한계, 규제 한도와 금리 기준일의 출처, 광고 게재와 면책을 안내합니다."
   />
 
-  <div class="container space-y-5 py-5">
+  <div class="sh-container sh-container--prose space-y-5 py-5">
     <div class="retro-panel overflow-hidden">
       <div class="retro-titlebar rounded-t-2xl">
         <h1 class="retro-title">이용약관</h1>
