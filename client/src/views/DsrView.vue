@@ -75,7 +75,7 @@ const faqJsonLd = computed(() => ({
     :json-ld="faqJsonLd"
     :canonical-path="canonicalPath"
   />
-  <div class="container space-y-5 py-5">
+  <div class="sh-container sh-container--tool space-y-5 py-5">
     <CalculatorPageHeader title="DSR 계산기">
       <template #control>
         <DsrMemoryControl />

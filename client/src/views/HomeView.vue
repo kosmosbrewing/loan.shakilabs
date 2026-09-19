@@ -83,7 +83,7 @@ const faqJsonLd = {
     :json-ld="faqJsonLd"
   />
 
-  <div class="container space-y-5 py-5">
+  <div class="sh-container sh-container--page space-y-5 py-5">
     <CalculatorPageHeader title="대출 계산기" />
 
     <ShSurface padding="none" class="overflow-hidden">

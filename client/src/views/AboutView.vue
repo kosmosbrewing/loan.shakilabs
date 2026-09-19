@@ -12,7 +12,7 @@ import { LOAN_ABOUT_GUIDE, LOAN_HOME_GUIDE } from "@/data/seoGuides";
     description="shakilabs.com/loan의 계산 기준과 사용 범위를 안내합니다."
   />
 
-  <div class="container space-y-5 py-5">
+  <div class="sh-container sh-container--prose space-y-5 py-5">
     <div class="retro-panel overflow-hidden">
       <div class="retro-titlebar rounded-t-2xl">
         <h1 class="retro-title">서비스 안내</h1>
