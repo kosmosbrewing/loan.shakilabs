@@ -70,3 +70,13 @@ export const SEO_ROUTES = [...BASE_ROUTES, ...PARAM_ROUTES];
 export const SITEMAP_ROUTES = SEO_ROUTES.filter(
   (route) => !(route in CANONICAL_OVERRIDES),
 );
+
+// 브랜드 폰트 문자셋 렌더 스캔 전용 라우트 목록. SEO_ROUTES(사이트맵·프리렌더 검증에
+// 쓰임)에 404를 넣으면 그 파일들의 책임 범위가 흐려지므로 여기서만 확장한다.
+// "/404"는 finance의 prerender canonical 표기(scripts/prerender.mjs)를 그대로 따온
+// 것으로, vue-router의 catch-all(/:pathMatch(.*)*)이 어떤 미매칭 경로든
+// NotFoundView로 라우팅하므로 실제 라우트로 등록할 필요는 없다.
+// collect-brand-font-chars.mjs가 이 경로를 스캔하지 않으면 NotFoundView.vue의
+// "페이지를 찾을 수 없습니다"(retro-title, GmarketSans 상속) 문구가 문자셋에서
+// 누락된다 — 404 페이지에서만 글리프가 깨지는 사고가 게이트 없이 재현됐다.
+export const FONT_SCAN_ROUTES = [...SEO_ROUTES, "/404"];
