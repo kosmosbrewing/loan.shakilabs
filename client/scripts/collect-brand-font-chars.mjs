@@ -13,7 +13,7 @@ import { createRequire } from "node:module";
 import { existsSync } from "node:fs";
 import { readFile, writeFile } from "node:fs/promises";
 import { extname, resolve } from "node:path";
-import { SEO_ROUTES } from "./seo-routes.mjs";
+import { FONT_SCAN_ROUTES } from "./seo-routes.mjs";
 import { charsetFile, clientRoot } from "./font-subset-config.mjs";
 
 const require = createRequire(import.meta.url);
@@ -116,7 +116,7 @@ const browser = await chromium.launch();
 const page = await browser.newPage();
 
 const renderedTexts = new Set();
-for (const route of SEO_ROUTES) {
+for (const route of FONT_SCAN_ROUTES) {
   for (const text of await scanRoute(page, route)) renderedTexts.add(text);
 }
 
@@ -126,4 +126,4 @@ server.close();
 const charset = [...new Set([...[...renderedTexts].join(""), ...NUMERAL_CHARACTERS])].sort().join("");
 await writeFile(charsetFile, charset, "utf8");
 
-console.log(`라우트 ${SEO_ROUTES.length}개 스캔, GmarketSans 리프 텍스트 ${renderedTexts.size}종, 문자 ${charset.length}자 -> ${charsetFile}`);
+console.log(`라우트 ${FONT_SCAN_ROUTES.length}개 스캔, GmarketSans 리프 텍스트 ${renderedTexts.size}종, 문자 ${charset.length}자 -> ${charsetFile}`);
