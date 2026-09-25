@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed } from "vue";
+import { ShCalculatorSplit, ShPairRow } from "@shakilabs/ui";
 import LoanMetricGrid from "@/components/loan/LoanMetricGrid.vue";
 import LoanResultHero from "@/components/loan/LoanResultHero.vue";
 import LoanScenarioChips from "@/components/loan/LoanScenarioChips.vue";
@@ -85,156 +86,169 @@ const borrowerTypes: { value: BorrowerType; label: string }[] = [
 
 <template>
   <div class="space-y-4">
-    <LoanScenarioChips :items="STEPPING_STONE_PRESETS" @select="selectPreset" />
+    <ShCalculatorSplit>
+      <template #input>
+        <LoanScenarioChips :items="STEPPING_STONE_PRESETS" @select="selectPreset" />
+        <section class="retro-panel-muted space-y-4 p-4">
+          <div class="grid gap-3 sm:grid-cols-2">
+            <label class="space-y-1.5">
+              <span class="text-caption font-semibold text-foreground">부부합산 연소득</span>
+              <input
+                type="text"
+                inputmode="numeric"
+                class="retro-input"
+                :value="state.householdIncome.toLocaleString('ko-KR')"
+                @input="state.householdIncome = parseNumericInput(($event.target as HTMLInputElement).value)"
+              />
+            </label>
+            <label class="space-y-1.5">
+              <span class="text-caption font-semibold text-foreground">주택 가격</span>
+              <input
+                type="text"
+                inputmode="numeric"
+                class="retro-input"
+                :value="state.propertyPrice.toLocaleString('ko-KR')"
+                @input="state.propertyPrice = parseNumericInput(($event.target as HTMLInputElement).value)"
+              />
+            </label>
+          </div>
 
-    <section class="retro-panel-muted space-y-4 p-4">
-      <div class="grid gap-3 sm:grid-cols-2">
-        <label class="space-y-1.5">
-          <span class="text-caption font-semibold text-foreground">부부합산 연소득</span>
-          <input
-            type="text"
-            inputmode="numeric"
-            class="retro-input"
-            :value="state.householdIncome.toLocaleString('ko-KR')"
-            @input="state.householdIncome = parseNumericInput(($event.target as HTMLInputElement).value)"
-          />
-        </label>
-        <label class="space-y-1.5">
-          <span class="text-caption font-semibold text-foreground">주택 가격</span>
-          <input
-            type="text"
-            inputmode="numeric"
-            class="retro-input"
-            :value="state.propertyPrice.toLocaleString('ko-KR')"
-            @input="state.propertyPrice = parseNumericInput(($event.target as HTMLInputElement).value)"
-          />
-        </label>
-      </div>
+          <div class="grid gap-3 sm:grid-cols-3">
+            <label class="space-y-1.5">
+              <span class="text-caption font-semibold text-foreground">유형</span>
+              <select v-model="state.borrowerType" class="retro-input">
+                <option v-for="bt in borrowerTypes" :key="bt.value" :value="bt.value">{{ bt.label }}</option>
+              </select>
+            </label>
+            <label class="space-y-1.5">
+              <span class="text-caption font-semibold text-foreground">대출 기간</span>
+              <select v-model.number="state.termYears" class="retro-input">
+                <option v-for="y in TERM_YEAR_OPTIONS" :key="y" :value="y">{{ y }}년</option>
+              </select>
+            </label>
+            <label class="space-y-1.5">
+              <span class="text-caption font-semibold text-foreground">지역</span>
+              <select v-model="state.isMetro" class="retro-input">
+                <option :value="true">수도권</option>
+                <option :value="false">비수도권</option>
+              </select>
+            </label>
+          </div>
 
-      <div class="grid gap-3 sm:grid-cols-3">
-        <label class="space-y-1.5">
-          <span class="text-caption font-semibold text-foreground">유형</span>
-          <select v-model="state.borrowerType" class="retro-input">
-            <option v-for="bt in borrowerTypes" :key="bt.value" :value="bt.value">{{ bt.label }}</option>
-          </select>
-        </label>
-        <label class="space-y-1.5">
-          <span class="text-caption font-semibold text-foreground">대출 기간</span>
-          <select v-model.number="state.termYears" class="retro-input">
-            <option v-for="y in TERM_YEAR_OPTIONS" :key="y" :value="y">{{ y }}년</option>
-          </select>
-        </label>
-        <label class="space-y-1.5">
-          <span class="text-caption font-semibold text-foreground">지역</span>
-          <select v-model="state.isMetro" class="retro-input">
-            <option :value="true">수도권</option>
-            <option :value="false">비수도권</option>
-          </select>
-        </label>
-      </div>
+          <div class="flex flex-wrap gap-2">
+            <button type="button" class="retro-panel px-3 py-2 text-caption font-semibold text-foreground" @click="reset">
+              기본값으로 초기화
+            </button>
+          </div>
+        </section>
+        <InputRangeNotice :notices="rangeNotices" />
+      </template>
 
-      <div class="flex flex-wrap gap-2">
-        <button type="button" class="retro-panel px-3 py-2 text-caption font-semibold text-foreground" @click="reset">
-          기본값으로 초기화
-        </button>
-      </div>
-    </section>
+      <template #below-input>
+        <!-- 두 표는 2~3열이라 반폭 칸에서도 스크롤 없이 들어간다(inner-scroll로 실측 확인) -->
+        <section class="retro-panel overflow-hidden">
+          <div class="p-4">
+            <p class="text-caption font-semibold text-foreground mb-1">대출 한도 상세</p>
+          </div>
+          <div class="overflow-x-auto">
+            <table aria-label="디딤돌대출 한도와 상환 방식 비교" class="w-max min-w-full text-left text-caption">
+              <thead class="bg-muted/40 text-muted-foreground">
+                <tr>
+                  <th scope="col" class="px-3 py-2">기준</th>
+                  <th scope="col" class="px-3 py-2 text-right">한도</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr class="border-t border-border/60">
+                  <td class="px-3 py-2.5 text-foreground">상품 한도 ({{ BORROWER_TYPE_LABELS[state.borrowerType] }})</td>
+                  <td class="px-3 py-2.5 text-right tabular-nums text-foreground">{{ formatWon(result.maxLoanByLimit) }}</td>
+                </tr>
+                <tr class="border-t border-border/60">
+                  <td class="px-3 py-2.5 text-foreground">LTV 한도 ({{ state.isMetro ? '수도권' : '비수도권' }})</td>
+                  <td class="px-3 py-2.5 text-right tabular-nums text-foreground">{{ formatWon(result.maxLoanByLtv) }}</td>
+                </tr>
+                <tr class="border-t border-border/60">
+                  <td class="px-3 py-2.5 text-foreground">DTI 한도 (60%)</td>
+                  <td class="px-3 py-2.5 text-right tabular-nums text-foreground">{{ formatWon(result.maxLoanByDti) }}</td>
+                </tr>
+                <tr class="border-t border-border/60 bg-primary/5">
+                  <td class="px-3 py-2.5 font-semibold text-primary">최종 대출 가능액</td>
+                  <td class="px-3 py-2.5 text-right tabular-nums font-bold text-primary">{{ formatWon(result.effectiveLoanAmount) }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
 
-    <InputRangeNotice :notices="rangeNotices" />
+        <section class="retro-panel overflow-hidden">
+          <div class="p-4">
+            <p class="text-caption font-semibold text-foreground mb-1">상환 방식 비교</p>
+          </div>
+          <div class="overflow-x-auto">
+            <table aria-label="디딤돌대출 한도와 상환 방식 비교" class="w-full text-left text-caption">
+              <thead class="bg-muted/40 text-muted-foreground">
+                <tr>
+                  <th scope="col" class="px-3 py-2">방식</th>
+                  <th scope="col" class="px-3 py-2 text-right">월 납입액</th>
+                  <th scope="col" class="px-3 py-2 text-right">총 이자</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr class="border-t border-border/60">
+                  <td class="px-3 py-2.5 text-foreground">원리금균등</td>
+                  <td class="px-3 py-2.5 text-right tabular-nums text-foreground">{{ formatWon(result.annuityPlan.monthlyPayment) }}</td>
+                  <td class="px-3 py-2.5 text-right tabular-nums text-foreground">{{ formatWon(result.annuityPlan.totalInterest) }}</td>
+                </tr>
+                <tr class="border-t border-border/60">
+                  <td class="px-3 py-2.5 text-foreground">
+                    <span>원금균등</span>
+                    <span class="block text-[10px] text-muted-foreground">첫 달 {{ formatWon(result.equalPrincipalPlan.firstPayment) }}</span>
+                  </td>
+                  <td class="px-3 py-2.5 text-right tabular-nums text-foreground">{{ formatWon(result.equalPrincipalPlan.monthlyPayment) }}</td>
+                  <td class="px-3 py-2.5 text-right tabular-nums text-foreground">{{ formatWon(result.equalPrincipalPlan.totalInterest) }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
 
-    <!-- 자격 알림 -->
-    <div
-      v-if="!result.eligible"
-      class="rounded-xl border border-destructive/30 bg-destructive/5 p-4 text-caption text-destructive"
-    >
-      <p class="font-semibold">자격 미충족</p>
-      <ul class="mt-1 list-disc pl-4 space-y-0.5">
-        <li v-for="reason in result.ineligibleReasons" :key="reason">{{ reason }}</li>
-      </ul>
-    </div>
+        <CompareSourceFooter :sources="[...STEPPING_STONE_SOURCES]" :updated-at="STEPPING_STONE_UPDATED" />
+      </template>
 
-    <LoanResultHero
-      label="대출 가능액"
-      :value="formatWon(result.effectiveLoanAmount)"
-      sub="한도·LTV·DTI 중 최소"
-    />
-    <LoanMetricGrid :items="metrics" />
-    <ConstraintBars title="디딤돌대출 한도 제한" :items="constraints" :format-value="formatWon" />
-    <MetricComparisonBars
-      title="상환 방식 부담 비교"
-      note="월 납입액과 전체 기간 총이자를 분리해 비교합니다."
-      :metrics="repaymentMetrics"
-      :format-value="formatWon"
-    />
+      <template #result>
+        <!-- 자격 알림: 계산된 result.eligible을 서술하는 결과 설명이라 결과 칸에 둔다 -->
+        <div
+          v-if="!result.eligible"
+          class="rounded-xl border border-destructive/30 bg-destructive/5 p-4 text-caption text-destructive"
+        >
+          <p class="font-semibold">자격 미충족</p>
+          <ul class="mt-1 list-disc pl-4 space-y-0.5">
+            <li v-for="reason in result.ineligibleReasons" :key="reason">{{ reason }}</li>
+          </ul>
+        </div>
 
-    <!-- 한도 상세 -->
-    <section class="retro-panel overflow-hidden">
-      <div class="p-4">
-        <p class="text-caption font-semibold text-foreground mb-1">대출 한도 상세</p>
-      </div>
-      <div class="overflow-x-auto">
-        <table aria-label="디딤돌대출 한도와 상환 방식 비교" class="w-max min-w-full text-left text-caption">
-          <thead class="bg-muted/40 text-muted-foreground">
-            <tr>
-              <th scope="col" class="px-3 py-2">기준</th>
-              <th scope="col" class="px-3 py-2 text-right">한도</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr class="border-t border-border/60">
-              <td class="px-3 py-2.5 text-foreground">상품 한도 ({{ BORROWER_TYPE_LABELS[state.borrowerType] }})</td>
-              <td class="px-3 py-2.5 text-right tabular-nums text-foreground">{{ formatWon(result.maxLoanByLimit) }}</td>
-            </tr>
-            <tr class="border-t border-border/60">
-              <td class="px-3 py-2.5 text-foreground">LTV 한도 ({{ state.isMetro ? '수도권' : '비수도권' }})</td>
-              <td class="px-3 py-2.5 text-right tabular-nums text-foreground">{{ formatWon(result.maxLoanByLtv) }}</td>
-            </tr>
-            <tr class="border-t border-border/60">
-              <td class="px-3 py-2.5 text-foreground">DTI 한도 (60%)</td>
-              <td class="px-3 py-2.5 text-right tabular-nums text-foreground">{{ formatWon(result.maxLoanByDti) }}</td>
-            </tr>
-            <tr class="border-t border-border/60 bg-primary/5">
-              <td class="px-3 py-2.5 font-semibold text-primary">최종 대출 가능액</td>
-              <td class="px-3 py-2.5 text-right tabular-nums font-bold text-primary">{{ formatWon(result.effectiveLoanAmount) }}</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </section>
+        <LoanResultHero
+          label="대출 가능액"
+          :value="formatWon(result.effectiveLoanAmount)"
+          sub="한도·LTV·DTI 중 최소"
+        />
+        <LoanMetricGrid :items="metrics" />
+      </template>
+    </ShCalculatorSplit>
 
-    <!-- 상환 방식 비교 -->
-    <section class="retro-panel overflow-hidden">
-      <div class="p-4">
-        <p class="text-caption font-semibold text-foreground mb-1">상환 방식 비교</p>
-      </div>
-      <div class="overflow-x-auto">
-        <table aria-label="디딤돌대출 한도와 상환 방식 비교" class="w-full text-left text-caption">
-          <thead class="bg-muted/40 text-muted-foreground">
-            <tr>
-              <th scope="col" class="px-3 py-2">방식</th>
-              <th scope="col" class="px-3 py-2 text-right">월 납입액</th>
-              <th scope="col" class="px-3 py-2 text-right">총 이자</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr class="border-t border-border/60">
-              <td class="px-3 py-2.5 text-foreground">원리금균등</td>
-              <td class="px-3 py-2.5 text-right tabular-nums text-foreground">{{ formatWon(result.annuityPlan.monthlyPayment) }}</td>
-              <td class="px-3 py-2.5 text-right tabular-nums text-foreground">{{ formatWon(result.annuityPlan.totalInterest) }}</td>
-            </tr>
-            <tr class="border-t border-border/60">
-              <td class="px-3 py-2.5 text-foreground">
-                <span>원금균등</span>
-                <span class="block text-[10px] text-muted-foreground">첫 달 {{ formatWon(result.equalPrincipalPlan.firstPayment) }}</span>
-              </td>
-              <td class="px-3 py-2.5 text-right tabular-nums text-foreground">{{ formatWon(result.equalPrincipalPlan.monthlyPayment) }}</td>
-              <td class="px-3 py-2.5 text-right tabular-nums text-foreground">{{ formatWon(result.equalPrincipalPlan.totalInterest) }}</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </section>
-
-    <CompareSourceFooter :sources="[...STEPPING_STONE_SOURCES]" :updated-at="STEPPING_STONE_UPDATED" />
+    <!-- 데이터 블록 2열: 한도 제한 막대(217)와 상환 부담 비교 차트(340)를 짝짓는다(비율 0.64) -->
+    <ShPairRow>
+      <template #start>
+        <ConstraintBars title="디딤돌대출 한도 제한" :items="constraints" :format-value="formatWon" />
+      </template>
+      <template #end>
+        <MetricComparisonBars
+          title="상환 방식 부담 비교"
+          note="월 납입액과 전체 기간 총이자를 분리해 비교합니다."
+          :metrics="repaymentMetrics"
+          :format-value="formatWon"
+        />
+      </template>
+    </ShPairRow>
   </div>
 </template>

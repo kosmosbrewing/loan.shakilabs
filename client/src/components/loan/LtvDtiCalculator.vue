@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed } from "vue";
+import { ShCalculatorSplit } from "@shakilabs/ui";
 import LoanMetricGrid from "@/components/loan/LoanMetricGrid.vue";
 import LoanResultHero from "@/components/loan/LoanResultHero.vue";
 import LoanScenarioChips from "@/components/loan/LoanScenarioChips.vue";
@@ -72,135 +73,143 @@ const borrowerCategories: { value: BorrowerCategory; label: string }[] = [
 
 <template>
   <div class="space-y-4">
-    <LoanScenarioChips :items="LTV_DTI_PRESETS" @select="selectPreset" />
+    <ShCalculatorSplit>
+      <template #input>
+        <LoanScenarioChips :items="LTV_DTI_PRESETS" @select="selectPreset" />
+        <section class="retro-panel-muted space-y-4 p-4">
+          <div class="grid gap-3 sm:grid-cols-2">
+            <label class="space-y-1.5">
+              <span class="text-caption font-semibold text-foreground">주택 가격</span>
+              <input
+                type="text"
+                inputmode="numeric"
+                class="retro-input"
+                :value="state.propertyPrice.toLocaleString('ko-KR')"
+                @input="state.propertyPrice = parseNumericInput(($event.target as HTMLInputElement).value)"
+              />
+            </label>
+            <label class="space-y-1.5">
+              <span class="text-caption font-semibold text-foreground">연소득 (부부합산)</span>
+              <input
+                type="text"
+                inputmode="numeric"
+                class="retro-input"
+                :value="state.annualIncome.toLocaleString('ko-KR')"
+                @input="state.annualIncome = parseNumericInput(($event.target as HTMLInputElement).value)"
+              />
+            </label>
+          </div>
 
-    <section class="retro-panel-muted space-y-4 p-4">
-      <div class="grid gap-3 sm:grid-cols-2">
-        <label class="space-y-1.5">
-          <span class="text-caption font-semibold text-foreground">주택 가격</span>
-          <input
-            type="text"
-            inputmode="numeric"
-            class="retro-input"
-            :value="state.propertyPrice.toLocaleString('ko-KR')"
-            @input="state.propertyPrice = parseNumericInput(($event.target as HTMLInputElement).value)"
-          />
-        </label>
-        <label class="space-y-1.5">
-          <span class="text-caption font-semibold text-foreground">연소득 (부부합산)</span>
-          <input
-            type="text"
-            inputmode="numeric"
-            class="retro-input"
-            :value="state.annualIncome.toLocaleString('ko-KR')"
-            @input="state.annualIncome = parseNumericInput(($event.target as HTMLInputElement).value)"
-          />
-        </label>
-      </div>
+          <div class="grid gap-3 sm:grid-cols-2">
+            <label class="space-y-1.5">
+              <span class="text-caption font-semibold text-foreground">기존 대출 연 상환액</span>
+              <input
+                type="text"
+                inputmode="numeric"
+                class="retro-input"
+                :value="state.existingDebtPayment.toLocaleString('ko-KR')"
+                @input="state.existingDebtPayment = parseNumericInput(($event.target as HTMLInputElement).value)"
+              />
+            </label>
+            <label class="space-y-1.5">
+              <span class="text-caption font-semibold text-foreground">예상 금리 (연%)</span>
+              <input v-model.number="state.loanRate" class="retro-input" min="0" max="30" step="0.1" type="number" />
+            </label>
+          </div>
 
-      <div class="grid gap-3 sm:grid-cols-2">
-        <label class="space-y-1.5">
-          <span class="text-caption font-semibold text-foreground">기존 대출 연 상환액</span>
-          <input
-            type="text"
-            inputmode="numeric"
-            class="retro-input"
-            :value="state.existingDebtPayment.toLocaleString('ko-KR')"
-            @input="state.existingDebtPayment = parseNumericInput(($event.target as HTMLInputElement).value)"
-          />
-        </label>
-        <label class="space-y-1.5">
-          <span class="text-caption font-semibold text-foreground">예상 금리 (연%)</span>
-          <input v-model.number="state.loanRate" class="retro-input" min="0" max="30" step="0.1" type="number" />
-        </label>
-      </div>
+          <div class="grid gap-3 sm:grid-cols-3">
+            <label class="space-y-1.5">
+              <span class="text-caption font-semibold text-foreground">규제 지역</span>
+              <select v-model="state.region" class="retro-input">
+                <option v-for="r in regions" :key="r.value" :value="r.value">{{ r.label }}</option>
+              </select>
+            </label>
+            <label class="space-y-1.5">
+              <span class="text-caption font-semibold text-foreground">차주 유형</span>
+              <select v-model="state.borrowerCategory" class="retro-input">
+                <option v-for="bc in borrowerCategories" :key="bc.value" :value="bc.value">{{ bc.label }}</option>
+              </select>
+            </label>
+            <label class="space-y-1.5">
+              <span class="text-caption font-semibold text-foreground">대출 기간</span>
+              <select v-model.number="state.termMonths" class="retro-input">
+                <option v-for="term in TERM_OPTIONS" :key="term" :value="term">{{ term }}개월 ({{ Math.round(term / 12) }}년)</option>
+              </select>
+            </label>
+          </div>
 
-      <div class="grid gap-3 sm:grid-cols-3">
-        <label class="space-y-1.5">
-          <span class="text-caption font-semibold text-foreground">규제 지역</span>
-          <select v-model="state.region" class="retro-input">
-            <option v-for="r in regions" :key="r.value" :value="r.value">{{ r.label }}</option>
-          </select>
-        </label>
-        <label class="space-y-1.5">
-          <span class="text-caption font-semibold text-foreground">차주 유형</span>
-          <select v-model="state.borrowerCategory" class="retro-input">
-            <option v-for="bc in borrowerCategories" :key="bc.value" :value="bc.value">{{ bc.label }}</option>
-          </select>
-        </label>
-        <label class="space-y-1.5">
-          <span class="text-caption font-semibold text-foreground">대출 기간</span>
-          <select v-model.number="state.termMonths" class="retro-input">
-            <option v-for="term in TERM_OPTIONS" :key="term" :value="term">{{ term }}개월 ({{ Math.round(term / 12) }}년)</option>
-          </select>
-        </label>
-      </div>
+          <div class="flex flex-wrap gap-2">
+            <button type="button" class="retro-panel px-3 py-2 text-caption font-semibold text-foreground" @click="reset">
+              기본값으로 초기화
+            </button>
+          </div>
+        </section>
+        <InputRangeNotice :notices="rangeNotices" />
+      </template>
 
-      <div class="flex flex-wrap gap-2">
-        <button type="button" class="retro-panel px-3 py-2 text-caption font-semibold text-foreground" @click="reset">
-          기본값으로 초기화
-        </button>
-      </div>
-    </section>
+      <template #below-input>
+        <!-- 3열 표라 반폭 칸에서도 스크롤 없이 들어간다(inner-scroll로 실측 확인) -->
+        <section class="retro-panel overflow-hidden">
+          <div class="p-4">
+            <p class="text-caption font-semibold text-foreground mb-1">규제별 한도 분석</p>
+            <p class="text-[10px] text-muted-foreground">세 가지 규제 중 가장 낮은 금액이 최종 한도</p>
+          </div>
+          <div class="overflow-x-auto">
+            <table aria-label="주택담보대출 규제별 한도 분석" class="w-full text-left text-caption">
+              <thead class="bg-muted/40 text-muted-foreground">
+                <tr>
+                  <th scope="col" class="px-3 py-2">규제</th>
+                  <th scope="col" class="px-3 py-2 text-right">비율/조건</th>
+                  <th scope="col" class="px-3 py-2 text-right">한도</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr class="border-t border-border/60" :class="{ 'bg-primary/5': result.limitingFactor === 'LTV' }">
+                  <td class="px-3 py-2.5 text-foreground">LTV</td>
+                  <td class="px-3 py-2.5 text-right tabular-nums text-muted-foreground">{{ formatRatioAsPercent(result.ltvRate, 0) }}</td>
+                  <td class="px-3 py-2.5 text-right tabular-nums font-medium" :class="result.limitingFactor === 'LTV' ? 'text-primary' : 'text-foreground'">{{ formatWon(result.maxByLtv) }}</td>
+                </tr>
+                <tr v-if="result.maxByAbsolute > 0" class="border-t border-border/60" :class="{ 'bg-primary/5': result.limitingFactor === '절대한도' }">
+                  <td class="px-3 py-2.5 text-foreground">절대한도</td>
+                  <td class="px-3 py-2.5 text-right tabular-nums text-muted-foreground">규제지역</td>
+                  <td class="px-3 py-2.5 text-right tabular-nums font-medium" :class="result.limitingFactor === '절대한도' ? 'text-primary' : 'text-foreground'">{{ formatWon(result.maxByAbsolute) }}</td>
+                </tr>
+                <tr class="border-t border-border/60" :class="{ 'bg-primary/5': result.limitingFactor === 'DTI' }">
+                  <td class="px-3 py-2.5 text-foreground">DTI</td>
+                  <td class="px-3 py-2.5 text-right tabular-nums text-muted-foreground">{{ formatRatioAsPercent(result.dtiRate, 0) }}</td>
+                  <td class="px-3 py-2.5 text-right tabular-nums font-medium" :class="result.limitingFactor === 'DTI' ? 'text-primary' : 'text-foreground'">{{ formatWon(result.maxByDti) }}</td>
+                </tr>
+                <tr class="border-t border-border/60" :class="{ 'bg-primary/5': result.limitingFactor === 'DSR' }">
+                  <td class="px-3 py-2.5 text-foreground">
+                    <span>DSR</span>
+                    <span class="block text-[10px] text-muted-foreground">스트레스 +{{ result.stressRate }}%p</span>
+                  </td>
+                  <td class="px-3 py-2.5 text-right tabular-nums text-muted-foreground">{{ formatRatioAsPercent(result.dsrRate, 0) }}</td>
+                  <td class="px-3 py-2.5 text-right tabular-nums font-medium" :class="result.limitingFactor === 'DSR' ? 'text-primary' : 'text-foreground'">{{ formatWon(result.maxByDsr) }}</td>
+                </tr>
+                <tr class="border-t-2 border-primary/30 bg-primary/5">
+                  <td class="px-3 py-2.5 font-semibold text-primary" colspan="2">최종 대출 가능액</td>
+                  <td class="px-3 py-2.5 text-right tabular-nums font-bold text-primary">{{ formatWon(result.finalMaxLoan) }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
 
-    <InputRangeNotice :notices="rangeNotices" />
+        <CompareSourceFooter :sources="[...LTV_DTI_SOURCES]" :updated-at="LTV_DTI_UPDATED" />
+      </template>
 
-    <LoanResultHero
-      label="최종 대출 한도"
-      :value="formatWon(result.finalMaxLoan)"
-      :sub="`제한 요인: ${result.limitingFactor}`"
-    />
-    <LoanMetricGrid :items="metrics" />
+      <template #result>
+        <LoanResultHero
+          label="최종 대출 한도"
+          :value="formatWon(result.finalMaxLoan)"
+          :sub="`제한 요인: ${result.limitingFactor}`"
+        />
+        <LoanMetricGrid :items="metrics" />
+      </template>
+    </ShCalculatorSplit>
+
+    <!-- 결과 칸을 짧게 유지해 300px 규칙을 지키려고 상세 차트를 1×2 아래 전폭으로 내린다 -->
     <ConstraintBars title="규제별 대출 한도" :items="constraints" :format-value="formatWon" />
-
-    <!-- 규제별 한도 상세 -->
-    <section class="retro-panel overflow-hidden">
-      <div class="p-4">
-        <p class="text-caption font-semibold text-foreground mb-1">규제별 한도 분석</p>
-        <p class="text-[10px] text-muted-foreground">세 가지 규제 중 가장 낮은 금액이 최종 한도</p>
-      </div>
-      <div class="overflow-x-auto">
-        <table aria-label="주택담보대출 규제별 한도 분석" class="w-full text-left text-caption">
-          <thead class="bg-muted/40 text-muted-foreground">
-            <tr>
-              <th scope="col" class="px-3 py-2">규제</th>
-              <th scope="col" class="px-3 py-2 text-right">비율/조건</th>
-              <th scope="col" class="px-3 py-2 text-right">한도</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr class="border-t border-border/60" :class="{ 'bg-primary/5': result.limitingFactor === 'LTV' }">
-              <td class="px-3 py-2.5 text-foreground">LTV</td>
-              <td class="px-3 py-2.5 text-right tabular-nums text-muted-foreground">{{ formatRatioAsPercent(result.ltvRate, 0) }}</td>
-              <td class="px-3 py-2.5 text-right tabular-nums font-medium" :class="result.limitingFactor === 'LTV' ? 'text-primary' : 'text-foreground'">{{ formatWon(result.maxByLtv) }}</td>
-            </tr>
-            <tr v-if="result.maxByAbsolute > 0" class="border-t border-border/60" :class="{ 'bg-primary/5': result.limitingFactor === '절대한도' }">
-              <td class="px-3 py-2.5 text-foreground">절대한도</td>
-              <td class="px-3 py-2.5 text-right tabular-nums text-muted-foreground">규제지역</td>
-              <td class="px-3 py-2.5 text-right tabular-nums font-medium" :class="result.limitingFactor === '절대한도' ? 'text-primary' : 'text-foreground'">{{ formatWon(result.maxByAbsolute) }}</td>
-            </tr>
-            <tr class="border-t border-border/60" :class="{ 'bg-primary/5': result.limitingFactor === 'DTI' }">
-              <td class="px-3 py-2.5 text-foreground">DTI</td>
-              <td class="px-3 py-2.5 text-right tabular-nums text-muted-foreground">{{ formatRatioAsPercent(result.dtiRate, 0) }}</td>
-              <td class="px-3 py-2.5 text-right tabular-nums font-medium" :class="result.limitingFactor === 'DTI' ? 'text-primary' : 'text-foreground'">{{ formatWon(result.maxByDti) }}</td>
-            </tr>
-            <tr class="border-t border-border/60" :class="{ 'bg-primary/5': result.limitingFactor === 'DSR' }">
-              <td class="px-3 py-2.5 text-foreground">
-                <span>DSR</span>
-                <span class="block text-[10px] text-muted-foreground">스트레스 +{{ result.stressRate }}%p</span>
-              </td>
-              <td class="px-3 py-2.5 text-right tabular-nums text-muted-foreground">{{ formatRatioAsPercent(result.dsrRate, 0) }}</td>
-              <td class="px-3 py-2.5 text-right tabular-nums font-medium" :class="result.limitingFactor === 'DSR' ? 'text-primary' : 'text-foreground'">{{ formatWon(result.maxByDsr) }}</td>
-            </tr>
-            <tr class="border-t-2 border-primary/30 bg-primary/5">
-              <td class="px-3 py-2.5 font-semibold text-primary" colspan="2">최종 대출 가능액</td>
-              <td class="px-3 py-2.5 text-right tabular-nums font-bold text-primary">{{ formatWon(result.finalMaxLoan) }}</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </section>
-
-    <CompareSourceFooter :sources="[...LTV_DTI_SOURCES]" :updated-at="LTV_DTI_UPDATED" />
   </div>
 </template>

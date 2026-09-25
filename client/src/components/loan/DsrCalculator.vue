@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed } from "vue";
-import { ShBulletProgress } from "@shakilabs/ui";
+import { ShBulletProgress, ShCalculatorSplit } from "@shakilabs/ui";
 import LoanMetricGrid from "@/components/loan/LoanMetricGrid.vue";
 import LoanResultHero from "@/components/loan/LoanResultHero.vue";
 import LoanScenarioChips from "@/components/loan/LoanScenarioChips.vue";
@@ -43,56 +43,62 @@ function selectPreset(key: string): void {
 
 <template>
   <div class="space-y-4">
-    <LoanScenarioChips :items="dsrPresets" @select="selectPreset" />
+    <ShCalculatorSplit>
+      <template #input>
+        <LoanScenarioChips :items="dsrPresets" @select="selectPreset" />
+        <section class="retro-panel-muted p-4 space-y-4">
+          <div class="grid gap-3 sm:grid-cols-2">
+            <label class="space-y-1.5">
+              <span class="text-caption font-semibold text-foreground">연소득</span>
+              <input type="text" inputmode="numeric" class="retro-input" :value="state.annualIncome.toLocaleString('ko-KR')" @input="state.annualIncome = parseNumericInput(($event.target as HTMLInputElement).value)" />
+            </label>
+            <label class="space-y-1.5">
+              <span class="text-caption font-semibold text-foreground">기존 연 원리금</span>
+              <input
+                type="text"
+                inputmode="numeric"
+                class="retro-input"
+                :value="state.existingAnnualDebtService.toLocaleString('ko-KR')"
+                @input="state.existingAnnualDebtService = parseNumericInput(($event.target as HTMLInputElement).value)"
+              />
+            </label>
+            <label class="space-y-1.5">
+              <span class="text-caption font-semibold text-foreground">DSR 한도</span>
+              <select v-model.number="state.dsrLimit" class="retro-input">
+                <option v-for="limit in DSR_LIMIT_OPTIONS" :key="limit" :value="limit">{{ Math.round(limit * 100) }}%</option>
+              </select>
+            </label>
+            <label class="space-y-1.5">
+              <span class="text-caption font-semibold text-foreground">예상 금리</span>
+              <input v-model.number="state.newLoanRate" class="retro-input" min="0" max="30" step="0.1" type="number" />
+            </label>
+            <label class="space-y-1.5 sm:col-span-2">
+              <span class="text-caption font-semibold text-foreground">만기</span>
+              <select v-model.number="state.termMonths" class="retro-input">
+                <option v-for="term in TERM_OPTIONS" :key="term" :value="term">{{ term }}개월</option>
+              </select>
+            </label>
+          </div>
 
-    <!-- 네이버 유입은 답만 보고 이탈하는 성향이 강하다. 모바일에서는 결과를 입력보다
-         먼저 보여 첫 화면 안에서 답이 끝나게 한다(데스크톱 2열 배치는 유지). -->
-    <div class="grid gap-4 xl:grid-cols-[1.2fr_0.8fr]">
-      <section class="retro-panel-muted order-2 p-4 space-y-4 xl:order-none">
-        <div class="grid gap-3 sm:grid-cols-2">
-          <label class="space-y-1.5">
-            <span class="text-caption font-semibold text-foreground">연소득</span>
-            <input type="text" inputmode="numeric" class="retro-input" :value="state.annualIncome.toLocaleString('ko-KR')" @input="state.annualIncome = parseNumericInput(($event.target as HTMLInputElement).value)" />
-          </label>
-          <label class="space-y-1.5">
-            <span class="text-caption font-semibold text-foreground">기존 연 원리금</span>
-            <input
-              type="text"
-              inputmode="numeric"
-              class="retro-input"
-              :value="state.existingAnnualDebtService.toLocaleString('ko-KR')"
-              @input="state.existingAnnualDebtService = parseNumericInput(($event.target as HTMLInputElement).value)"
-            />
-          </label>
-          <label class="space-y-1.5">
-            <span class="text-caption font-semibold text-foreground">DSR 한도</span>
-            <select v-model.number="state.dsrLimit" class="retro-input">
-              <option v-for="limit in DSR_LIMIT_OPTIONS" :key="limit" :value="limit">{{ Math.round(limit * 100) }}%</option>
-            </select>
-          </label>
-          <label class="space-y-1.5">
-            <span class="text-caption font-semibold text-foreground">예상 금리</span>
-            <input v-model.number="state.newLoanRate" class="retro-input" min="0" max="30" step="0.1" type="number" />
-          </label>
-          <label class="space-y-1.5 sm:col-span-2">
-            <span class="text-caption font-semibold text-foreground">만기</span>
-            <select v-model.number="state.termMonths" class="retro-input">
-              <option v-for="term in TERM_OPTIONS" :key="term" :value="term">{{ term }}개월</option>
-            </select>
-          </label>
-        </div>
+          <div class="flex flex-wrap gap-2">
+            <button type="button" class="retro-panel px-3 py-2 text-caption font-semibold text-foreground" @click="reset">
+              기본값으로 초기화
+            </button>
+            <p class="text-tiny text-muted-foreground">
+              카드론·마이너스통장·자동차 할부 등 DSR에 반영되는 기존 채무는 연 원리금으로 합산하세요.
+            </p>
+          </div>
+        </section>
+      </template>
 
-        <div class="flex flex-wrap gap-2">
-          <button type="button" class="retro-panel px-3 py-2 text-caption font-semibold text-foreground" @click="reset">
-            기본값으로 초기화
-          </button>
-          <p class="text-tiny text-muted-foreground">
-            카드론·마이너스통장·자동차 할부 등 DSR에 반영되는 기존 채무는 연 원리금으로 합산하세요.
-          </p>
-        </div>
-      </section>
+      <template #below-input>
+        <section class="retro-panel p-4">
+          <p class="text-caption leading-relaxed text-muted-foreground">{{ LOAN_ASSUMPTION_NOTE }}</p>
+        </section>
+      </template>
 
-      <section class="retro-panel order-1 p-4 space-y-3 xl:order-none">
+      <template #result>
+        <!-- 한도 해석은 계산된 result를 그대로 서술하는 결과 설명이라 입력이 아니라 결과 칸에 둔다 -->
         <div
           class="rounded-2xl px-4 py-3"
           :class="overLimit
@@ -109,17 +115,18 @@ function selectPreset(key: string): void {
             현재 가정으로는 월 {{ formatWon(result.availableMonthlyBudget) }}까지 새 대출 상환을 감당하는 구조입니다.
           </p>
         </div>
-        <p class="text-caption leading-relaxed text-muted-foreground">{{ LOAN_ASSUMPTION_NOTE }}</p>
-      </section>
-    </div>
 
-    <LoanResultHero
-      label="추정 최대 대출액"
-      :value="formatWon(result.maxLoanAmount)"
-      :sub="`총상환액 ${formatWon(result.estimatedTotalRepayment)}`"
-      :tone="overLimit ? 'danger' : 'accent'"
-    />
-    <LoanMetricGrid :items="metrics" />
+        <LoanResultHero
+          label="추정 최대 대출액"
+          :value="formatWon(result.maxLoanAmount)"
+          :sub="`총상환액 ${formatWon(result.estimatedTotalRepayment)}`"
+          :tone="overLimit ? 'danger' : 'accent'"
+        />
+        <LoanMetricGrid :items="metrics" />
+      </template>
+    </ShCalculatorSplit>
+
+    <!-- 결과 칸을 짧게 유지해 300px 규칙을 지키려고 상세 차트를 1×2 아래 전폭으로 내린다 -->
     <ShBulletProgress
       label="현재 DSR 한도 사용률"
       :value="result.currentDsr"

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed } from "vue";
-import { ShBulletProgress } from "@shakilabs/ui";
+import { ShBulletProgress, ShCalculatorSplit } from "@shakilabs/ui";
 import LoanMetricGrid from "@/components/loan/LoanMetricGrid.vue";
 import LoanResultHero from "@/components/loan/LoanResultHero.vue";
 import LoanScenarioChips from "@/components/loan/LoanScenarioChips.vue";
@@ -58,52 +58,60 @@ function selectPreset(key: string): void {
 
 <template>
   <div class="space-y-4">
-    <LoanScenarioChips :items="refinancePresets" @select="selectPreset" />
+    <ShCalculatorSplit>
+      <template #input>
+        <LoanScenarioChips :items="refinancePresets" @select="selectPreset" />
+        <section class="refinance-input-panel retro-panel-muted space-y-4 p-4">
+          <div class="grid gap-3 sm:grid-cols-2">
+            <label class="space-y-1.5">
+              <span class="text-caption font-semibold text-foreground">남은 대출원금</span>
+              <input type="text" inputmode="numeric" class="retro-input" :value="state.balance.toLocaleString('ko-KR')" @input="state.balance = parseNumericInput(($event.target as HTMLInputElement).value)" />
+            </label>
+            <label class="space-y-1.5">
+              <span class="text-caption font-semibold text-foreground">현재 금리</span>
+              <input v-model.number="state.currentRate" class="retro-input" min="0" max="30" step="0.1" type="number" />
+            </label>
+            <label class="space-y-1.5">
+              <span class="text-caption font-semibold text-foreground">갈아탈 금리</span>
+              <input v-model.number="state.newRate" class="retro-input" min="0" max="30" step="0.1" type="number" />
+            </label>
+            <label class="space-y-1.5">
+              <span class="text-caption font-semibold text-foreground">갈아타기 비용</span>
+              <input type="text" inputmode="numeric" class="retro-input" :value="state.refinanceFee.toLocaleString('ko-KR')" @input="state.refinanceFee = parseNumericInput(($event.target as HTMLInputElement).value)" />
+            </label>
+            <label class="space-y-1.5">
+              <span class="text-caption font-semibold text-foreground">남은 개월 수</span>
+              <select v-model.number="state.remainingMonths" class="retro-input">
+                <option v-for="term in TERM_OPTIONS" :key="`remain-${term}`" :value="term">{{ term }}개월</option>
+              </select>
+            </label>
+            <label class="space-y-1.5">
+              <span class="text-caption font-semibold text-foreground">새 만기</span>
+              <select v-model.number="state.newTermMonths" class="retro-input">
+                <option v-for="term in TERM_OPTIONS" :key="`new-${term}`" :value="term">{{ term }}개월</option>
+              </select>
+            </label>
+          </div>
 
-    <div class="grid gap-4 xl:grid-cols-[1.2fr_0.8fr]">
-      <section class="refinance-input-panel retro-panel-muted space-y-4 p-4">
-        <div class="grid gap-3 sm:grid-cols-2">
-          <label class="space-y-1.5">
-            <span class="text-caption font-semibold text-foreground">남은 대출원금</span>
-            <input type="text" inputmode="numeric" class="retro-input" :value="state.balance.toLocaleString('ko-KR')" @input="state.balance = parseNumericInput(($event.target as HTMLInputElement).value)" />
-          </label>
-          <label class="space-y-1.5">
-            <span class="text-caption font-semibold text-foreground">현재 금리</span>
-            <input v-model.number="state.currentRate" class="retro-input" min="0" max="30" step="0.1" type="number" />
-          </label>
-          <label class="space-y-1.5">
-            <span class="text-caption font-semibold text-foreground">갈아탈 금리</span>
-            <input v-model.number="state.newRate" class="retro-input" min="0" max="30" step="0.1" type="number" />
-          </label>
-          <label class="space-y-1.5">
-            <span class="text-caption font-semibold text-foreground">갈아타기 비용</span>
-            <input type="text" inputmode="numeric" class="retro-input" :value="state.refinanceFee.toLocaleString('ko-KR')" @input="state.refinanceFee = parseNumericInput(($event.target as HTMLInputElement).value)" />
-          </label>
-          <label class="space-y-1.5">
-            <span class="text-caption font-semibold text-foreground">남은 개월 수</span>
-            <select v-model.number="state.remainingMonths" class="retro-input">
-              <option v-for="term in TERM_OPTIONS" :key="`remain-${term}`" :value="term">{{ term }}개월</option>
-            </select>
-          </label>
-          <label class="space-y-1.5">
-            <span class="text-caption font-semibold text-foreground">새 만기</span>
-            <select v-model.number="state.newTermMonths" class="retro-input">
-              <option v-for="term in TERM_OPTIONS" :key="`new-${term}`" :value="term">{{ term }}개월</option>
-            </select>
-          </label>
-        </div>
+          <div class="flex flex-wrap gap-2">
+            <button type="button" class="retro-panel px-3 py-2 text-caption font-semibold text-foreground" @click="reset">
+              기본값으로 초기화
+            </button>
+            <p class="text-tiny text-muted-foreground">
+              중도상환수수료, 인지세, 보증료는 한 번에 비용으로 합산해 입력하세요.
+            </p>
+          </div>
+        </section>
+      </template>
 
-        <div class="flex flex-wrap gap-2">
-          <button type="button" class="retro-panel px-3 py-2 text-caption font-semibold text-foreground" @click="reset">
-            기본값으로 초기화
-          </button>
-          <p class="text-tiny text-muted-foreground">
-            중도상환수수료, 인지세, 보증료는 한 번에 비용으로 합산해 입력하세요.
-          </p>
-        </div>
-      </section>
+      <template #below-input>
+        <section class="retro-panel p-4">
+          <p class="text-caption leading-relaxed text-muted-foreground">{{ LOAN_ASSUMPTION_NOTE }}</p>
+        </section>
+      </template>
 
-      <section class="refinance-summary-panel retro-panel space-y-3 p-4">
+      <template #result>
+        <!-- 갈아타기 유불리 판정은 계산된 result를 그대로 서술하는 결과 설명이라 결과 칸에 둔다 -->
         <div
           class="refinance-status rounded-2xl border px-4 py-3"
           :class="result.isSwitchWorthIt ? 'border-status-success/30' : 'border-status-warning/30'"
@@ -119,17 +127,17 @@ function selectPreset(key: string): void {
             }}
           </p>
         </div>
-        <p class="text-caption leading-relaxed text-muted-foreground">{{ LOAN_ASSUMPTION_NOTE }}</p>
-      </section>
-    </div>
 
-    <LoanResultHero
-      label="순절감 예상"
-      :value="formatWon(result.netSavings)"
-      :sub="result.breakEvenMonths == null ? '초기비용 회수 어려움' : `${result.breakEvenMonths}개월 내 비용 회수`"
-    />
-    <LoanMetricGrid :items="metrics" />
+        <LoanResultHero
+          label="순절감 예상"
+          :value="formatWon(result.netSavings)"
+          :sub="result.breakEvenMonths == null ? '초기비용 회수 어려움' : `${result.breakEvenMonths}개월 내 비용 회수`"
+        />
+        <LoanMetricGrid :items="metrics" />
+      </template>
+    </ShCalculatorSplit>
 
+    <!-- 결과 칸을 짧게 유지해 300px 규칙을 지키려고 상세 차트를 1×2 아래 전폭으로 내린다 -->
     <MetricComparisonBars
       title="대환 전후 비용 비교"
       note="월 납입액과 총이자를 각각 같은 축에서 비교하며 짧을수록 부담이 낮습니다."
