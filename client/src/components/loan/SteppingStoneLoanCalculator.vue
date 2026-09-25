@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed } from "vue";
-import { ShCalculatorSplit } from "@shakilabs/ui";
+import { ShCalculatorSplit, ShPairRow } from "@shakilabs/ui";
 import LoanMetricGrid from "@/components/loan/LoanMetricGrid.vue";
 import LoanResultHero from "@/components/loan/LoanResultHero.vue";
 import LoanScenarioChips from "@/components/loan/LoanScenarioChips.vue";
@@ -236,13 +236,19 @@ const borrowerTypes: { value: BorrowerType; label: string }[] = [
       </template>
     </ShCalculatorSplit>
 
-    <!-- 결과 칸을 짧게 유지해 300px 규칙을 지키려고 상세 차트를 1×2 아래 전폭으로 내린다 -->
-    <ConstraintBars title="디딤돌대출 한도 제한" :items="constraints" :format-value="formatWon" />
-    <MetricComparisonBars
-      title="상환 방식 부담 비교"
-      note="월 납입액과 전체 기간 총이자를 분리해 비교합니다."
-      :metrics="repaymentMetrics"
-      :format-value="formatWon"
-    />
+    <!-- 데이터 블록 2열: 한도 제한 막대(217)와 상환 부담 비교 차트(340)를 짝짓는다(비율 0.64) -->
+    <ShPairRow>
+      <template #start>
+        <ConstraintBars title="디딤돌대출 한도 제한" :items="constraints" :format-value="formatWon" />
+      </template>
+      <template #end>
+        <MetricComparisonBars
+          title="상환 방식 부담 비교"
+          note="월 납입액과 전체 기간 총이자를 분리해 비교합니다."
+          :metrics="repaymentMetrics"
+          :format-value="formatWon"
+        />
+      </template>
+    </ShPairRow>
   </div>
 </template>

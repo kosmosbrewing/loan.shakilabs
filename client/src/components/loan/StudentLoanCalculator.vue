@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, reactive } from "vue";
-import { ShBreakdownBar, ShCalculatorSplit } from "@shakilabs/ui";
+import { ShBreakdownBar, ShCalculatorSplit, ShPairRow } from "@shakilabs/ui";
 import { TrendingUp, CalendarClock, Wallet } from "lucide-vue-next";
 import { Card, CardContent } from "@/components/ui/card";
 import LoanResultHero from "@/components/loan/LoanResultHero.vue";
@@ -118,22 +118,27 @@ const statIconClasses = [
       </template>
     </ShCalculatorSplit>
 
-    <!-- 결과 칸을 짧게 유지해 300px 규칙을 지키려고 차트·부연 설명을 1×2 아래 전폭으로 내린다 -->
-    <ShBreakdownBar
-      label="이자 반영 후 대출 잔액"
-      note="기초 잔액과 예상 이자를 합친 금액이 연간 상환액과 연말 잔액으로 나뉩니다."
-      :segments="balanceSegments"
-      :format-value="formatWon"
-      surface="outlined"
-    />
+    <!-- 데이터 블록 2열: 잔액 배분 막대(137)와 노트+출처(60+132)를 짝짓는다(비율 0.66) -->
+    <ShPairRow>
+      <template #start>
+        <ShBreakdownBar
+          label="이자 반영 후 대출 잔액"
+          note="기초 잔액과 예상 이자를 합친 금액이 연간 상환액과 연말 잔액으로 나뉩니다."
+          :segments="balanceSegments"
+          :format-value="formatWon"
+          surface="outlined"
+        />
+      </template>
+      <template #end>
+        <Card>
+          <CardContent class="p-4 text-caption leading-relaxed text-muted-foreground">
+            자발적 상환액은 고지 의무상환액에서 차감되는 것으로 간주했습니다. 상속·증여에 따른 의무상환과 체납 가산금은
+            반영하지 않은 단순 계산입니다.
+          </CardContent>
+        </Card>
 
-    <Card>
-      <CardContent class="p-4 text-caption leading-relaxed text-muted-foreground">
-        자발적 상환액은 고지 의무상환액에서 차감되는 것으로 간주했습니다. 상속·증여에 따른 의무상환과 체납 가산금은
-        반영하지 않은 단순 계산입니다.
-      </CardContent>
-    </Card>
-
-    <CompareSourceFooter :sources="[...STUDENT_LOAN_SOURCES]" updated-at="2026-03-17" />
+        <CompareSourceFooter :sources="[...STUDENT_LOAN_SOURCES]" updated-at="2026-03-17" />
+      </template>
+    </ShPairRow>
   </div>
 </template>

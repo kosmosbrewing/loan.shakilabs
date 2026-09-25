@@ -133,7 +133,8 @@ function setAmountPreset(amount: number): void {
       better="lower"
     />
 
-    <!-- 6열 표라 반폭 칸이 아니라 1×2 아래 전폭에 둔다 -->
+    <!-- 6열 표라 반폭 칸이 아니라 1×2 아래 전폭에 둔다(inner-scroll 실측: 1440에서 84px·1024에서
+         148px 가려짐 — 반폭 시도 후 되돌림) -->
     <section class="retro-panel overflow-hidden">
       <div class="p-4">
         <p class="text-caption font-semibold text-foreground mb-1">은행별 주담대 금리 비교</p>

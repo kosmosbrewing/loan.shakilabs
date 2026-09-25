@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, reactive } from "vue";
-import { ShBreakdownBar, ShCalculatorSplit } from "@shakilabs/ui";
+import { ShBreakdownBar, ShCalculatorSplit, ShPairRow } from "@shakilabs/ui";
 import { ShieldCheck, Banknote, TrendingDown } from "lucide-vue-next";
 import { Card, CardContent } from "@/components/ui/card";
 import LoanResultHero from "@/components/loan/LoanResultHero.vue";
@@ -105,22 +105,27 @@ const statIconClasses = [
       </template>
     </ShCalculatorSplit>
 
-    <!-- 결과 칸을 짧게 유지해 300px 규칙을 지키려고 차트·부연 설명을 1×2 아래 전폭으로 내린다 -->
-    <ShBreakdownBar
-      label="이번 상환액의 수수료 적용 범위"
-      note="면제 처리 금액과 과금 대상 원금의 합은 이번 상환액과 같습니다."
-      :segments="repaymentSegments"
-      :format-value="formatWon"
-      surface="outlined"
-    />
+    <!-- 데이터 블록 2열: 수수료 배분 막대(137)와 노트+출처(60+132)를 짝짓는다(비율 0.66) -->
+    <ShPairRow>
+      <template #start>
+        <ShBreakdownBar
+          label="이번 상환액의 수수료 적용 범위"
+          note="면제 처리 금액과 과금 대상 원금의 합은 이번 상환액과 같습니다."
+          :segments="repaymentSegments"
+          :format-value="formatWon"
+          surface="outlined"
+        />
+      </template>
+      <template #end>
+        <Card>
+          <CardContent class="p-4 text-caption leading-relaxed text-muted-foreground">
+            연간 면제한도 {{ formatWon(result.freeQuota) }}와 잔여 부과기간 {{ result.remainingMonths }}개월을 반영한 참고 계산입니다.
+            은행별 최소 면제금액, 상품별 예외조항은 별도로 확인해야 합니다.
+          </CardContent>
+        </Card>
 
-    <Card>
-      <CardContent class="p-4 text-caption leading-relaxed text-muted-foreground">
-        연간 면제한도 {{ formatWon(result.freeQuota) }}와 잔여 부과기간 {{ result.remainingMonths }}개월을 반영한 참고 계산입니다.
-        은행별 최소 면제금액, 상품별 예외조항은 별도로 확인해야 합니다.
-      </CardContent>
-    </Card>
-
-    <CompareSourceFooter :sources="[...PREPAYMENT_FEE_SOURCES]" updated-at="2026-03-17" />
+        <CompareSourceFooter :sources="[...PREPAYMENT_FEE_SOURCES]" updated-at="2026-03-17" />
+      </template>
+    </ShPairRow>
   </div>
 </template>

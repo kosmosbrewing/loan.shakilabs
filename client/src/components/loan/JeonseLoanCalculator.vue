@@ -130,7 +130,7 @@ function setDepositPreset(amount: number): void {
       </template>
     </ShCalculatorSplit>
 
-    <!-- 결과 칸을 짧게 유지해 300px 규칙을 지키려고 순위 차트를 1×2 아래 전폭으로 내린다 -->
+    <!-- 자격 충족 상품이 0개면(고액 보증금) 이 차트가 완전히 비므로 짝을 짓지 않는다(칸 전체 공백 금지) -->
     <GapComparisonBars
       v-if="productItems.length"
       title="자격 충족 상품 이자 비교"
@@ -142,7 +142,8 @@ function setDepositPreset(amount: number): void {
       better="lower"
     />
 
-    <!-- 5열 표라 반폭 칸이 아니라 1×2 아래 전폭에 둔다 -->
+    <!-- 5열 표라 반폭 칸이 아니라 1×2 아래 전폭에 둔다(inner-scroll 실측: 표+출처 짝도 1440에서
+         162px·1024에서 226px 가려짐 — 반폭 시도 후 되돌림) -->
     <section class="retro-panel overflow-hidden">
       <div class="p-4">
         <p class="text-caption font-semibold text-foreground mb-1">전세대출 상품별 이자 비교</p>

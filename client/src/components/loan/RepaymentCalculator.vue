@@ -6,6 +6,7 @@ import {
   ShField,
   ShInput,
   ShLabel,
+  ShPairRow,
   ShSelect,
   ShTable,
   ShTableBody,
@@ -126,42 +127,60 @@ function selectPreset(key: string): void {
       </template>
     </ShCalculatorSplit>
 
-    <!-- 결과 칸을 짧게 유지해 300px 규칙을 지키려고 차트를 1×2 아래 전폭으로 내린다 -->
-    <MetricComparisonBars
-      title="상환 방식 부담 비교"
-      note="초기 현금흐름과 전체 이자 부담은 별개이므로 두 축으로 나눠 표시합니다."
-      :metrics="comparisonMetrics"
-      :format-value="formatWon"
-    />
-
-    <!-- ShTable은 min-width 32rem을 강제해 반폭 칸(1024px에서 약 480px)에서 가로 스크롤로
-         잘린다 — 1×2 아래 전폭에 둔다 -->
-    <section class="retro-panel p-4 space-y-3">
-      <p class="text-caption leading-relaxed text-muted-foreground">{{ LOAN_ASSUMPTION_NOTE }}</p>
-      <ShTable aria-label="상환 방식별 납입액 비교" density="compact" min-width="32rem" scroll-hint="표를 좌우로 스크롤해 상환액을 확인하세요.">
-        <ShTableHeader>
-          <ShTableRow>
-            <ShTableHead>방식</ShTableHead>
-            <ShTableHead numeric>첫 달</ShTableHead>
-            <ShTableHead numeric>마지막 달</ShTableHead>
-            <ShTableHead numeric>총상환액</ShTableHead>
-          </ShTableRow>
-        </ShTableHeader>
-        <ShTableBody>
-          <ShTableRow>
-            <ShTableCell emphasis>원리금균등</ShTableCell>
-            <ShTableCell numeric>{{ formatWon(result.annuity.firstPayment) }}</ShTableCell>
-            <ShTableCell numeric>{{ formatWon(result.annuity.lastPayment) }}</ShTableCell>
-            <ShTableCell numeric>{{ formatWon(result.annuity.totalRepayment) }}</ShTableCell>
-          </ShTableRow>
-          <ShTableRow>
-            <ShTableCell emphasis>원금균등</ShTableCell>
-            <ShTableCell numeric>{{ formatWon(result.equalPrincipal.firstPayment) }}</ShTableCell>
-            <ShTableCell numeric>{{ formatWon(result.equalPrincipal.lastPayment) }}</ShTableCell>
-            <ShTableCell numeric>{{ formatWon(result.equalPrincipal.totalRepayment) }}</ShTableCell>
-          </ShTableRow>
-        </ShTableBody>
-      </ShTable>
-    </section>
+    <!-- 데이터 블록 2열: 차트(340)와 표(191)를 짝짓는다(비율 0.56) -->
+    <ShPairRow>
+      <template #start>
+        <MetricComparisonBars
+          title="상환 방식 부담 비교"
+          note="초기 현금흐름과 전체 이자 부담은 별개이므로 두 축으로 나눠 표시합니다."
+          :metrics="comparisonMetrics"
+          :format-value="formatWon"
+        />
+      </template>
+      <template #end>
+        <!-- ShTable 기본 min-width 32rem(512px)은 반폭 칸(1024px≈480px)보다 넓어 가로 스크롤을
+             부르지만, 4열뿐이라 실제 내용 폭은 그보다 좁다 — lg부터 하한을 풀어 칸 폭에 맞춘다
+             (.repayment-table-loosen, inner-scroll 실측: 가려짐 0). -->
+        <section class="retro-panel p-4 space-y-3">
+          <p class="text-caption leading-relaxed text-muted-foreground">{{ LOAN_ASSUMPTION_NOTE }}</p>
+          <div class="repayment-table-loosen">
+            <ShTable aria-label="상환 방식별 납입액 비교" density="compact" min-width="32rem" scroll-hint="표를 좌우로 스크롤해 상환액을 확인하세요.">
+              <ShTableHeader>
+                <ShTableRow>
+                  <ShTableHead>방식</ShTableHead>
+                  <ShTableHead numeric>첫 달</ShTableHead>
+                  <ShTableHead numeric>마지막 달</ShTableHead>
+                  <ShTableHead numeric>총상환액</ShTableHead>
+                </ShTableRow>
+              </ShTableHeader>
+              <ShTableBody>
+                <ShTableRow>
+                  <ShTableCell emphasis>원리금균등</ShTableCell>
+                  <ShTableCell numeric>{{ formatWon(result.annuity.firstPayment) }}</ShTableCell>
+                  <ShTableCell numeric>{{ formatWon(result.annuity.lastPayment) }}</ShTableCell>
+                  <ShTableCell numeric>{{ formatWon(result.annuity.totalRepayment) }}</ShTableCell>
+                </ShTableRow>
+                <ShTableRow>
+                  <ShTableCell emphasis>원금균등</ShTableCell>
+                  <ShTableCell numeric>{{ formatWon(result.equalPrincipal.firstPayment) }}</ShTableCell>
+                  <ShTableCell numeric>{{ formatWon(result.equalPrincipal.lastPayment) }}</ShTableCell>
+                  <ShTableCell numeric>{{ formatWon(result.equalPrincipal.totalRepayment) }}</ShTableCell>
+                </ShTableRow>
+              </ShTableBody>
+            </ShTable>
+          </div>
+        </section>
+      </template>
+    </ShPairRow>
   </div>
 </template>
+
+<style scoped>
+/* ShTable의 --sh-table-min-width는 인라인 스타일이라 클래스 min-w-0로는 못 이긴다 —
+   :deep()로 .sh-table의 min-width를 직접 더 높은 특이성으로 다시 선언해야 lg부터 풀린다. */
+@media (min-width: 64rem) {
+  .repayment-table-loosen :deep(.sh-table) {
+    min-width: 0;
+  }
+}
+</style>
