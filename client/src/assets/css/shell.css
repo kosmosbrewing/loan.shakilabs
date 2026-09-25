@@ -1,26 +1,7 @@
 /* v3 AppShell 레이어 — @shakilabs/ui 0.3.15 스타일 "뒤에" 로드된다(main.ts 임포트 순서).
-   패키지 기본값을 앱에서 덮어야 하는 것만 둔다. 모든 셀렉터는 .loan-header-toggle 등
+   패키지 기본값을 앱에서 덮어야 하는 것만 둔다. 모든 셀렉터는 .loan-page-header 등
    앱 스코프 클래스를 하나 더 물려 패키지보다 높은 특정도를 갖는다 — 순서에 기대지 않는다.
    2차 내비(조용한 탭)는 0.3.38부터 패키지가 전부 소유한다 — 여기서 덮지 않는다. */
-
-/* ── 전역 검정 헤더 유틸: 테마 토글 (v3 §3.2) ───────────────────────────
-   색(color)은 지정하지 않는다 — 0.3.16부터 패키지가
-   `.sh-global-header__utility :is(button,a)`를 header-ink(#fafafa)로 강제하고
-   hover도 배경 #ffffff1a·색을 같이 강제한다(레시피 §2). 구조(크기·여백·테두리)만
-   앱이 채운다 — 이 버튼은 ShButton이 아닌 raw <button>이라 구조는 패키지가 안 준다. */
-.loan-header-toggle {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 44px;
-  min-height: 44px;
-  padding: 0;
-  border: 0;
-  border-radius: var(--sh-radius-sm, 0.125rem);
-  background: transparent;
-  cursor: pointer;
-  transition: background-color 0.14s ease;
-}
 
 @media (min-width: 48rem) {
   /* 탭 줄은 3rem + 1px 보더 = 49px. <48rem에서는 ☰로 접혀 0이다(index.html 기본값). */

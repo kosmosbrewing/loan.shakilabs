@@ -3,14 +3,10 @@
 // 앱은 링크와 유틸 슬롯(테마 토글)만 채우고 자체 헤더 마크업을 갖지 않는다.
 // 카테고리 색(구 bg-primary/[8%] 틴트)은 헤더에 들어가지 않는다(§4.3).
 // 0.3.38 "순수 내비게이션"(2026-09-25): 헤더는 위치(로고 / 앱 이름)와 이동(블로그·소개·☰)만 싣는다 — 팁 티커는 뺐다.
-import { computed, onMounted, ref } from "vue";
-import { Moon, Sun } from "lucide-vue-next";
+import { computed } from "vue";
 import { RouterLink, useRoute } from "vue-router";
-import { ShGlobalHeader, type GlobalHeaderLink } from "@shakilabs/ui";
+import { ShGlobalHeader, ShThemeToggle, type GlobalHeaderLink } from "@shakilabs/ui";
 import { LOAN_TABS } from "@/data/loanNavigation";
-
-const THEME_STORAGE_KEY = "loan-tools:theme:v1";
-type ThemeMode = "light" | "dark";
 
 // 사이트 링크 — 블로그는 포털 소유라 href, 소개는 이 앱 라우트라 RouterLink(to). 모바일에서는 ☰ 안으로 들어간다.
 const links: GlobalHeaderLink[] = [
@@ -25,24 +21,6 @@ const navItems = LOAN_TABS;
 const navActiveKey = computed(
   () => navItems.find((item) => route.path === item.to)?.key ?? "",
 );
-
-const theme = ref<ThemeMode>("light");
-
-function applyTheme(next: ThemeMode): void {
-  theme.value = next;
-  document.documentElement.classList.toggle("dark", next === "dark");
-  localStorage.setItem(THEME_STORAGE_KEY, next);
-}
-
-function toggleTheme(): void {
-  applyTheme(theme.value === "dark" ? "light" : "dark");
-}
-
-onMounted(() => {
-  theme.value = document.documentElement.classList.contains("dark")
-    ? "dark"
-    : "light";
-});
 </script>
 
 <template>
@@ -57,15 +35,7 @@ onMounted(() => {
     :link-component="RouterLink"
   >
     <template #utility>
-      <button
-        type="button"
-        class="loan-header-toggle"
-        :aria-label="theme === 'dark' ? '라이트 모드로 전환' : '다크 모드로 전환'"
-        @click="toggleTheme"
-      >
-        <Moon v-if="theme === 'dark'" class="h-4 w-4" aria-hidden="true" />
-        <Sun v-else class="h-4 w-4" aria-hidden="true" />
-      </button>
+      <ShThemeToggle storage-key="loan-tools:theme:v1" />
     </template>
   </ShGlobalHeader>
 </template>
