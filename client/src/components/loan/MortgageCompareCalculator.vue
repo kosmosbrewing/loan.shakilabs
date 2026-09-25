@@ -4,7 +4,8 @@ import { ShPresetGroup } from "@shakilabs/ui";
 import LoanMetricGrid from "@/components/loan/LoanMetricGrid.vue";
 import LoanResultHero from "@/components/loan/LoanResultHero.vue";
 import LoanScenarioChips from "@/components/loan/LoanScenarioChips.vue";
-import MetricComparisonBars from "@/components/result-visualization/MetricComparisonBars.vue";
+import type { GapBarItem } from "@shakilabs/ui";
+import GapComparisonBars from "@/components/result-visualization/GapComparisonBars.vue";
 import CompareSourceFooter from "@/components/common/CompareSourceFooter.vue";
 import { LOAN_ASSUMPTION_NOTE, TERM_OPTIONS } from "@/data/loanPresets";
 import { MORTGAGE_AMOUNT_PRESETS, MORTGAGE_COMPARE_SOURCES, MORTGAGE_DATA_UPDATED, mortgageComparePresets } from "@/data/mortgageRates";
@@ -43,29 +44,14 @@ const metrics = computed(() => {
     },
   ];
 });
-const bankMetrics = computed(() => [
-  {
-    key: "monthly",
-    label: "최저금리 기준 월 상환액",
-    values: result.value.banks.map((row, index) => ({
-      key: row.id,
-      label: row.bank,
-      value: row.bestMonthlyPayment,
-      highlight: index === 0,
-      detail: `최저금리 ${formatPercentValue(row.bestRate, 2)}`,
-    })),
-  },
-  {
-    key: "interest",
-    label: "최저금리 기준 총이자",
-    values: result.value.banks.map((row, index) => ({
-      key: row.id,
-      label: row.bank,
-      value: row.bestTotalInterest,
-      highlight: index === 0,
-    })),
-  },
-]);
+// 같은 대출금·기간이라 월 상환액과 총이자는 금리에 비례해 순위가 늘 같다(거울상) — 총이자 하나를
+// 1위 대비 차이로 그리고 월 상환액·금리는 보조 문구로 둔다.
+const bankItems = computed<GapBarItem[]>(() => result.value.banks.map((row) => ({
+  key: row.id,
+  label: row.bank,
+  value: row.bestTotalInterest,
+  detail: `월 상환 ${formatWon(row.bestMonthlyPayment)} · 최저금리 ${formatPercentValue(row.bestRate, 2)}`,
+})));
 
 function selectPreset(key: string): void {
   const preset = mortgageComparePresets.find((item) => item.key === key);
@@ -132,11 +118,14 @@ function setAmountPreset(amount: number): void {
     />
     <LoanMetricGrid :items="metrics" />
 
-    <MetricComparisonBars
+    <GapComparisonBars
       title="은행별 상환 부담"
+      gap-lead="막대는 1위보다 더 내는 총이자입니다."
       note="공시 금리 범위 중 최저금리를 동일 대출금과 기간에 적용한 비교입니다."
-      :metrics="bankMetrics"
+      metric-label="최저금리 기준 총이자"
+      :items="bankItems"
       :format-value="formatWon"
+      better="lower"
     />
 
     <!-- 은행별 비교 테이블 -->
