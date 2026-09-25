@@ -11,7 +11,9 @@ defineProps<{
 </script>
 
 <template>
-  <div class="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+  <!-- 1×2 결과 칸(lg 이상은 반폭)에 얹히므로 lg부터는 1열로 되돌린다 — 3개 카드가 xl:4열이면
+       나머지 1개가 홀로 남고, 반폭(~540px)에서는 좁아 보인다 -->
+  <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-1">
     <Card
       v-for="item in items"
       :key="item.label"

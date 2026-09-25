@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, reactive } from "vue";
-import { ShBreakdownBar } from "@shakilabs/ui";
+import { ShBreakdownBar, ShCalculatorSplit } from "@shakilabs/ui";
 import { ShieldCheck, Banknote, TrendingDown } from "lucide-vue-next";
 import { Card, CardContent } from "@/components/ui/card";
 import LoanResultHero from "@/components/loan/LoanResultHero.vue";
@@ -39,67 +39,73 @@ const statIconClasses = [
 
 <template>
   <div class="space-y-4">
-    <section class="retro-panel-muted space-y-4 p-4">
-      <div class="grid gap-3 md:grid-cols-2">
-        <label class="space-y-1.5">
-          <span class="text-caption font-semibold text-foreground">원대출 금액</span>
-          <input type="text" inputmode="numeric" class="retro-input" :value="form.originalLoanAmount.toLocaleString('ko-KR')" @input="form.originalLoanAmount = parseNumericInput(($event.target as HTMLInputElement).value)" />
-        </label>
-        <label class="space-y-1.5">
-          <span class="text-caption font-semibold text-foreground">이번 상환액</span>
-          <input type="text" inputmode="numeric" class="retro-input" :value="form.repaymentAmount.toLocaleString('ko-KR')" @input="form.repaymentAmount = parseNumericInput(($event.target as HTMLInputElement).value)" />
-        </label>
-      </div>
-      <div class="grid gap-3 md:grid-cols-4">
-        <label class="space-y-1.5">
-          <span class="text-caption font-semibold text-foreground">수수료율(%)</span>
-          <input v-model.number="form.feeRate" class="retro-input" min="0" max="5" step="0.1" type="number" />
-        </label>
-        <label class="space-y-1.5">
-          <span class="text-caption font-semibold text-foreground">부과기간(개월)</span>
-          <input v-model.number="form.chargePeriodMonths" class="retro-input" min="1" max="120" step="1" type="number" />
-        </label>
-        <label class="space-y-1.5">
-          <span class="text-caption font-semibold text-foreground">경과 개월</span>
-          <input v-model.number="form.elapsedMonths" class="retro-input" min="0" max="120" step="1" type="number" />
-        </label>
-        <label class="space-y-1.5">
-          <span class="text-caption font-semibold text-foreground">연간 면제비율(%)</span>
-          <input v-model.number="form.annualFreeRate" class="retro-input" min="0" max="100" step="1" type="number" />
-        </label>
-      </div>
-    </section>
-
-    <InputRangeNotice :notices="rangeNotices" />
-
-    <LoanResultHero
-      label="예상 수수료"
-      :value="formatWon(result.feeAmount)"
-      sub="이번 상환액 기준"
-    />
-
-    <div class="grid grid-cols-1 gap-2 sm:grid-cols-3">
-      <Card
-        v-for="(stat, index) in [
-          { label: '면제 처리 금액', value: formatWon(result.waivedAmount), cls: '' },
-          { label: '과금 대상 원금', value: formatWon(result.feeTargetAmount), cls: '' },
-          { label: '실효 부담률', value: formatRatioAsPercent(result.effectiveRate, 2), cls: '' },
-        ]"
-        :key="stat.label"
-        class="border-border/50 bg-muted/30"
-      >
-        <CardContent class="p-3.5">
-          <div class="flex items-center gap-2">
-            <span class="inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-lg" :class="statIconClasses[index]">
-              <component :is="statIcons[index]" class="h-3.5 w-3.5" />
-            </span>
-            <p class="truncate text-caption uppercase tracking-wide text-muted-foreground">{{ stat.label }}</p>
+    <ShCalculatorSplit>
+      <template #input>
+        <section class="retro-panel-muted space-y-4 p-4">
+          <div class="grid gap-3 md:grid-cols-2">
+            <label class="space-y-1.5">
+              <span class="text-caption font-semibold text-foreground">원대출 금액</span>
+              <input type="text" inputmode="numeric" class="retro-input" :value="form.originalLoanAmount.toLocaleString('ko-KR')" @input="form.originalLoanAmount = parseNumericInput(($event.target as HTMLInputElement).value)" />
+            </label>
+            <label class="space-y-1.5">
+              <span class="text-caption font-semibold text-foreground">이번 상환액</span>
+              <input type="text" inputmode="numeric" class="retro-input" :value="form.repaymentAmount.toLocaleString('ko-KR')" @input="form.repaymentAmount = parseNumericInput(($event.target as HTMLInputElement).value)" />
+            </label>
           </div>
-          <p class="mt-2 text-heading font-bold tabular-nums" :class="stat.cls">{{ stat.value }}</p>
-        </CardContent>
-      </Card>
-    </div>
+          <div class="grid gap-3 md:grid-cols-4">
+            <label class="space-y-1.5">
+              <span class="text-caption font-semibold text-foreground">수수료율(%)</span>
+              <input v-model.number="form.feeRate" class="retro-input" min="0" max="5" step="0.1" type="number" />
+            </label>
+            <label class="space-y-1.5">
+              <span class="text-caption font-semibold text-foreground">부과기간(개월)</span>
+              <input v-model.number="form.chargePeriodMonths" class="retro-input" min="1" max="120" step="1" type="number" />
+            </label>
+            <label class="space-y-1.5">
+              <span class="text-caption font-semibold text-foreground">경과 개월</span>
+              <input v-model.number="form.elapsedMonths" class="retro-input" min="0" max="120" step="1" type="number" />
+            </label>
+            <label class="space-y-1.5">
+              <span class="text-caption font-semibold text-foreground">연간 면제비율(%)</span>
+              <input v-model.number="form.annualFreeRate" class="retro-input" min="0" max="100" step="1" type="number" />
+            </label>
+          </div>
+        </section>
+        <InputRangeNotice :notices="rangeNotices" />
+      </template>
 
+      <template #result>
+        <LoanResultHero
+          label="예상 수수료"
+          :value="formatWon(result.feeAmount)"
+          sub="이번 상환액 기준"
+        />
+
+        <div class="grid grid-cols-1 gap-2 sm:grid-cols-3 lg:grid-cols-1">
+          <Card
+            v-for="(stat, index) in [
+              { label: '면제 처리 금액', value: formatWon(result.waivedAmount), cls: '' },
+              { label: '과금 대상 원금', value: formatWon(result.feeTargetAmount), cls: '' },
+              { label: '실효 부담률', value: formatRatioAsPercent(result.effectiveRate, 2), cls: '' },
+            ]"
+            :key="stat.label"
+            class="border-border/50 bg-muted/30"
+          >
+            <CardContent class="p-3.5">
+              <div class="flex items-center gap-2">
+                <span class="inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-lg" :class="statIconClasses[index]">
+                  <component :is="statIcons[index]" class="h-3.5 w-3.5" />
+                </span>
+                <p class="truncate text-caption uppercase tracking-wide text-muted-foreground">{{ stat.label }}</p>
+              </div>
+              <p class="mt-2 text-heading font-bold tabular-nums" :class="stat.cls">{{ stat.value }}</p>
+            </CardContent>
+          </Card>
+        </div>
+      </template>
+    </ShCalculatorSplit>
+
+    <!-- 결과 칸을 짧게 유지해 300px 규칙을 지키려고 차트·부연 설명을 1×2 아래 전폭으로 내린다 -->
     <ShBreakdownBar
       label="이번 상환액의 수수료 적용 범위"
       note="면제 처리 금액과 과금 대상 원금의 합은 이번 상환액과 같습니다."

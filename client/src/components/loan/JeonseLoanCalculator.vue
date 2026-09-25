@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed } from "vue";
-import { ShPresetGroup } from "@shakilabs/ui";
+import { ShCalculatorSplit, ShPresetGroup } from "@shakilabs/ui";
 import LoanMetricGrid from "@/components/loan/LoanMetricGrid.vue";
 import LoanResultHero from "@/components/loan/LoanResultHero.vue";
 import LoanScenarioChips from "@/components/loan/LoanScenarioChips.vue";
@@ -69,63 +69,68 @@ function setDepositPreset(amount: number): void {
 
 <template>
   <div class="space-y-4">
-    <LoanScenarioChips :items="jeonseLoanPresets" @select="selectPreset" />
+    <ShCalculatorSplit>
+      <template #input>
+        <LoanScenarioChips :items="jeonseLoanPresets" @select="selectPreset" />
+        <section class="retro-panel-muted space-y-4 p-4">
+          <div class="space-y-1.5">
+            <label for="jeonse-loan-deposit" class="text-caption font-semibold text-foreground">전세보증금 (대출금액)</label>
+            <input
+              id="jeonse-loan-deposit"
+              type="text"
+              inputmode="numeric"
+              class="retro-input"
+              :value="state.depositAmount.toLocaleString('ko-KR')"
+              @input="state.depositAmount = parseNumericInput(($event.target as HTMLInputElement).value)"
+            />
+            <ShPresetGroup
+              :model-value="state.depositAmount"
+              :options="depositPresetOptions"
+              label="전세 보증금 빠른 선택"
+              @update:model-value="setDepositPreset"
+            />
+          </div>
 
-    <section class="retro-panel-muted space-y-4 p-4">
-      <div class="space-y-1.5">
-        <label for="jeonse-loan-deposit" class="text-caption font-semibold text-foreground">전세보증금 (대출금액)</label>
-        <input
-          id="jeonse-loan-deposit"
-          type="text"
-          inputmode="numeric"
-          class="retro-input"
-          :value="state.depositAmount.toLocaleString('ko-KR')"
-          @input="state.depositAmount = parseNumericInput(($event.target as HTMLInputElement).value)"
+          <div class="grid gap-3 sm:grid-cols-3">
+            <label class="space-y-1.5">
+              <span class="text-caption font-semibold text-foreground">금리 (연%)</span>
+              <input v-model.number="state.annualRate" class="retro-input" min="0" max="30" step="0.1" type="number" />
+            </label>
+            <label class="space-y-1.5">
+              <span class="text-caption font-semibold text-foreground">대출기간</span>
+              <select v-model.number="state.termMonths" class="retro-input">
+                <option v-for="term in TERM_OPTIONS" :key="term" :value="term">{{ term }}개월 ({{ Math.round(term / 12) }}년)</option>
+              </select>
+            </label>
+            <label class="space-y-1.5">
+              <span class="text-caption font-semibold text-foreground">상환방식</span>
+              <select v-model="state.isInterestOnly" class="retro-input">
+                <option :value="true">이자만 납부 (거치식)</option>
+                <option :value="false">원리금균등 상환</option>
+              </select>
+            </label>
+          </div>
+
+          <div class="flex flex-wrap gap-2">
+            <button type="button" class="retro-panel px-3 py-2 text-caption font-semibold text-foreground" @click="reset">
+              기본값으로 초기화
+            </button>
+          </div>
+        </section>
+        <InputRangeNotice :notices="rangeNotices" />
+      </template>
+
+      <template #result>
+        <LoanResultHero
+          label="월 납입액"
+          :value="formatWon(result.monthlyPayment)"
+          :sub="result.isInterestOnly ? '이자만 납부 (거치식)' : '원리금균등 상환'"
         />
-        <ShPresetGroup
-          :model-value="state.depositAmount"
-          :options="depositPresetOptions"
-          label="전세 보증금 빠른 선택"
-          @update:model-value="setDepositPreset"
-        />
-      </div>
+        <LoanMetricGrid :items="metrics" />
+      </template>
+    </ShCalculatorSplit>
 
-      <div class="grid gap-3 sm:grid-cols-3">
-        <label class="space-y-1.5">
-          <span class="text-caption font-semibold text-foreground">금리 (연%)</span>
-          <input v-model.number="state.annualRate" class="retro-input" min="0" max="30" step="0.1" type="number" />
-        </label>
-        <label class="space-y-1.5">
-          <span class="text-caption font-semibold text-foreground">대출기간</span>
-          <select v-model.number="state.termMonths" class="retro-input">
-            <option v-for="term in TERM_OPTIONS" :key="term" :value="term">{{ term }}개월 ({{ Math.round(term / 12) }}년)</option>
-          </select>
-        </label>
-        <label class="space-y-1.5">
-          <span class="text-caption font-semibold text-foreground">상환방식</span>
-          <select v-model="state.isInterestOnly" class="retro-input">
-            <option :value="true">이자만 납부 (거치식)</option>
-            <option :value="false">원리금균등 상환</option>
-          </select>
-        </label>
-      </div>
-
-      <div class="flex flex-wrap gap-2">
-        <button type="button" class="retro-panel px-3 py-2 text-caption font-semibold text-foreground" @click="reset">
-          기본값으로 초기화
-        </button>
-      </div>
-    </section>
-
-    <InputRangeNotice :notices="rangeNotices" />
-
-    <LoanResultHero
-      label="월 납입액"
-      :value="formatWon(result.monthlyPayment)"
-      :sub="result.isInterestOnly ? '이자만 납부 (거치식)' : '원리금균등 상환'"
-    />
-    <LoanMetricGrid :items="metrics" />
-
+    <!-- 결과 칸을 짧게 유지해 300px 규칙을 지키려고 순위 차트를 1×2 아래 전폭으로 내린다 -->
     <GapComparisonBars
       v-if="productItems.length"
       title="자격 충족 상품 이자 비교"
@@ -137,7 +142,7 @@ function setDepositPreset(amount: number): void {
       better="lower"
     />
 
-    <!-- 상품별 비교 테이블 -->
+    <!-- 5열 표라 반폭 칸이 아니라 1×2 아래 전폭에 둔다 -->
     <section class="retro-panel overflow-hidden">
       <div class="p-4">
         <p class="text-caption font-semibold text-foreground mb-1">전세대출 상품별 이자 비교</p>

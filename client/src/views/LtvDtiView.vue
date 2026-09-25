@@ -62,7 +62,8 @@ const faqJsonLd = {
   <div class="sh-container sh-container--tool space-y-5 py-5">
     <CalculatorPageHeader title="LTV·DTI·DSR 계산기" />
 
-    <div class="retro-panel overflow-hidden">
+    <!-- overflow-hidden을 걸면 내부 ShCalculatorSplit의 결과 sticky가 죽는다(조상 overflow 금지) -->
+    <div class="retro-panel">
       <div class="retro-titlebar rounded-t-2xl">
         <h2 class="retro-title">한도 조건 입력</h2>
         <FreshBadge :message="`${LTV_DTI_UPDATED} 기준`" />

@@ -82,7 +82,8 @@ const faqJsonLd = computed(() => ({
       </template>
     </CalculatorPageHeader>
 
-    <div class="retro-panel overflow-hidden">
+    <!-- overflow-hidden을 걸면 내부 ShCalculatorSplit의 결과 sticky가 죽는다(조상 overflow 금지) -->
+    <div class="retro-panel">
       <div class="retro-titlebar rounded-t-2xl">
         <h2 class="retro-title">DSR 조건 입력</h2>
         <FreshBadge :message="LOAN_BADGE_MESSAGE" />

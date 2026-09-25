@@ -62,7 +62,8 @@ const faqJsonLd = {
   <div class="sh-container sh-container--tool space-y-5 py-5">
     <CalculatorPageHeader title="주택담보대출 금리 비교" />
 
-    <div class="retro-panel overflow-hidden">
+    <!-- overflow-hidden을 걸면 내부 ShCalculatorSplit의 결과 sticky가 죽는다(조상 overflow 금지) -->
+    <div class="retro-panel">
       <div class="retro-titlebar rounded-t-2xl">
         <h2 class="retro-title">대출 조건 입력</h2>
         <FreshBadge :message="`${MORTGAGE_DATA_UPDATED} 기준`" />

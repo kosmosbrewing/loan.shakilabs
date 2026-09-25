@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed } from "vue";
-import { ShPresetGroup } from "@shakilabs/ui";
+import { ShCalculatorSplit, ShPresetGroup } from "@shakilabs/ui";
 import LoanMetricGrid from "@/components/loan/LoanMetricGrid.vue";
 import LoanResultHero from "@/components/loan/LoanResultHero.vue";
 import LoanScenarioChips from "@/components/loan/LoanScenarioChips.vue";
@@ -65,59 +65,64 @@ function setAmountPreset(amount: number): void {
 
 <template>
   <div class="space-y-4">
-    <LoanScenarioChips :items="mortgageComparePresets" @select="selectPreset" />
+    <ShCalculatorSplit>
+      <template #input>
+        <LoanScenarioChips :items="mortgageComparePresets" @select="selectPreset" />
+        <section class="retro-panel-muted space-y-4 p-4">
+          <div class="space-y-1.5">
+            <label for="mortgage-loan-amount" class="text-caption font-semibold text-foreground">대출금액</label>
+            <input
+              id="mortgage-loan-amount"
+              type="text"
+              inputmode="numeric"
+              class="retro-input"
+              :value="state.loanAmount.toLocaleString('ko-KR')"
+              @input="state.loanAmount = parseNumericInput(($event.target as HTMLInputElement).value)"
+            />
+            <ShPresetGroup
+              :model-value="state.loanAmount"
+              :options="amountPresetOptions"
+              label="대출 금액 빠른 선택"
+              @update:model-value="setAmountPreset"
+            />
+          </div>
 
-    <section class="retro-panel-muted space-y-4 p-4">
-      <div class="space-y-1.5">
-        <label for="mortgage-loan-amount" class="text-caption font-semibold text-foreground">대출금액</label>
-        <input
-          id="mortgage-loan-amount"
-          type="text"
-          inputmode="numeric"
-          class="retro-input"
-          :value="state.loanAmount.toLocaleString('ko-KR')"
-          @input="state.loanAmount = parseNumericInput(($event.target as HTMLInputElement).value)"
+          <div class="grid gap-3 sm:grid-cols-2">
+            <label class="space-y-1.5">
+              <span class="text-caption font-semibold text-foreground">대출기간</span>
+              <select v-model.number="state.termMonths" class="retro-input">
+                <option v-for="term in TERM_OPTIONS" :key="term" :value="term">{{ term }}개월 ({{ Math.round(term / 12) }}년)</option>
+              </select>
+            </label>
+            <label class="space-y-1.5">
+              <span class="text-caption font-semibold text-foreground">상환방식</span>
+              <select v-model="state.repaymentMethod" class="retro-input">
+                <option value="annuity">원리금균등</option>
+                <option value="equalPrincipal">원금균등</option>
+              </select>
+            </label>
+          </div>
+
+          <div class="flex flex-wrap gap-2">
+            <button type="button" class="retro-panel px-3 py-2 text-caption font-semibold text-foreground" @click="reset">
+              입력 초기화
+            </button>
+          </div>
+        </section>
+        <InputRangeNotice :notices="rangeNotices" />
+      </template>
+
+      <template #result>
+        <LoanResultHero
+          label="최저금리 은행"
+          :value="result.bestBank ? `${result.bestBank.bank} ${formatPercentValue(result.bestBank.bestRate, 2)}` : '-'"
+          :sub="result.bestBank ? `월 ${formatWon(result.bestBank.bestMonthlyPayment)}` : undefined"
         />
-        <ShPresetGroup
-          :model-value="state.loanAmount"
-          :options="amountPresetOptions"
-          label="대출 금액 빠른 선택"
-          @update:model-value="setAmountPreset"
-        />
-      </div>
+        <LoanMetricGrid :items="metrics" />
+      </template>
+    </ShCalculatorSplit>
 
-      <div class="grid gap-3 sm:grid-cols-2">
-        <label class="space-y-1.5">
-          <span class="text-caption font-semibold text-foreground">대출기간</span>
-          <select v-model.number="state.termMonths" class="retro-input">
-            <option v-for="term in TERM_OPTIONS" :key="term" :value="term">{{ term }}개월 ({{ Math.round(term / 12) }}년)</option>
-          </select>
-        </label>
-        <label class="space-y-1.5">
-          <span class="text-caption font-semibold text-foreground">상환방식</span>
-          <select v-model="state.repaymentMethod" class="retro-input">
-            <option value="annuity">원리금균등</option>
-            <option value="equalPrincipal">원금균등</option>
-          </select>
-        </label>
-      </div>
-
-      <div class="flex flex-wrap gap-2">
-        <button type="button" class="retro-panel px-3 py-2 text-caption font-semibold text-foreground" @click="reset">
-          입력 초기화
-        </button>
-      </div>
-    </section>
-
-    <InputRangeNotice :notices="rangeNotices" />
-
-    <LoanResultHero
-      label="최저금리 은행"
-      :value="result.bestBank ? `${result.bestBank.bank} ${formatPercentValue(result.bestBank.bestRate, 2)}` : '-'"
-      :sub="result.bestBank ? `월 ${formatWon(result.bestBank.bestMonthlyPayment)}` : undefined"
-    />
-    <LoanMetricGrid :items="metrics" />
-
+    <!-- 결과 칸을 짧게 유지해 300px 규칙을 지키려고 순위 차트를 1×2 아래 전폭으로 내린다 -->
     <GapComparisonBars
       title="은행별 상환 부담"
       gap-lead="막대는 1위보다 더 내는 총이자입니다."
@@ -128,7 +133,7 @@ function setAmountPreset(amount: number): void {
       better="lower"
     />
 
-    <!-- 은행별 비교 테이블 -->
+    <!-- 6열 표라 반폭 칸이 아니라 1×2 아래 전폭에 둔다 -->
     <section class="retro-panel overflow-hidden">
       <div class="p-4">
         <p class="text-caption font-semibold text-foreground mb-1">은행별 주담대 금리 비교</p>
