@@ -113,8 +113,10 @@ const borrowerTypes: { value: BorrowerType; label: string }[] = [
             </label>
           </div>
 
-          <div class="grid gap-3 sm:grid-cols-3">
-            <label class="space-y-1.5">
+          <!-- 셀렉트 3열(칸 155px)에서는 첫 프리셋이 고르는 "생애최초 신혼가구"가 1024px에서 화살표에 가려
+               잘렸다(실측 100>84px, 1280에서도 여유 5px) — 긴 유형은 전체 폭 한 줄, 짧은 두 칸만 2열 -->
+          <div class="grid gap-3 sm:grid-cols-2">
+            <label class="space-y-1.5 sm:col-span-2">
               <span class="text-caption font-semibold text-foreground">유형</span>
               <select v-model="state.borrowerType" class="retro-input">
                 <option v-for="bt in borrowerTypes" :key="bt.value" :value="bt.value">{{ bt.label }}</option>

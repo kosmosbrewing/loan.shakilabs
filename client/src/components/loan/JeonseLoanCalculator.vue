@@ -91,7 +91,9 @@ function setDepositPreset(amount: number): void {
             />
           </div>
 
-          <div class="grid gap-3 sm:grid-cols-3">
+          <!-- 3열(칸 155px)에서는 "이자만 납부 (거치식)"이 네이티브 화살표에 가려 잘렸다(1280 실측 114>105px,
+               1024에서는 대출기간 "120개월 (10년)"도) — 짧은 금리·대출기간만 2열, 상환방식은 전체 폭 한 줄 -->
+          <div class="grid gap-3 sm:grid-cols-2">
             <label class="space-y-1.5">
               <span class="text-caption font-semibold text-foreground">금리 (연%)</span>
               <input v-model.number="state.annualRate" class="retro-input" min="0" max="30" step="0.1" type="number" />
@@ -102,7 +104,7 @@ function setDepositPreset(amount: number): void {
                 <option v-for="term in TERM_OPTIONS" :key="term" :value="term">{{ term }}개월 ({{ Math.round(term / 12) }}년)</option>
               </select>
             </label>
-            <label class="space-y-1.5">
+            <label class="space-y-1.5 sm:col-span-2">
               <span class="text-caption font-semibold text-foreground">상환방식</span>
               <select v-model="state.isInterestOnly" class="retro-input">
                 <option :value="true">이자만 납부 (거치식)</option>
