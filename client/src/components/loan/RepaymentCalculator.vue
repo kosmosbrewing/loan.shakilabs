@@ -5,7 +5,6 @@ import {
   ShCalculatorSplit,
   ShField,
   ShInput,
-  ShLabel,
   ShPairRow,
   ShSelect,
   ShTable,
@@ -75,11 +74,13 @@ function selectPreset(key: string): void {
       <template #input>
         <LoanScenarioChips :items="repaymentPresets" @select="selectPreset" />
         <section class="retro-panel-muted p-4 space-y-4">
+          <!-- 접미사 달린 ShInput과 ShSelect(0.3.38)는 id를 입력칸이 아니라 바깥 span에 붙여서
+               ShLabel for가 칸에 닿지 않았다(라이브 v7-verify 라벨없음 3/3) — ShField를 label로 그려
+               글자와 칸을 함께 감싸 연결한다(다른 loan 계산기의 label 감싸기 문법과 같다). -->
           <div class="grid gap-3 sm:grid-cols-3">
-            <ShField class="sm:col-span-2">
-              <ShLabel for="repayment-principal">대출원금</ShLabel>
+            <ShField as="label" class="sm:col-span-2">
+              <span class="sh-label">대출원금</span>
               <ShInput
-                id="repayment-principal"
                 :model-value="state.principal.toLocaleString('ko-KR')"
                 inputmode="numeric"
                 @update:model-value="state.principal = parseNumericInput($event)"
@@ -87,10 +88,9 @@ function selectPreset(key: string): void {
                 <template #suffix>원</template>
               </ShInput>
             </ShField>
-            <ShField>
-              <ShLabel for="repayment-rate">금리</ShLabel>
+            <ShField as="label">
+              <span class="sh-label">금리</span>
               <ShInput
-                id="repayment-rate"
                 :model-value="state.annualRate"
                 min="0"
                 max="30"
@@ -101,9 +101,9 @@ function selectPreset(key: string): void {
                 <template #suffix>%</template>
               </ShInput>
             </ShField>
-            <ShField class="sm:col-span-3">
-              <ShLabel for="repayment-term">만기</ShLabel>
-              <ShSelect id="repayment-term" :model-value="state.termMonths" @update:model-value="state.termMonths = Number($event)">
+            <ShField as="label" class="sm:col-span-3">
+              <span class="sh-label">만기</span>
+              <ShSelect :model-value="state.termMonths" @update:model-value="state.termMonths = Number($event)">
                 <option v-for="term in TERM_OPTIONS" :key="term" :value="term">{{ term }}개월</option>
               </ShSelect>
             </ShField>

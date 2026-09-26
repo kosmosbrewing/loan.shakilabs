@@ -21,6 +21,7 @@ const payloadSchema = z.object({
 type MemoryControlExposed = {
   save: (payload: unknown) => void;
   clear: () => void;
+  markRestored: () => void;
 };
 
 const control = ref<MemoryControlExposed | null>(null);
@@ -63,6 +64,8 @@ async function handleRestore(payload: unknown): Promise<void> {
   }
   // 사용자가 방금 링크·변종 URL로 들어온 입력을 저장본이 덮어쓰지 않게 한다
   if (Object.keys(route.query).length > 0) return;
+  // 실제로 되살리는 경우에만 "복원함" — 위에서 링크 값을 지키고 돌아간 경우는 "기억 중"으로 남는다(0.3.41)
+  control.value?.markRestored();
   trackEvent("recent_result_open", {
     app_id: "loan",
     tool_id: "dsr",

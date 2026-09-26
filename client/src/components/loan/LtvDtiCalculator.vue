@@ -117,8 +117,10 @@ const borrowerCategories: { value: BorrowerCategory; label: string }[] = [
             </label>
           </div>
 
-          <div class="grid gap-3 sm:grid-cols-3">
-            <label class="space-y-1.5">
+          <!-- 셀렉트 3열(칸 155px)에서는 "규제지역 (서울·경기)"이 화살표에 가려 잘렸다(1280 실측 114>105px,
+               1024에서는 차주 유형·대출 기간 옵션도) — 긴 규제 지역은 전체 폭 한 줄, 짧은 두 칸만 2열 -->
+          <div class="grid gap-3 sm:grid-cols-2">
+            <label class="space-y-1.5 sm:col-span-2">
               <span class="text-caption font-semibold text-foreground">규제 지역</span>
               <select v-model="state.region" class="retro-input">
                 <option v-for="r in regions" :key="r.value" :value="r.value">{{ r.label }}</option>
