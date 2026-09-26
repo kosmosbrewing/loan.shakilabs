@@ -69,14 +69,14 @@ import SEOHead from "@/components/common/SEOHead.vue";
         </section>
 
         <section class="space-y-2">
-          <h2 class="text-body font-bold text-foreground">3. 이 탭에만 남는 임시 저장 — DSR 이어보기</h2>
+          <h2 class="text-body font-bold text-foreground">3. 이 탭에만 남는 임시 저장 — DSR 입력 기억</h2>
           <p>
-            DSR 계산기에는 "이 탭에서 DSR 입력 이어보기" 기능이 있습니다. 켜면 해당 화면의 주소(위 2항의
+            DSR 계산기에는 이용자가 직접 켜야 동작하는 "이 탭에 입력 기억하기" 스위치가 있습니다. 켜면 해당 화면의 주소(위 2항의
             쿼리 포함)와 저장 시각이 브라우저 sessionStorage의
-            <code class="rounded bg-muted px-1 text-foreground">loan:dsr-session-draft:v1</code>
+            <code class="rounded bg-muted px-1 text-foreground">shaki:draft:loan:dsr:v1</code>
             키에 기록됩니다. 저장되는 것은 주소와 시각뿐이며, 별도의 식별자나 기기 정보를 함께 넣지
-            않습니다. 저장 후 8시간이 지나면 불러오기 대상에서 제외되고, sessionStorage 특성상 탭이나
-            브라우저를 닫으면 사라지며, 화면의 "입력 기억 끄기" 버튼으로 즉시 삭제할 수 있습니다. 이
+            않습니다. 저장 후 8시간이 지나면 불러오지 않고, sessionStorage 특성상 탭이나
+            브라우저를 닫으면 사라지며, 화면의 입력 기억 스위치를 끄면 즉시 삭제됩니다. 이
             데이터는 기기 밖으로 전송되지 않습니다. 나머지 계산기 9종은 이 임시 저장을 사용하지 않습니다.
           </p>
         </section>
@@ -202,7 +202,7 @@ import SEOHead from "@/components/common/SEOHead.vue";
             답변드립니다.
           </p>
           <p class="text-foreground">운영: ShakiLabs · 문의: skdba1313@gmail.com</p>
-          <p>시행일: 2026년 8월 5일 · 최종 개정: 2026년 8월 10일</p>
+          <p>시행일: 2026년 8월 5일 · 최종 개정: 2026년 9월 26일</p>
         </section>
       </div>
     </div>
