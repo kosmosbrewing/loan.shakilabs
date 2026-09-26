@@ -13,25 +13,12 @@ const activeItem = computed(() =>
 </script>
 
 <template>
-  <!-- v3 §3.3 — 2차 내비. 풀폭 브랜드 컬러 바(#A02222)를 걷어내고 canvas 배경 +
-       accent underline으로 중성화한다. 배경/글자/밑줄 규칙은 loan-secondary-nav
-       스코프로 main.css에 있다(패키지 기본값이 아직 --sh-color-primary 풀폭이라
-       앱에서 덮는다).
-       모바일(<48rem)은 헤더의 좌측 드로어가 대신한다(v3 §3.3-1) — 링크는 AppHeader의
-       nav-items(LOAN_TABS, 같은 출처)로 드로어에 그대로 렌더되어 크롤 경로는 유지된다. -->
+  <!-- 모바일(<48rem)에서는 패키지가 이 탭 줄을 숨기고 헤더 ☰가 같은 목록을 연다(0.3.38).
+       ☰ 목록은 항상 DOM에 렌더되므로 크롤 경로는 끊기지 않는다. -->
   <ShPrimaryNavigation
-    class="loan-secondary-nav"
     aria-label="대출 계산기 메뉴"
     :items="tabs"
     :active-key="activeItem?.key"
     :link-component="RouterLink"
   />
 </template>
-
-<style scoped>
-@media (max-width: 47.99rem) {
-  .loan-secondary-nav {
-    display: none;
-  }
-}
-</style>
