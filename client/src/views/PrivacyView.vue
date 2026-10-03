@@ -3,8 +3,10 @@ import SEOHead from "@/components/common/SEOHead.vue";
 </script>
 
 <template>
+  <!-- 함대 제목 레시피: 개인정보 처리방침은 "site" 모양(앱 이름을 붙여 도메인 내 중복 제목 방지) -->
   <SEOHead
     title="개인정보 처리방침"
+    title-kind="site"
     description="대출 계산기가 받는 소득·부채·담보 가액 입력값이 어디까지 가는지 계산기별로 밝힌 개인정보 처리방침입니다. 주소 쿼리에 남는 숫자, DSR 이어보기 임시 저장, 제3자 광고 쿠키와 옵트아웃 방법을 안내합니다."
   />
 

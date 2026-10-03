@@ -3,8 +3,11 @@ import SEOHead from "@/components/common/SEOHead.vue";
 </script>
 
 <template>
+  <!-- 함대 제목 레시피: 이용약관은 "site" 모양 — 앱 이름을 빼면 "이용약관 | ShakiLabs"가
+       shakilabs.com 아래 12개 앱에서 같아져 도메인 안 중복 제목이 된다 -->
   <SEOHead
     title="이용약관"
+    title-kind="site"
     description="ShakiLabs 대출 계산기 이용약관입니다. 계산기 10종의 제공 범위, 금융 자문·대출 중개가 아니라는 한계, 규제 한도와 금리 기준일의 출처, 광고 게재와 면책을 안내합니다."
   />
 
