@@ -17,8 +17,11 @@ describe("LOAN_ABOUT_GUIDE 데이터 출처 문단", () => {
   });
 
   it("계산식 기준일과 금리표 확인일을 둘 다 상수에서 읽어 적는다", () => {
-    expect(dataSection!.body).toContain(LOAN_DATA_VERIFIED);
-    expect(dataSection!.body).toContain(MORTGAGE_DATA_UPDATED);
+    // BRIEF-V8로 body가 문단 배열이 됐다(250자 초과 분할) — 합쳐서 부분 문자열로 검사해야
+    // toContain이 "배열 원소 완전일치"가 아니라 원래 의도한 "부분 문자열 포함"으로 동작한다.
+    const text = Array.isArray(dataSection!.body) ? dataSection!.body.join(" ") : dataSection!.body;
+    expect(text).toContain(LOAN_DATA_VERIFIED);
+    expect(text).toContain(MORTGAGE_DATA_UPDATED);
   });
 
   // 계산식 기준일과 금리 데이터 확인일은 다른 것이다. 하나로 묶으면 둘 중 하나가 거짓이 된다.

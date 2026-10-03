@@ -6,7 +6,27 @@
 
 export interface Finding {
   h2: string;
-  body: string;
+  // 문자열(짧은 섹션) 또는 문단 배열(250자 넘는 긴 산문, BRIEF-V8) — chunkSentences로 만든다.
+  body: string | string[];
+}
+
+// 가독성 게이트(BRIEF-V8 loan #1) — 다이제스트 산문은 문장 3~4개를 공백 없이 이어 붙여 250자를
+// 넘는 한 문단이 됐다. 문장을 지우거나 숫자를 바꾸지 않고, "이미 나뉜 문장"을 200자 이내로만
+// 다시 묶는다(seller #3, commit 831fb89와 같은 함수 — 결과가 어긋나면 같은 결함이 재발한 것).
+export function chunkSentences(sentences: string[], maxChars = 200): string[] {
+  const paragraphs: string[] = [];
+  let current = "";
+  for (const sentence of sentences) {
+    const candidate = current ? `${current} ${sentence}` : sentence;
+    if (candidate.length > maxChars && current) {
+      paragraphs.push(current);
+      current = sentence;
+    } else {
+      current = candidate;
+    }
+  }
+  if (current) paragraphs.push(current);
+  return paragraphs;
 }
 
 export function won(value: number): string {

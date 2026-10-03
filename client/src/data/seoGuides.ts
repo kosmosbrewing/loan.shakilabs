@@ -21,8 +21,11 @@ import {
   STEPPING_STONE_DIGEST,
   STUDENT_LOAN_DIGEST,
 } from "./digests";
+import { chunkSentences } from "./digests/format";
 
-export interface GuideSection { h2: string; body: string; }
+// 문자열(짧은 섹션) 또는 문단 배열(250자 넘는 긴 산문, BRIEF-V8) — SeoRichGuide.vue가
+// 배열이면 요소마다 <p>를 하나씩 찍는다. seller #3(commit 831fb89)과 같은 규칙.
+export interface GuideSection { h2: string; body: string | string[]; }
 export interface GuideFaq { q: string; a: string; }
 export interface GuideChecklist { title: string; items: string[]; }
 // 공공기관 공식 출처 링크 — 콘텐츠 신뢰도(E-E-A-T) 근거로 가이드 하단에 노출한다
@@ -42,11 +45,15 @@ export interface GuideData {
  * 계산식 기준일은 /about과 같은 상수에서 읽는다. 페이지별 기본 가정을 넣어 문단이 페이지마다 다르게 한다.
  */
 export function digestBasis(assumptions: string): GuideSection {
+  // BRIEF-V8: assumptions가 길어지면(예: 학자금대출 6개 변수) 전체가 250자를 넘는다.
+  // 세 문장(일반 설명·가정값 안내·확인 당부)은 원래도 따로였으니 배열로 나눠 재배열만 한다.
   return {
     h2: "위 발견의 계산 기준",
-    body:
-      `위 항목의 숫자는 이 페이지 계산기와 같은 산식을 여러 조건으로 반복 실행해 얻은 값이며, 계산식 기준일은 ${LOAN_DATA_VERIFIED}입니다. ` +
-      `${assumptions} 금리·기간·금액은 결과를 설명하기 위한 가정값이고 은행별 금리표는 근거로 쓰지 않았으므로, 본인 조건을 계산기에 직접 넣어 확인하세요.`,
+    body: chunkSentences([
+      `위 항목의 숫자는 이 페이지 계산기와 같은 산식을 여러 조건으로 반복 실행해 얻은 값이며, 계산식 기준일은 ${LOAN_DATA_VERIFIED}입니다.`,
+      assumptions,
+      "금리·기간·금액은 결과를 설명하기 위한 가정값이고 은행별 금리표는 근거로 쓰지 않았으므로, 본인 조건을 계산기에 직접 넣어 확인하세요.",
+    ]),
   };
 }
 
@@ -400,15 +407,19 @@ export const LOAN_ABOUT_GUIDE: GuideData = {
     },
     {
       h2: "데이터 출처와 확인일",
-      body:
-        "금리 정보는 한국은행 경제통계 시스템, 은행연합회 공시자료, 주택금융공사·주택도시기금 공식 고시를 기반으로 합니다. " +
-        "정책 대출 한도와 조건은 국토교통부·금융위원회 공식 자료를 참고합니다. " +
-        "금리를 자동으로 받아 오는 장치가 없어 사람이 공시를 직접 열어 확인해 반영하며, 정해진 갱신 주기는 없습니다. " +
-        "확인일은 성격이 다른 두 가지를 따로 적습니다. " +
-        `LTV·DTI·DSR 한도와 상환 계산식 등 정책·계산식 기준일은 ${LOAN_DATA_VERIFIED}이고, ` +
-        `주담대 비교에 쓰는 은행별 주택담보대출 금리표를 마지막으로 확인한 날은 ${MORTGAGE_DATA_UPDATED}입니다. ` +
-        `은행 금리표는 ${MORTGAGE_DATA_UPDATED} 이후 갱신하지 않았으므로 지금의 실제 금리와 차이가 있을 수 있습니다. ` +
-        "대출은 금액이 크고 되돌리기 어려운 결정입니다. 금리 비교 결과는 상환 구조를 이해하기 위한 참고로만 쓰시고, 실제 적용 금리는 각 은행 공시나 창구에서 반드시 확인하시기 바랍니다.",
+      // BRIEF-V8: 8문장이 이어져 461자 한 문단이었다. 문장 경계(마지막 줄도 실제로는 2문장)를
+      // 그대로 살려 배열로 나누고 chunkSentences로 200자 이내씩 재배열한다(삭제·숫자 변경 없음).
+      body: chunkSentences([
+        "금리 정보는 한국은행 경제통계 시스템, 은행연합회 공시자료, 주택금융공사·주택도시기금 공식 고시를 기반으로 합니다.",
+        "정책 대출 한도와 조건은 국토교통부·금융위원회 공식 자료를 참고합니다.",
+        "금리를 자동으로 받아 오는 장치가 없어 사람이 공시를 직접 열어 확인해 반영하며, 정해진 갱신 주기는 없습니다.",
+        "확인일은 성격이 다른 두 가지를 따로 적습니다.",
+        `LTV·DTI·DSR 한도와 상환 계산식 등 정책·계산식 기준일은 ${LOAN_DATA_VERIFIED}이고,`,
+        `주담대 비교에 쓰는 은행별 주택담보대출 금리표를 마지막으로 확인한 날은 ${MORTGAGE_DATA_UPDATED}입니다.`,
+        `은행 금리표는 ${MORTGAGE_DATA_UPDATED} 이후 갱신하지 않았으므로 지금의 실제 금리와 차이가 있을 수 있습니다.`,
+        "대출은 금액이 크고 되돌리기 어려운 결정입니다.",
+        "금리 비교 결과는 상환 구조를 이해하기 위한 참고로만 쓰시고, 실제 적용 금리는 각 은행 공시나 창구에서 반드시 확인하시기 바랍니다.",
+      ]),
     },
     {
       h2: "운영 원칙",
