@@ -80,6 +80,13 @@ const DIGESTS: Record<string, Finding[]> = {
 };
 const ALL = Object.entries(DIGESTS).flatMap(([page, items]) => items.map((f, i) => ({ id: `${page}#${i + 1}`, ...f })));
 
+// BRIEF-V8: Finding.body가 string | string[]로 바뀌었다(250자 넘는 문단은 chunkSentences로
+// 쪼갠 배열). 아래 테스트는 전부 평평한 한 문자열을 기대하므로, 배열이면 공백으로 다시 합쳐
+// 분할 전과 같은 문자열을 만든다(seller #3, commit 831fb89와 같은 처리).
+function flatten(body: string | string[]): string {
+  return Array.isArray(body) ? body.join(" ") : body;
+}
+
 const compact = (text: string) => text.replace(/\s+/g, "");
 
 function bigrams(text: string): Map<string, number> {
@@ -114,9 +121,9 @@ describe("파생 다이제스트 — 발견 밀도", () => {
   it("발견마다 파생 수치가 여럿 들어 있고 h2가 겹치지 않는다", () => {
     const seen = new Set<string>();
     for (const f of ALL) {
-      const numbers = f.body.match(/\d[\d,.]*/g) ?? [];
+      const numbers = flatten(f.body).match(/\d[\d,.]*/g) ?? [];
       expect(numbers.length, f.id).toBeGreaterThanOrEqual(MIN_NUMBER_TOKENS);
-      expect(f.body.length, f.id).toBeGreaterThan(200);
+      expect(flatten(f.body).length, f.id).toBeGreaterThan(200);
       expect(seen.has(f.h2), f.h2).toBe(false);
       seen.add(f.h2);
     }
@@ -124,13 +131,13 @@ describe("파생 다이제스트 — 발견 밀도", () => {
 
   // YMYL: 금리·기간 같은 파라미터는 사실이 아니라 가정이다. 문장 안에 "가정"이 드러나야 한다.
   it("발견마다 가정값임을 명시한다", () => {
-    for (const f of ALL) expect(f.body, f.id).toContain("가정");
+    for (const f of ALL) expect(flatten(f.body), f.id).toContain("가정");
   });
 
   it("조사 오류가 없다", () => {
     for (const f of ALL) {
-      expect(`${f.h2} ${f.body}`, f.id).not.toMatch(/원로 |원를 |원는 |원가 |원와 |원라 |%을 |%이 |%은 |%과 |%으로 |%p이 |%p을 |%p은 /);
-      expect(f.body, f.id).not.toMatch(/NaN|Infinity|undefined/);
+      expect(`${f.h2} ${flatten(f.body)}`, f.id).not.toMatch(/원로 |원를 |원는 |원가 |원와 |원라 |%을 |%이 |%은 |%과 |%으로 |%p이 |%p을 |%p은 /);
+      expect(flatten(f.body), f.id).not.toMatch(/NaN|Infinity|undefined/);
     }
   });
 });
@@ -140,12 +147,12 @@ describe("파생 다이제스트 — 은행 금리표·갱신 약속 배제", ()
   it("은행 이름을 한 번도 쓰지 않는다", () => {
     // "하나"·"우리"처럼 일반 명사와 겹치는 짧은 이름은 "○○은행" 꼴로만 잡는다
     const banks = BANK_MORTGAGE_RATES.flatMap((b) => (b.bank.length >= 3 ? [b.bank, `${b.bank}은행`] : [`${b.bank}은행`]));
-    for (const f of ALL) for (const bank of banks) expect(`${f.h2} ${f.body}`, `${f.id} ${bank}`).not.toContain(bank);
+    for (const f of ALL) for (const bank of banks) expect(`${f.h2} ${flatten(f.body)}`, `${f.id} ${bank}`).not.toContain(bank);
   });
 
   it("갱신 주기를 약속하는 말이 없다", () => {
     const banned = /매월\s*\S*\s*(반영|갱신|업데이트)|주\s*1회|매주|정기적으로\s*(갱신|업데이트)|실시간/;
-    for (const f of ALL) expect(f.body, f.id).not.toMatch(banned);
+    for (const f of ALL) expect(flatten(f.body), f.id).not.toMatch(banned);
   });
 
   it("계산 기준 문단은 계산식 기준일만 적고 금리표 확인일은 적지 않는다", () => {
@@ -154,9 +161,9 @@ describe("파생 다이제스트 — 은행 금리표·갱신 약속 배제", ()
     const bodies = new Set<string>();
     for (const g of guides) {
       const basis = g.sections!.find((s) => s.h2 === "위 발견의 계산 기준")!;
-      expect(basis.body).toContain(LOAN_DATA_VERIFIED);
-      expect(basis.body).not.toMatch(/2026-03/);
-      bodies.add(basis.body);
+      expect(flatten(basis.body)).toContain(LOAN_DATA_VERIFIED);
+      expect(flatten(basis.body)).not.toMatch(/2026-03/);
+      bodies.add(flatten(basis.body));
     }
     // 페이지별 가정이 들어가 문단이 10개 모두 다르다
     expect(bodies.size).toBe(10);
@@ -168,7 +175,7 @@ describe("파생 다이제스트 — 복제 방지", () => {
     let max = 0;
     for (let i = 0; i < ALL.length; i += 1) {
       for (let j = i + 1; j < ALL.length; j += 1) {
-        const s = similarity(ALL[i].body, ALL[j].body);
+        const s = similarity(flatten(ALL[i].body), flatten(ALL[j].body));
         max = Math.max(max, s);
         expect(s, `${ALL[i].id} vs ${ALL[j].id}`).toBeLessThan(MAX_PAIR_SIMILARITY);
       }
@@ -177,11 +184,11 @@ describe("파생 다이제스트 — 복제 방지", () => {
   });
 
   it(`기존 가이드 본문·FAQ와 유사도 ${MAX_LEGACY_SIMILARITY} 미만`, () => {
-    const digestBodies = new Set(ALL.map((f) => f.body));
+    const digestBodies = new Set(ALL.map((f) => flatten(f.body)));
     const legacy = [LOAN_HOME_GUIDE, LOAN_DSR_GUIDE, LOAN_LTV_GUIDE, LOAN_REPAYMENT_GUIDE, LOAN_JEONSE_GUIDE, LOAN_MORTGAGE_GUIDE, LOAN_JEONSE_GUARANTEE_GUIDE]
-      .flatMap((g) => [g.intro, ...(g.sections ?? []).map((s) => s.body), ...(g.faqs ?? []).map((q) => q.a)])
+      .flatMap((g) => [g.intro, ...(g.sections ?? []).map((s) => flatten(s.body)), ...(g.faqs ?? []).map((q) => q.a)])
       .filter((body) => !digestBodies.has(body));
-    for (const f of ALL) for (const body of legacy) expect(similarity(f.body, body), f.id).toBeLessThan(MAX_LEGACY_SIMILARITY);
+    for (const f of ALL) for (const body of legacy) expect(similarity(flatten(f.body), body), f.id).toBeLessThan(MAX_LEGACY_SIMILARITY);
   });
 });
 
@@ -212,8 +219,8 @@ describe("파생 다이제스트 — 가이드 배선", () => {
 
 // card #56 방식: 산문에 인용된 수치가 엔진을 독립적으로 다시 돌린 값과 일치해야 한다.
 // 다이제스트는 포매터만 거치므로 여기서 어긋나면 엔진이 바뀌었는데 문장이 낡은 것이다.
-const bodyOf = (items: Finding[], i: number) => items[i].body;
-const all = (items: Finding[]) => items.map((f) => `${f.h2} ${f.body}`).join("\n");
+const bodyOf = (items: Finding[], i: number) => flatten(items[i].body);
+const all = (items: Finding[]) => items.map((f) => `${f.h2} ${flatten(f.body)}`).join("\n");
 
 describe("파생 다이제스트 — 인용 수치 엔진 재계산 일치", () => {
   it("/repayment: 두 방식 총이자·역전 달·잔액·등가 금리", () => {
