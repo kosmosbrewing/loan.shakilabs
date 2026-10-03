@@ -138,7 +138,7 @@ function setAmountPreset(amount: number): void {
     <section class="retro-panel overflow-hidden">
       <div class="p-4">
         <p class="text-caption font-semibold text-foreground mb-1">은행별 주담대 금리 비교</p>
-        <p class="text-[10px] text-muted-foreground">{{ LOAN_ASSUMPTION_NOTE }}</p>
+        <p class="text-caption text-muted-foreground">{{ LOAN_ASSUMPTION_NOTE }}</p>
       </div>
       <div class="overflow-x-auto">
         <table aria-label="은행별 주택담보대출 금리 비교" class="w-max min-w-full text-left text-caption">
@@ -164,7 +164,7 @@ function setAmountPreset(amount: number): void {
                      올려서, 같은 토큰의 알파 틴트가 2겹 쌓인 자리였다. 다크에서 실측 4.06:1(기준 미달).
                      알파를 걷고 --primary / --primary-foreground 짝(Badge default 변형과 같은 규약)을
                      쓰면 배경 합성과 무관하게 대비가 고정된다 — 다크 6.64:1 / 라이트 7.65:1. -->
-                <span v-if="idx === 0" class="mr-1 inline-block rounded bg-primary px-1.5 py-0.5 text-[10px] font-bold text-primary-foreground">최저</span>
+                <span v-if="idx === 0" class="mr-1 inline-block rounded bg-primary px-1.5 py-0.5 text-caption font-bold text-primary-foreground">최저</span>
                 {{ row.bank }}
               </td>
               <td class="px-3 py-2.5 text-right font-medium tabular-nums" :class="idx === 0 ? 'text-primary' : 'text-foreground'">

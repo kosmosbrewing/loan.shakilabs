@@ -204,7 +204,7 @@ const borrowerTypes: { value: BorrowerType; label: string }[] = [
                 <tr class="border-t border-border/60">
                   <td class="px-3 py-2.5 text-foreground">
                     <span>원금균등</span>
-                    <span class="block text-[10px] text-muted-foreground">첫 달 {{ formatWon(result.equalPrincipalPlan.firstPayment) }}</span>
+                    <span class="block text-caption text-muted-foreground">첫 달 {{ formatWon(result.equalPrincipalPlan.firstPayment) }}</span>
                   </td>
                   <td class="px-3 py-2.5 text-right tabular-nums text-foreground">{{ formatWon(result.equalPrincipalPlan.monthlyPayment) }}</td>
                   <td class="px-3 py-2.5 text-right tabular-nums text-foreground">{{ formatWon(result.equalPrincipalPlan.totalInterest) }}</td>

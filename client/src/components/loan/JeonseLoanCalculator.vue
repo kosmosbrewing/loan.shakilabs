@@ -149,7 +149,7 @@ function setDepositPreset(amount: number): void {
     <section class="retro-panel overflow-hidden">
       <div class="p-4">
         <p class="text-caption font-semibold text-foreground mb-1">전세대출 상품별 이자 비교</p>
-        <p class="text-[10px] text-muted-foreground">{{ LOAN_ASSUMPTION_NOTE }}</p>
+        <p class="text-caption text-muted-foreground">{{ LOAN_ASSUMPTION_NOTE }}</p>
       </div>
       <div class="overflow-x-auto">
         <table aria-label="전세대출 상품별 이자 비교" class="w-max min-w-full text-left text-caption">
@@ -170,7 +170,7 @@ function setDepositPreset(amount: number): void {
             >
               <td class="px-3 py-2.5">
                 <span class="font-semibold text-foreground">{{ row.product.name }}</span>
-                <span class="block text-[10px] text-muted-foreground mt-0.5">{{ row.product.description }}</span>
+                <span class="block text-caption text-muted-foreground mt-0.5">{{ row.product.description }}</span>
               </td>
               <td class="px-3 py-2.5 text-right tabular-nums text-foreground">
                 {{ formatPercentValue(row.product.minRate, 1) }}
@@ -183,7 +183,7 @@ function setDepositPreset(amount: number): void {
               </td>
               <td class="px-3 py-2.5 text-center">
                 <span
-                  class="inline-block rounded-md px-2 py-0.5 text-[10px] font-semibold"
+                  class="inline-block rounded-md px-2 py-0.5 text-caption font-semibold"
                   :class="row.eligible ? 'bg-primary/10 text-primary' : 'bg-muted text-muted-foreground'"
                 >
                   {{ row.eligible ? '가능' : '초과' }}

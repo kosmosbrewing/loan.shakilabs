@@ -154,7 +154,7 @@ const borrowerCategories: { value: BorrowerCategory; label: string }[] = [
         <section class="retro-panel overflow-hidden">
           <div class="p-4">
             <p class="text-caption font-semibold text-foreground mb-1">규제별 한도 분석</p>
-            <p class="text-[10px] text-muted-foreground">세 가지 규제 중 가장 낮은 금액이 최종 한도</p>
+            <p class="text-caption text-muted-foreground">세 가지 규제 중 가장 낮은 금액이 최종 한도</p>
           </div>
           <div class="overflow-x-auto">
             <table aria-label="주택담보대출 규제별 한도 분석" class="w-full text-left text-caption">
@@ -184,7 +184,7 @@ const borrowerCategories: { value: BorrowerCategory; label: string }[] = [
                 <tr class="border-t border-border/60" :class="{ 'bg-primary/5': result.limitingFactor === 'DSR' }">
                   <td class="px-3 py-2.5 text-foreground">
                     <span>DSR</span>
-                    <span class="block text-[10px] text-muted-foreground">스트레스 +{{ result.stressRate }}%p</span>
+                    <span class="block text-caption text-muted-foreground">스트레스 +{{ result.stressRate }}%p</span>
                   </td>
                   <td class="px-3 py-2.5 text-right tabular-nums text-muted-foreground">{{ formatRatioAsPercent(result.dsrRate, 0) }}</td>
                   <td class="px-3 py-2.5 text-right tabular-nums font-medium" :class="result.limitingFactor === 'DSR' ? 'text-primary' : 'text-foreground'">{{ formatWon(result.maxByDsr) }}</td>
