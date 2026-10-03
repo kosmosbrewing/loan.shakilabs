@@ -6,6 +6,7 @@ import { ActionCard } from "@/components/ui/action-card";
 import CalculatorPageHeader from "@/components/loan/CalculatorPageHeader.vue";
 import RelatedServices from "@/components/common/RelatedServices.vue";
 import SEOHead from "@/components/common/SEOHead.vue";
+import { APP_NAME } from "@/composables/useSEO";
 import FaqAccordionPanel from "@/components/common/FaqAccordionPanel.vue";
 import SeoRichGuide from "@/components/common/SeoRichGuide.vue";
 import { mergeFaqs } from "@/lib/faqMerge";
@@ -77,8 +78,9 @@ const faqJsonLd = {
 </script>
 
 <template>
+  <!-- 함대 제목 레시피(2026-10-03 개정): 홈은 `<앱 이름> | ShakiLabs` (useSEO.buildPageTitle 참고) -->
   <SEOHead
-    title="대출 계산기 · 갈아타기·DSR·상환방식 비교 | ShakiLabs"
+    :title="APP_NAME"
     description="대환대출 손익, DSR 한도 역산, 원리금균등 vs 원금균등 비교를 한 곳에서 계산하세요."
     :json-ld="faqJsonLd"
   />

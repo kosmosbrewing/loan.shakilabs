@@ -40,6 +40,51 @@ function validateVercelConfig(configPath) {
     `${configPath}: loan rewrite must preserve the requested path`);
 }
 
+// 함대 제목 레시피(2026-10-03 개정) 게이트 — useSEO.buildPageTitle의 두 모양을 산출물에서 직접 본다.
+// - 계산기·도구(기본): `<페이지 제목> | ShakiLabs` — 네이버는 제목을 ~35자에서 자르므로 가운데
+//   앱 이름 접미사가 되살아나면 핵심 구절이 다시 잘린다.
+// - 소개·약관·개인정보·404("site"): `<페이지 제목> · <앱 이름> | ShakiLabs` — 앱 이름이 빠지면
+//   shakilabs.com 아래 12개 앱의 "이용약관 | ShakiLabs"가 서로 같은 제목이 된다.
+// - 홈: `<앱 이름> | ShakiLabs`.
+// 소스가 아니라 산출물을 본다: 셸 <title>과 뷰 제목이 어긋나거나 옛 가운데 접미사가 다시
+// 붙어도 여기서 걸린다. 파라미터 변종도 대표 라우트와 같은 "tool" 모양을 따른다.
+const TITLE_BRAND_SUFFIX = " | ShakiLabs";
+const APP_NAME = "대출 계산기";
+const SITE_TITLE_ROUTES = new Set(["/about", "/terms", "/privacy", "/404"]);
+const MAX_PAGE_TITLE_CHARS = 40;
+
+function validateTitleRecipe(html, route) {
+  const titleTagCount = html.match(/<title\b/gi)?.length ?? 0;
+  assert(titleTagCount === 1,
+    `Expected exactly one <title> tag for ${route}, found ${titleTagCount}`);
+
+  const title = html.match(/<title>([^<]+)<\/title>/)?.[1]?.trim() ?? "";
+  assert(title.endsWith(TITLE_BRAND_SUFFIX),
+    `Title must end with "${TITLE_BRAND_SUFFIX}" for ${route}: ${title}`);
+  const head = title.slice(0, -TITLE_BRAND_SUFFIX.length);
+  assert(!head.includes(" | "),
+    `Title must not carry a middle " | " segment for ${route}: ${title}`);
+
+  let pageTitle;
+  if (route === "/") {
+    assert(head === APP_NAME,
+      `Home title must be "${APP_NAME}${TITLE_BRAND_SUFFIX}": ${title}`);
+    pageTitle = head;
+  } else if (SITE_TITLE_ROUTES.has(route)) {
+    const appSuffix = ` · ${APP_NAME}`;
+    assert(head.endsWith(appSuffix),
+      `Site page title must be "<page title>${appSuffix}${TITLE_BRAND_SUFFIX}" for ${route}: ${title}`);
+    pageTitle = head.slice(0, -appSuffix.length);
+  } else {
+    pageTitle = head;
+  }
+  assert(pageTitle.length > 0 && pageTitle.length <= MAX_PAGE_TITLE_CHARS,
+    `Page title must be 1-${MAX_PAGE_TITLE_CHARS} chars for ${route}: ${pageTitle.length} (${title})`);
+
+  const description = html.match(/<meta name="description" content="([^"]*)"/)?.[1]?.trim();
+  assert(description, `Missing meta description for ${route}`);
+}
+
 function validateRoute(route) {
   const outputPath = routeOutputPath(route);
   assert(existsSync(outputPath), `Missing static output for ${route}: ${outputPath}`);
@@ -61,6 +106,9 @@ function validateRoute(route) {
   // build.mjs가 걷어내는데, 그 제거가 조용히 깨지면 여기서 잡는다.
   assert(!/<noscript>/i.test(html),
     `Rendered route must not retain the shell noscript for ${route}`);
+  // 변종 라우트(canonicalRoute !== route)도 자기 자신의 제목을 렌더하므로 똑같이 검사한다 —
+  // 레시피는 canonical 통합과 무관하게 산출되는 모든 <title>에 적용된다.
+  validateTitleRecipe(html, route);
 }
 
 // 사이트맵 = 대표 URL 전수 포함 + canonical 통합 변종 0건 (양방향 검증)
@@ -184,6 +232,7 @@ validatePolicyDisclosures();
 const notFoundPath = resolve(distRoot, "404.html");
 assert(existsSync(notFoundPath), "Missing custom 404.html output");
 const notFoundHtml = readFileSync(notFoundPath, "utf8");
+validateTitleRecipe(notFoundHtml, "/404");
 assert(/name="robots" content="noindex,nofollow"/.test(notFoundHtml),
   "404.html must be noindex,nofollow");
 // 본문이 수십 자뿐인 화면에 광고를 실으면 "Valuable Inventory" 위반이다. noindex는 색인만

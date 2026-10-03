@@ -7,8 +7,12 @@ import { LOAN_ABOUT_GUIDE, LOAN_HOME_GUIDE } from "@/data/seoGuides";
 </script>
 
 <template>
+  <!-- 함대 제목 레시피: 소개는 "site" 모양(`<페이지 제목> · <앱 이름> | ShakiLabs`).
+       제목을 화면 H1("서비스 안내")과 맞춰 "대출 계산기 소개 · 대출 계산기"처럼 앱 이름이
+       겹치지 않게 한다 -->
   <SEOHead
-    title="대출 계산기 소개"
+    title="서비스 안내"
+    title-kind="site"
     description="shakilabs.com/loan의 계산 기준과 사용 범위를 안내합니다."
   />
 
