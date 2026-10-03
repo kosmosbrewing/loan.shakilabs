@@ -1,4 +1,6 @@
 import { existsSync, readFileSync } from "node:fs";
+import { validateNoTinyTextUtilities } from "./validate-no-tiny-text.mjs";
+import { validateParagraphLength } from "./validate-paragraph-length.mjs";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import {
@@ -251,3 +253,7 @@ console.log(
   `${Object.keys(CANONICAL_OVERRIDES).length} canonicalized variants), ` +
   `${utilityCount} generated colour utilities, and custom 404 output.`
 );
+
+// v8b(2026-10-03): 13px 미만 글자 소스 게이트 + 빌드 HTML 문단 ≤250자 게이트
+validateNoTinyTextUtilities({ projectRoot });
+validateParagraphLength({ distRoot });
