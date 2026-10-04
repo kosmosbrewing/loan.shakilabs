@@ -3,7 +3,6 @@ import { RouterLink } from "vue-router";
 import { ArrowRightLeft, Gauge, Scale, ReceiptText, GraduationCap, ArrowRight } from "lucide-vue-next";
 import { ShSurface, ShText } from "@shakilabs/ui";
 import { ActionCard } from "@/components/ui/action-card";
-import CalculatorPageHeader from "@/components/loan/CalculatorPageHeader.vue";
 import RelatedServices from "@/components/common/RelatedServices.vue";
 import SEOHead from "@/components/common/SEOHead.vue";
 import { APP_NAME } from "@/composables/useSEO";
@@ -86,7 +85,8 @@ const faqJsonLd = {
   />
 
   <div class="sh-container sh-container--page space-y-5 py-5">
-    <CalculatorPageHeader title="대출 계산기" />
+    <!-- v8c: 허브 제목은 display 토큰(28px) — 도구 화면 머리(CalculatorPageHeader, 20px)와 구분 -->
+    <ShText as="h1" variant="display" class="break-keep">대출 계산기</ShText>
 
     <ShSurface padding="none" class="overflow-hidden">
       <div class="retro-titlebar rounded-t-2xl">
