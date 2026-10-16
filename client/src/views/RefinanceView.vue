@@ -68,7 +68,7 @@ const faqJsonLd = computed(() => ({
 </script>
 
 <template>
-  <SEOHead
+  <SEOHead noindex
     :title="seoTitle"
     :description="seoDescription"
     :json-ld="faqJsonLd"
