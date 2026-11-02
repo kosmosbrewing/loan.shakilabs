@@ -6,10 +6,6 @@ import { ActionCard } from "@/components/ui/action-card";
 import RelatedServices from "@/components/common/RelatedServices.vue";
 import SEOHead from "@/components/common/SEOHead.vue";
 import { APP_NAME } from "@/composables/useSEO";
-import FaqAccordionPanel from "@/components/common/FaqAccordionPanel.vue";
-import SeoRichGuide from "@/components/common/SeoRichGuide.vue";
-import { mergeFaqs } from "@/lib/faqMerge";
-import { LOAN_HOME_GUIDE } from "@/data/seoGuides";
 
 const tools = [
   {
@@ -43,37 +39,6 @@ const tools = [
     icon: GraduationCap,
   },
 ] as const;
-
-const faqItems = [
-  {
-    q: "shakilabs.com/loan에서는 어떤 계산을 할 수 있나요?",
-    a: "대환대출, DSR, 상환방식 비교뿐 아니라 중도상환수수료와 취업후상환 학자금대출 계산도 할 수 있습니다.",
-  },
-  {
-    q: "대환대출 계산기는 무엇을 비교해 주나요?",
-    a: "현재 대출과 새 대출의 월 납입액, 총이자, 갈아타기 비용 회수 시점을 함께 보여줍니다.",
-  },
-  {
-    q: "DSR 계산 결과는 실제 한도와 완전히 같은가요?",
-    a: "아닙니다. 금융사 내부 심사와 다른 부채 정보에 따라 달라질 수 있어 참고용으로 먼저 보는 계산입니다.",
-  },
-] as const;
-
-// 화면 아코디언과 구조화 데이터가 같은 병합 결과를 쓰도록 한 번만 계산한다
-const mergedFaqs = mergeFaqs(faqItems, LOAN_HOME_GUIDE.faqs);
-
-const faqJsonLd = {
-  "@context": "https://schema.org",
-  "@type": "FAQPage",
-  mainEntity: mergedFaqs.map((faq) => ({
-    "@type": "Question",
-    name: faq.q,
-    acceptedAnswer: {
-      "@type": "Answer",
-      text: faq.a,
-    },
-  })),
-};
 </script>
 
 <template>
@@ -81,7 +46,6 @@ const faqJsonLd = {
   <SEOHead
     :title="APP_NAME"
     description="대환대출 손익, DSR 한도 역산, 원리금균등 vs 원금균등 비교를 한 곳에서 계산하세요."
-    :json-ld="faqJsonLd"
   />
 
   <div class="sh-container sh-container--page space-y-5 py-5">
@@ -93,8 +57,9 @@ const faqJsonLd = {
         <ShText as="h2" variant="heading">대출 의사결정에 필요한 계산</ShText>
       </div>
       <div class="retro-panel-content space-y-4">
+        <!-- 허브 도입은 한 문장. 허브 FAQ 8문항·"종합 가이드" 5절은 2026-11 UI 감사에서 뺐다(GA4 28일 허브 조회 4). -->
         <p class="text-body leading-relaxed text-muted-foreground">
-          대출 갈아타기, DSR, 상환방식 비교처럼 실제로 자주 묻는 질문을 모바일에서도 바로 확인할 수 있게 구성했습니다.
+          대환 손익·DSR 한도·상환방식 비교·중도상환수수료·학자금 상환 계산기 5개.
         </p>
         <div class="grid gap-3 md:grid-cols-5">
           <ActionCard
@@ -118,15 +83,6 @@ const faqJsonLd = {
       </div>
     </ShSurface>
 
-    <FaqAccordionPanel :items="mergedFaqs" />
-
     <RelatedServices />
-
-    <SeoRichGuide
-      :title="LOAN_HOME_GUIDE.title"
-      :intro="LOAN_HOME_GUIDE.intro"
-      :sections="LOAN_HOME_GUIDE.sections"
-      :disclaimer="LOAN_HOME_GUIDE.disclaimer"
-    />
   </div>
 </template>
